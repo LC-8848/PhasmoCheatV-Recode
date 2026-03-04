@@ -29,7 +29,7 @@ void ForceStart::OnMenuRender()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 	bool enabled = IsActive();
-	if (ImGui::Checkbox("Enable Force Start", &enabled))
+	if (ImGui::Checkbox(LANG("EnableForceStart"), &enabled))
 	{
 		SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
 		if (enabled) OnActivate();

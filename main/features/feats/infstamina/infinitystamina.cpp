@@ -7,7 +7,7 @@ InfinityStamina::InfinityStamina() : FeatureCore("Infinity Stamina", TYPE_MOVEME
 void InfinityStamina::OnMenuRender()
 {
 	bool enabled = IsActive();
-	if (ImGui::Checkbox("Infinity Stamina", &enabled))
+	if (BCheckBox(LANG("InfinityStaminaEnable"), &enabled))
 	{
 		SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
 		if (enabled) OnActivate();

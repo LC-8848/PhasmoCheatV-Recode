@@ -6,14 +6,14 @@ constexpr int32_t mapIds[] = {
     4,   // Tanglewood Drive
     6,   // Edgefield Road
     7,   // Ridgeview Court
-    0,   // none
+    42,   // Nell's Diner
     10,  // Grafton Farmhouse
     12,  // Willow Street
     15,  // Point Hope
     8,   // Brownstone High School
     9,   // Bleasdale Farmhouse
     5,   // Sunny Meadows
-    0,   // none
+    5,   // Sunny Meadows restricted
     11,  // Prison
     13,  // Maple Lodge Campsite
     14   // Camp Woodwind
@@ -54,10 +54,10 @@ void MapModifier::OnMenuRender()
     if (mapInstance)
     {
         std::string CurrentMapName = Utils::UnityStrToSysStr(*mapInstance->Fields.mapName);
-        ImGui::Text("Current Map: %s", CurrentMapName.c_str());
+        ImGui::Text(LANG("CurrentMap"), CurrentMapName.c_str());
     }
 
-    if (ImGui::Checkbox("Auto Select Map", &AutoSelectMap))
+    if (ImGui::Checkbox(LANG("AutoSelectMap"), &AutoSelectMap))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "AutoSelectMap", bool, AutoSelectMap);
     }
@@ -74,7 +74,7 @@ void MapModifier::OnMenuRender()
             }
         }
 
-        if (ImGui::Combo("Select Map", &currentItem, mapItems, IM_ARRAYSIZE(mapItems)))
+        if (ImGui::Combo(LANG("SelectMap"), &currentItem, mapItems, IM_ARRAYSIZE(mapItems)))
         {
             int32_t newMapId = mapIds[currentItem];
             SET_CONFIG_VALUE(GetConfigManager(), "AutoVoteMapId", int32_t, newMapId);
@@ -86,7 +86,7 @@ void MapModifier::OnMenuRender()
     bool CustomMaxLight = CONFIG_BOOL(GetConfigManager(), "CustomMaxLight");
     int32_t MaxLight = CONFIG_INT(GetConfigManager(), "MaxLight");
 
-    if (ImGui::Checkbox("Enable Map Modifier", &enabled))
+    if (ImGui::Checkbox(LANG("EnableMapModifier"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -95,28 +95,28 @@ void MapModifier::OnMenuRender()
 
     if (enabled)
     {
-        if (ImGui::Checkbox("Custom max lights", &CustomMaxLight))
+        if (ImGui::Checkbox(LANG("CustomMaxLights"), &CustomMaxLight))
             SET_CONFIG_VALUE(GetConfigManager(), "CustomMaxLight", bool, CustomMaxLight);
         if (CustomMaxLight)
         {
-            if (ImGui::SliderInt("Max lights", &MaxLight, 1, 100))
+            if (ImGui::SliderInt(LANG("MaxLights"), &MaxLight, 1, 100))
                 SET_CONFIG_VALUE(GetConfigManager(), "MaxLight", int32_t, MaxLight);
         }
 
-        if (ImGui::Button("Activate all lights switches"))
+        if (ImGui::Button(LANG("ActivateAllLights")))
             lightsModifier = 1;
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Deactivate all lights switches"))
+        if (ImGui::Button(LANG("DeactivateAllLights")))
             lightsModifier = 2;
 
-        if (ImGui::Button("Trigger lightning"))
+        if (ImGui::Button(LANG("TriggerLightning")))
             callLightning = true;
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Switch fuse box"))
+        if (ImGui::Button(LANG("SwitchFuseBox")))
             switchFuseBox = true;
     }
 }
@@ -136,7 +136,7 @@ void MapModifier::MapModifierMain()
 
         if (vectorLights.empty())
         {
-            NOTIFY_ERROR_QUICK("You need to be in the game.");
+            NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
             return;
         }
 
@@ -148,7 +148,7 @@ void MapModifier::MapModifierMain()
             SDK::LightSwitch_Use(lightSwitch, true, false, false, false, nullptr);
         }
 
-        NOTIFY_SUCCESS_QUICK("All light switches has been activated.");
+        NOTIFY_SUCCESS_QUICK(LANG("AllLightsActivated"));
     }
     if (IsActive() && lightsModifier == 2)
     {
@@ -158,7 +158,7 @@ void MapModifier::MapModifierMain()
 
         if (vectorLights.empty())
         {
-            NOTIFY_ERROR_QUICK("You need to be in the game.");
+            NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
             return;
         }
 
@@ -170,7 +170,7 @@ void MapModifier::MapModifierMain()
             SDK::LightSwitch_Use(lightSwitch, false, false, false, false, nullptr);
         }
 
-        NOTIFY_SUCCESS_QUICK("All light switches has been deactivated.");
+        NOTIFY_SUCCESS_QUICK(LANG("AllLightsDeactivated"));
     }
     if (IsActive() && callLightning)
     {
@@ -180,7 +180,7 @@ void MapModifier::MapModifierMain()
 
         if (!lightningController)
         {
-            NOTIFY_ERROR_QUICK("You need to be in the game.");
+            NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
             return;
         }
 
@@ -188,7 +188,7 @@ void MapModifier::MapModifierMain()
 
         if (!randomWeather)
         {
-            NOTIFY_ERROR_QUICK("[RandomWeather] You need to be in the game.");
+            NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
             return;
         }
 
@@ -196,13 +196,13 @@ void MapModifier::MapModifierMain()
 
         if (!weatherProfile)
         {
-            NOTIFY_ERROR_QUICK("[WeatherProfile] You need to be in the game.");
+            NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
             return;
         }
 
-        if (weatherProfile->Fields.weatherType != SDK::WeatherType::heavyRain)
+        if (weatherProfile->Fields.weatherType != SDK::WeatherType::heavyRain) // NEVER REMOVE THIS IF LOOP - IT WILL RESULT IN ISHACKER = TRUE
         {
-            NOTIFY_ERROR_QUICK("The weather should be heavy rain.");
+            NOTIFY_ERROR_QUICK(LANG("WeatherShouldBeHeavyRain"));
             return;
         }
 
@@ -210,7 +210,7 @@ void MapModifier::MapModifierMain()
 
         methodLightning(lightningController, nullptr);
 
-        NOTIFY_SUCCESS_QUICK("Lightning has been triggered.");
+        NOTIFY_SUCCESS_QUICK(LANG("LightningTriggered"));
     }
 
     if (IsActive() && switchFuseBox)
@@ -221,13 +221,13 @@ void MapModifier::MapModifierMain()
 
         if (!fuseBox)
         { 
-            NOTIFY_ERROR_QUICK("You need to be in the game.");
+            NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
             return;
         }
 
         SDK::FuseBox_Use(fuseBox, nullptr);
 
-        NOTIFY_SUCCESS_QUICK("Fuse box has been switched.");
+        NOTIFY_SUCCESS_QUICK(LANG("FuseBoxSwitched"));
     }
 }
 

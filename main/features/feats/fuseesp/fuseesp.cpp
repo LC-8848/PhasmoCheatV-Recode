@@ -48,7 +48,7 @@ void FuseBoxESP::OnMenuRender()
 	ImColor col = CONFIG_COLOR(GetConfigManager(), "Color");
 	bool showStatus = CONFIG_BOOL(GetConfigManager(), "ShowStatus");
 
-	if (ImGui::Checkbox("Enable fusebox esp##fuseBoxESP", &enabled)) {
+	if (ImGui::Checkbox(LANG("EnableFuseboxEsp"), &enabled)) {
 		SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
 		if (enabled) OnActivate();
 		else OnDeactivate();
@@ -56,11 +56,11 @@ void FuseBoxESP::OnMenuRender()
 	ImGui::SameLine();
 	if (enabled)
 	{
-		if (ImGui::ColorEdit4("Color##fuseBoxESP", reinterpret_cast<float*>(&col.Value), colorEditFlags))
+		if (ImGui::ColorEdit4((std::string(LANG("Color")) + "##fuseBoxESP").c_str(), reinterpret_cast<float*>(&col.Value), colorEditFlags))
 		{
 			SET_CONFIG_VALUE(GetConfigManager(), "Color", ImColor, col);
 		}
-		if (ImGui::Checkbox("Show status##fuseBoxESP", &showStatus))
+		if (ImGui::Checkbox(LANG("ShowStatusFuseBox"), &showStatus))
 		{
 			SET_CONFIG_VALUE(GetConfigManager(), "ShowStatus", bool, showStatus);
 		}

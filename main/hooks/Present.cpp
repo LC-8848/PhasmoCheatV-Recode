@@ -1,4 +1,6 @@
 ﻿#include "../includes.h"
+#include "../features/features_includes.h"
+#include "../config/BindSystem.h"
 
 using namespace PhasmoCheatV;
 
@@ -19,6 +21,7 @@ HRESULT __stdcall Hooks::HkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval
             ImGui::CreateContext();
             ImGui_ImplWin32_Init(Renderer::Window);
             ImGui_ImplDX11_Init(Renderer::Device, Renderer::Context);
+            CALL_METHOD_ARGS(Visuals, GhostESP, SetD3D11Device, Renderer::Device); // Photo ESP
             ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
             ImGui::LoadIniSettingsFromDisk((Utils::GetPhasmoCheatVDirectory() + "\\menu.ini").c_str());
             ImGui::GetIO().FontGlobalScale = dpiScale;
@@ -47,6 +50,8 @@ HRESULT __stdcall Hooks::HkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval
     {
         Menu::Render();
     }
+
+    BindSystem::ProcessBinds();
 
     if (GET_FEATURE_HANDLER())                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
     {

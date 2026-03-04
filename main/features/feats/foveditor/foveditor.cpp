@@ -13,7 +13,7 @@ void FoVEditor::OnMenuRender()
 {
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
     bool enabled = IsActive();
-    if (ImGui::Checkbox("Enable custom FoV", &enabled))
+    if (BCheckBox(LANG("EnableCustomFoV"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -24,16 +24,16 @@ void FoVEditor::OnMenuRender()
     {
         ImGui::Spacing();
         float customFoV = CONFIG_FLOAT(GetConfigManager(), "CustomFoVValue");
-        if (ImGui::SliderFloat("Custom FoV Value", &customFoV, 10.0f, 170.0f, "%.1f"))
+        if (ImGui::SliderFloat(LANG("CustomFoVValue"), &customFoV, 10.0f, 170.0f, "%.1f"))
         {
             SET_CONFIG_VALUE(GetConfigManager(), "CustomFoVValue", float, customFoV);
         }
         ImGui::Spacing();
-        if (ImGui::Button("Force Apply", ImVec2(120, 30)))
+        if (ImGui::Button(LANG("ForceApply"), ImVec2(120, 30)))
         {
             FoVEditorMain();
         }
-        if (ImGui::Button("Reset to Default"))
+        if (ImGui::Button(LANG("ResetToDefault")))
         {
             float defaultFoV = CONFIG_FLOAT(GetConfigManager(), "DefaultFoVValue");
             SET_CONFIG_VALUE(GetConfigManager(), "CustomFoVValue", float, defaultFoV);

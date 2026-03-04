@@ -19,6 +19,8 @@ namespace PhasmoCheatV::InGame
     inline SDK::LightningController* lightningController = nullptr;
     inline SDK::TarotCards* tarotCards = nullptr;
     inline SDK::RandomWeather* randomWeather = nullptr;
+    inline SDK::LevelSelectionManager* levelSelectionManager = nullptr;
+    inline SDK::HandCamera* handCamera = nullptr;
 
     // Reset in-game pointers
     inline void Reset() {
@@ -38,5 +40,7 @@ namespace PhasmoCheatV::InGame
         lightningController = nullptr;
         tarotCards = nullptr;
         randomWeather = nullptr;
+        levelSelectionManager = nullptr;
+        handCamera = nullptr;
     }
 }

@@ -13,7 +13,7 @@ void SaltModifier::OnMenuRender()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
     bool enabled = IsActive();
-    if (ImGui::Checkbox("Enable Salt Modifier", &enabled))
+    if (ImGui::Checkbox(LANG("EnableSaltModifier"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -25,13 +25,13 @@ void SaltModifier::OnMenuRender()
         bool infSalt = CONFIG_BOOL(GetConfigManager(), "InfinitySalt");
         bool noSaltUsedGhost = CONFIG_BOOL(GetConfigManager(), "NoSaltUsedGhost");
 
-        if (ImGui::Checkbox("Infinity Salt", &infSalt))
+        if (ImGui::Checkbox(LANG("InfinitySalt"), &infSalt))
             SET_CONFIG_VALUE(GetConfigManager(), "InfinitySalt", bool, infSalt);
 
-        if (ImGui::Checkbox("Ghost doesn't use salt", &noSaltUsedGhost))
+        if (ImGui::Checkbox(LANG("GhostNUseSalt"), &noSaltUsedGhost))
             SET_CONFIG_VALUE(GetConfigManager(), "NoSaltUsedGhost", bool, noSaltUsedGhost);
 
-        if (ImGui::Button("Reset all salt"))
+        if (ImGui::Button(LANG("ResetAllSalt")))
         {
             SDK::String* saltSpotTypeName = Utils::SysStrToUnityStr("SaltSpot");
             SDK::Type* saltSpotType = SDK::System_Type_GetType(saltSpotTypeName, nullptr);
@@ -51,7 +51,7 @@ void SaltModifier::OnMenuRender()
         
         ImGui::SameLine();
 
-        if (ImGui::Button("Use all salt"))
+        if (ImGui::Button(LANG("UseAllSalt")))
         {
             SDK::String* saltSpotTypeName = Utils::SysStrToUnityStr("SaltSpot");
             SDK::Type* saltSpotType = SDK::System_Type_GetType(saltSpotTypeName, nullptr);

@@ -1,4 +1,3 @@
-
 #include "notifyinfo.h"
 
 using namespace PhasmoCheatV::Features::Visuals;
@@ -13,7 +12,7 @@ void NotifyInfo::OnMenuRender()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 	bool enabled = IsActive();
-	if (ImGui::Checkbox("Enable Notify Info", &enabled))
+	if (ImGui::Checkbox(LANG("EnableNotifyInfo"), &enabled))
 	{
 		SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
 		if (enabled) OnActivate();
@@ -26,14 +25,14 @@ void NotifyInfo::RenderNotifyHunt(SDK::GhostAI* ghostAI, bool Hunting)
 {
 	std::string txt;
 	if (isHunting == false && Hunting == false)
-		txt = "Ghost tried to hunt.";
+		txt = LANG("GhostTriedHunt");
 	else
-		txt = Hunting ? "Ghost started hunting." : "Ghost stopped hunting.";
+		txt = Hunting ? LANG("GhostStartHunting") : LANG("GhostStopHunting");
 
 	NOTIFY_WARNING_QUICK(txt);
 }
 
 void NotifyInfo::RenderNotifyBone()
 {
-	NOTIFY_INFO_QUICK("Bone has been collected.");
+	NOTIFY_INFO_QUICK(LANG("BoneCollected"));
 }

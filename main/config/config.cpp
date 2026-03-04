@@ -13,6 +13,13 @@ namespace PhasmoCheatV::Config
             {"toggle_key", Globals::MenuToggleKey}
         };
 
+        nlohmann::json bindsJson;
+        for (const auto& [featureName, bind] : BindSystem::Binds)
+        {
+            bindsJson[featureName] = bind.Key;
+        }
+        defaultConfig["binds"] = bindsJson;
+
         if (GET_FEATURE_HANDLER())
         {
             for (const auto& featurePair : GET_FEATURE_HANDLER()->GetFeatures())
@@ -131,6 +138,17 @@ namespace PhasmoCheatV::Config
                 Globals::MenuToggleKey = data["menu_settings"]["toggle_key"].get<int>();
             }
 
+            if (data.contains("binds"))
+            {
+                for (auto& [featureName, key] : data["binds"].items())
+                {
+                    if (key.is_number_integer())
+                    {
+                        BindSystem::Binds[featureName].Key = key.get<int>();
+                    }
+                }
+            }
+
             if (GET_FEATURE_HANDLER())
             {
                 for (const auto& featurePair : GET_FEATURE_HANDLER()->GetFeatures())
@@ -142,30 +160,30 @@ namespace PhasmoCheatV::Config
 
                     if (data.contains(name))
                     {
-                        for (const auto& configName : configManager->GetAllConfigs())
+                        for (const auto& config : configManager->GetAllConfigs())
                         {
-                            const auto& config = configName->GetEntryName();
+                            const auto& configName = config->GetEntryName();
 
-                            if (data[name].contains(config))
+                            if (data[name].contains(configName))
                             {
-                                const auto& configValue = data[name][config];
-                                auto& value = configName->GetEntryValue();
+                                const auto& configValue = data[name][configName];
+                                auto& value = config->GetEntryValue();
 
                                 if (std::holds_alternative<bool>(value) && configValue.is_boolean())
                                 {
-                                    configName->SetEntryValue(configValue.get<bool>());
+                                    config->SetEntryValue(configValue.get<bool>());
                                 }
                                 else if (std::holds_alternative<int>(value) && configValue.is_number_integer())
                                 {
-                                    configName->SetEntryValue(configValue.get<int>());
+                                    config->SetEntryValue(configValue.get<int>());
                                 }
                                 else if (std::holds_alternative<float>(value) && configValue.is_number_float())
                                 {
-                                    configName->SetEntryValue(configValue.get<float>());
+                                    config->SetEntryValue(configValue.get<float>());
                                 }
                                 else if (std::holds_alternative<std::string>(value) && configValue.is_string())
                                 {
-                                    configName->SetEntryValue(configValue.get<std::string>());
+                                    config->SetEntryValue(configValue.get<std::string>());
                                 }
                                 else if (std::holds_alternative<ImColor>(value) && configValue.is_object())
                                 {
@@ -175,7 +193,7 @@ namespace PhasmoCheatV::Config
                                         configValue["b"].get<float>(),
                                         configValue["a"].get<float>()
                                     );
-                                    configName->SetEntryValue(color);
+                                    config->SetEntryValue(color);
                                 }
                             }
                         }
@@ -202,6 +220,13 @@ namespace PhasmoCheatV::Config
         Json menuSettings;
         menuSettings["toggle_key"] = Globals::MenuToggleKey;
         data["menu_settings"] = menuSettings;
+
+        Json bindsJson;
+        for (const auto& [featureName, bind] : BindSystem::Binds)
+        {
+            bindsJson[featureName] = bind.Key;
+        }
+        data["binds"] = bindsJson;
 
         if (GET_FEATURE_HANDLER())
         {

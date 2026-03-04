@@ -25,12 +25,13 @@ void ShopModifier::OnMenuRender()
     bool customCount = CONFIG_BOOL(GetConfigManager(), "CustomCount");
     bool customUpgradeCost = CONFIG_BOOL(GetConfigManager(), "CustomUpgradeCost");
     bool customRequiredLevel = CONFIG_BOOL(GetConfigManager(), "CustomRequiredLevel");
+
     int32_t customCostValue = CONFIG_INT(GetConfigManager(), "CustomCostValue");
     int32_t customCountValue = CONFIG_INT(GetConfigManager(), "CustomCountValue");
     int32_t customUpgradeCostValue = CONFIG_INT(GetConfigManager(), "CustomUpgradeCostValue");
     int32_t customRequiredLevelValue = CONFIG_INT(GetConfigManager(), "CustomRequiredLevelValue");
 
-    if (ImGui::Checkbox("Enable Shop Modifier", &enabled))
+    if (ImGui::Checkbox(LANG("EnableShopModifier"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -39,49 +40,48 @@ void ShopModifier::OnMenuRender()
 
     if (enabled)
     {
-        if (ImGui::Checkbox("Skip Shop Tutorials", &skipShopTutorials))
+        if (ImGui::Checkbox(LANG("SkipShopTutorials"), &skipShopTutorials))
             SET_CONFIG_VALUE(GetConfigManager(), "SkipShopTutorials", bool, skipShopTutorials);
 
-        if (ImGui::Checkbox("Custom Cost", &customCost))
+        if (ImGui::Checkbox(LANG("CustomCost"), &customCost))
             SET_CONFIG_VALUE(GetConfigManager(), "CustomCost", bool, customCost);
 
         if (customCost)
         {
-            if (ImGui::SliderInt("Custom Cost Value", &customCostValue, 0, 1000000))
+            if (ImGui::SliderInt(LANG("CustomCostValue"), &customCostValue, 0, 1000000))
                 SET_CONFIG_VALUE(GetConfigManager(), "CustomCostValue", int32_t, customCostValue);
         }
 
-        if (ImGui::Checkbox("Custom Count", &customCount))
+        if (ImGui::Checkbox(LANG("CustomCount"), &customCount))
             SET_CONFIG_VALUE(GetConfigManager(), "CustomCount", bool, customCount);
 
         if (customCount)
         {
-            if (ImGui::SliderInt("Custom Count Value", &customCountValue, 0, 999))
+            if (ImGui::SliderInt(LANG("CustomCountValue"), &customCountValue, 0, 999))
                 SET_CONFIG_VALUE(GetConfigManager(), "CustomCountValue", int32_t, customCountValue);
         }
 
-        if (ImGui::Checkbox("Custom Upgrade Cost", &customUpgradeCost))
+        if (ImGui::Checkbox(LANG("CustomUpgradeCost"), &customUpgradeCost))
             SET_CONFIG_VALUE(GetConfigManager(), "CustomUpgradeCost", bool, customUpgradeCost);
 
         if (customUpgradeCost)
         {
-            if (ImGui::SliderInt("Custom Upgrade Cost Value", &customUpgradeCostValue, 0, 1000000))
+            if (ImGui::SliderInt(LANG("CustomUpgradeCostValue"), &customUpgradeCostValue, 0, 1000000))
                 SET_CONFIG_VALUE(GetConfigManager(), "CustomUpgradeCostValue", int32_t, customUpgradeCostValue);
         }
 
-        if (ImGui::Checkbox("Custom Required Level", &customRequiredLevel))
+        if (ImGui::Checkbox(LANG("CustomRequiredLevel"), &customRequiredLevel))
             SET_CONFIG_VALUE(GetConfigManager(), "CustomRequiredLevel", bool, customRequiredLevel);
 
         if (customRequiredLevel)
         {
-            if (ImGui::SliderInt("Custom Required Level Value", &customRequiredLevelValue, 0, 999))
+            if (ImGui::SliderInt(LANG("CustomRequiredLevelValue"), &customRequiredLevelValue, 0, 999))
                 SET_CONFIG_VALUE(GetConfigManager(), "CustomRequiredLevelValue", int32_t, customRequiredLevelValue);
         }
     }
 
     ImGui::PopStyleVar();
 }
-
 
 void ShopModifier::OnActivate()
 {

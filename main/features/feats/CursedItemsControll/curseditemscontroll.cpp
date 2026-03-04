@@ -11,13 +11,13 @@ CursedItemsControll::CursedItemsControll() : FeatureCore("CursedItems Controll",
 
 void CursedItemsControll::OnMenuRender()
 {
-    if (ImGui::Button("Break cursed items##cursed"))
+    if (ImGui::Button(LANG("BreakCursed")))
     {
         if (InGame::cursedItemsController == nullptr)
-            return NOTIFY_ERROR_QUICK("You need to be in the game.");
+            return NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
 
         if (!Utils::IsLocalMasterClient())
-            return NOTIFY_ERROR_QUICK("You must be the host to use this feature.");
+            return NOTIFY_ERROR_QUICK(LANG("NeedMustBeHost"));
 
         if (InGame::cursedItemsController->Fields.OuijaBoard)
             SDK::CursedItem_BreakItem(reinterpret_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.OuijaBoard), nullptr);
@@ -41,7 +41,7 @@ void CursedItemsControll::OnMenuRender()
             SDK::CursedItem_BreakItem(static_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.MonkeyPaw), nullptr);
     }
 
-    if (ImGui::Button("Use cursed items##cursed"))
+    if (ImGui::Button(LANG("UseCursed")))
     {
         if (InGame::cursedItemsController == nullptr)
             return NOTIFY_ERROR_QUICK("You need to be in the game.");
@@ -61,7 +61,7 @@ void CursedItemsControll::OnMenuRender()
 
     bool enabled = IsActive();
 
-    if (ImGui::Checkbox("Active tarot cards modifier##cursed", &enabled))
+    if (BCheckBox(LANG("TarotCardsModEnable"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -72,19 +72,19 @@ void CursedItemsControll::OnMenuRender()
     if (enabled)
     {
         bool forceCards = CONFIG_BOOL(GetConfigManager(), "CardForce");
-        if (ImGui::Checkbox("Force Card Type##cursed", &forceCards))
+        if (ImGui::Checkbox(LANG("ForceTarotCards"), &forceCards))
             SET_CONFIG_VALUE(GetConfigManager(), "CardForce", bool, forceCards);
 
         if (forceCards)
         {
             const char* tarotCardList[] = { "Fool", "Wheel Of Fortune", "Tower", "Devil", "Death", "Hermit", "Moon", "Sun", "High Priestess", "Hanged Man" };
             int currentType = CONFIG_INT(GetConfigManager(), "CardTypeForced");
-            if (ImGui::Combo("Card Type##cursed", &currentType, tarotCardList, IM_ARRAYSIZE(tarotCardList)))
+            if (ImGui::Combo(LANG("CardType"), &currentType, tarotCardList, IM_ARRAYSIZE(tarotCardList)))
                 SET_CONFIG_VALUE(GetConfigManager(), "CardTypeForced", int, static_cast<int>(currentType));
         }
 
         bool infCards = CONFIG_BOOL(GetConfigManager(), "InfCards");
-        if (ImGui::Checkbox("Infinite cards##cursed", &infCards))
+        if (ImGui::Checkbox(LANG("InfTarotCards"), &infCards))
             SET_CONFIG_VALUE(GetConfigManager(), "InfCards", bool, infCards);
     }
 }

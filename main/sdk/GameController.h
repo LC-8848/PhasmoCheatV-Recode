@@ -44,4 +44,5 @@ namespace SDK
 
 	DEC_MET(GameController_Exit, void(*)(GameController* gameController, void* photoMessageInfo, MethodInfo* methodInfo), "Assembly-CSharp", "", "GameController", "Exit", 1);
 	DEC_MET(GameController_GetAveragePlayerInsanity, float(*)(GameController* gameController, MethodInfo* methodInfo), "Assembly-CSharp", "", "GameController", "GetAveragePlayerInsanity", 0);
+	DEC_MET(GameController_PlayerDied, void(*)(GameController* gameController, Player* player ,MethodInfo* methodInfo), "Assembly-CSharp", "", "GameController", "PlayerDied", 1);
 }

@@ -22,7 +22,7 @@ void GhostModifier::OnMenuRender()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
     bool enabled = IsActive();
-    if (ImGui::Checkbox("Enable Ghost Modifier", &enabled))
+    if (BCheckBox(LANG("EnableGhostModifier"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -32,64 +32,62 @@ void GhostModifier::OnMenuRender()
     if (enabled)
     {
         bool customSpeedEnabled = CONFIG_BOOL(GetConfigManager(), "CustomSpeedEnabled");
-        if (ImGui::Checkbox("Enable custom ghost speed##ghostModifier", &customSpeedEnabled))
+        if (ImGui::Checkbox((std::string(LANG("EnableCustomGhostSpeed")) + "##ghostModifier_customSpeed").c_str(), &customSpeedEnabled))
             SET_CONFIG_VALUE(GetConfigManager(), "CustomSpeedEnabled", bool, customSpeedEnabled);
 
         float ghostSpeed = CONFIG_FLOAT(GetConfigManager(), "GhostSpeed");
-        if (ImGui::SliderFloat("Ghost Speed##ghostModifier", &ghostSpeed, 0.0f, 15.0f, "%.1f"))
+        if (ImGui::SliderFloat((std::string(LANG("GhostSpeed")) + "##ghostModifier_speed").c_str(), &ghostSpeed, 0.0f, 15.0f, "%.1f"))
             SET_CONFIG_VALUE(GetConfigManager(), "GhostSpeed", float, ghostSpeed);
 
         ImGui::Separator();
 
-        if (ImGui::Button("Force appear##ghostModifier"))
+        if (ImGui::Button((std::string(LANG("ForceAppear")) + "##ghostModifier_forceAppear").c_str()))
         {
             if (InGame::ghostAI == nullptr)
-            {
-                NOTIFY_ERROR_QUICK("You need to be in the game.");
-            }
+                NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
             else if (!Utils::IsLocalMasterClient())
-            {
-                NOTIFY_ERROR_QUICK("You must be host to use this feature.");
-            }
+                NOTIFY_ERROR_QUICK(LANG("NeedMustBeHost"));
             else
-            {
                 SET_CONFIG_VALUE(GetConfigManager(), "ShouldForceAppear", bool, true);
-            }
         }
 
         int forcedState = CONFIG_INT(GetConfigManager(), "ForceState");
-        if (ImGui::Combo("Forced type##ghostModifier", &forcedState, ghostStateList, IM_ARRAYSIZE(ghostStateList)))
+        if (ImGui::Combo((std::string(LANG("ForcedType")) + "##ghostModifier_forceState").c_str(), &forcedState, ghostStateList, IM_ARRAYSIZE(ghostStateList)))
             SET_CONFIG_VALUE(GetConfigManager(), "ForceState", int, forcedState);
 
-        if (ImGui::Button("Force State##ghostModifier"))
+        if (ImGui::Button((std::string(LANG("ForceState")) + "##ghostModifier_applyState").c_str()))
         {
             if (!InGame::ghostAI)
-            {
-                NOTIFY_ERROR_QUICK("You need to be in the game.");
-            }
+                NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
             else if (!Utils::IsLocalMasterClient())
-            {
-                NOTIFY_ERROR_QUICK("You must be host to use this feature.");
-            }
+                NOTIFY_ERROR_QUICK(LANG("NeedMustBeHost"));
             else
-            {
                 SET_CONFIG_VALUE(GetConfigManager(), "ShouldChangeState", bool, true);
-            }
         }
 
         ImGui::Separator();
 
         bool freezeState = CONFIG_BOOL(GetConfigManager(), "FreezeState");
-        if (ImGui::Checkbox("Freeze State##ghostModifier", &freezeState))
+        if (ImGui::Checkbox((std::string(LANG("FreezeState")) + "##ghostModifier_freeze").c_str(), &freezeState))
         {
             if (!Utils::IsLocalMasterClient())
             {
-				NOTIFY_ERROR_QUICK("You must be host to use this feature.");
+                NOTIFY_ERROR_QUICK(LANG("NeedMustBeHost"));
                 SET_CONFIG_VALUE(GetConfigManager(), "FreezeState", bool, false);
             }
             else
             {
                 SET_CONFIG_VALUE(GetConfigManager(), "FreezeState", bool, freezeState);
+            }
+        }
+
+        if (SDK::GhostAI* ghost = InGame::ghostAI) {
+            if (SDK::GhostModel* ghostModel = ghost->Fields.currentModel) {
+                bool isVisibleGhost = Utils::IsGhostVisible(ghost);
+                if (ImGui::Button(LANG("SetGhostVisible")))
+                {
+                    SDK::GhostModel_SetVisibility(ghostModel, !isVisibleGhost, nullptr);
+                }
             }
         }
     }

@@ -113,25 +113,26 @@ void Watermark::OnMenuRender()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
     bool enabled = IsActive();
-    if (ImGui::Checkbox("Enable Watermark", &enabled))
+    if (ImGui::Checkbox(LANG("EnableWatermark"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
         else OnDeactivate();
     }
 
-    if (enabled) {
+    if (enabled)
+    {
         bool showFPS = CONFIG_BOOL(GetConfigManager(), "ShowFPS");
         bool showSanity = CONFIG_BOOL(GetConfigManager(), "ShowSanity");
         bool showPing = CONFIG_BOOL(GetConfigManager(), "ShowPing");
 
-        if (ImGui::Checkbox("Show FPS", &showFPS))
+        if (ImGui::Checkbox(LANG("Watermark_ShowFPS"), &showFPS))
             SET_CONFIG_VALUE(GetConfigManager(), "ShowFPS", bool, showFPS);
 
-        if (ImGui::Checkbox("Show average sanity", &showSanity))
+        if (ImGui::Checkbox(LANG("Watermark_ShowSanity"), &showSanity))
             SET_CONFIG_VALUE(GetConfigManager(), "ShowSanity", bool, showSanity);
 
-        if (ImGui::Checkbox("Show ping", &showPing))
+        if (ImGui::Checkbox(LANG("Watermark_ShowPing"), &showPing))
             SET_CONFIG_VALUE(GetConfigManager(), "ShowPing", bool, showPing);
     }
 

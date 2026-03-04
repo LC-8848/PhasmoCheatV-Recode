@@ -15,7 +15,7 @@ void DoorModifier::OnMenuRender()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
     bool enabled = IsActive();
-    if (ImGui::Checkbox("Enable Door Modifier", &enabled))
+    if (ImGui::Checkbox(LANG("EnableDoorModifier"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -26,19 +26,19 @@ void DoorModifier::OnMenuRender()
     {
         ImGui::Separator();
 
-        if (ImGui::Button("Disable Door Interaction"))
+        if (ImGui::Button(LANG("DisableDoorInteraction")))
             ProcessDoorAction(DoorAction::ToggleInteraction, false);
         ImGui::SameLine();
-        if (ImGui::Button("Enable Door Interaction"))
+        if (ImGui::Button(LANG("EnableDoorInteraction")))
             ProcessDoorAction(DoorAction::ToggleInteraction, true);
 
-        if (ImGui::Button("Teleport Doors To Player"))
+        if (ImGui::Button(LANG("TeleportDoorsToPlayer")))
             ProcessDoorAction(DoorAction::TeleportToPlayer);
 
-        if (ImGui::Button("Disable All Doors"))
+        if (ImGui::Button(LANG("DisableAllDoors")))
             ProcessDoorAction(DoorAction::DisableAll);
         ImGui::SameLine();
-        if (ImGui::Button("Enable All Doors"))
+        if (ImGui::Button(LANG("EnableAllDoors")))
             ProcessDoorAction(DoorAction::EnableAll);
     }
 
@@ -49,7 +49,7 @@ void DoorModifier::ProcessDoorAction(DoorAction action, bool enable)
 {
     if (!InGame::levelController)
     {
-        NOTIFY_ERROR_QUICK("You need to be in the game.");
+        NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
         return;
     }
 
@@ -79,16 +79,16 @@ void DoorModifier::ProcessDoorAction(DoorAction action, bool enable)
     switch (action)
     {
     case DoorAction::ToggleInteraction:
-        NOTIFY_INFO_QUICK(enable ? "Door interaction enabled" : "Door interaction disabled");
+        NOTIFY_INFO_QUICK(enable ? LANG("DoorInteractionEnabled") : LANG("DoorInteractionDisabled"));
         break;
     case DoorAction::TeleportToPlayer:
-        NOTIFY_INFO_QUICK("Doors teleported to player");
+        NOTIFY_INFO_QUICK(LANG("DoorsTeleported"));
         break;
     case DoorAction::DisableAll:
-        NOTIFY_INFO_QUICK("All doors disabled");
+        NOTIFY_INFO_QUICK(LANG("AllDoorsDisabled"));
         break;
     case DoorAction::EnableAll:
-        NOTIFY_INFO_QUICK("All doors enabled");
+        NOTIFY_INFO_QUICK(LANG("AllDoorsEnabled"));
         break;
     }
 }

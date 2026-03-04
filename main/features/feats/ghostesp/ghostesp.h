@@ -28,10 +28,10 @@ namespace PhasmoCheatV::Features::Visuals
         void DrawSkeleton(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
         void DrawNone(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
 
-        //void LoadAvailablePhotos();
-        //bool LoadTexture(const std::string& filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height);
-        //void DrawPhotoESP(const SDK::GhostAI* ghostAI);
-        //void CleanupTextures();
+        void LoadAvailablePhotos();
+        bool LoadTexture(const std::string& filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height);
+        void DrawPhotoESP(const SDK::GhostAI* ghostAI);
+        void CleanupTextures();
 
         struct TextureData {
             ID3D11ShaderResourceView* SRV = nullptr;
@@ -41,5 +41,7 @@ namespace PhasmoCheatV::Features::Visuals
         std::unordered_map<std::string, TextureData> loadedTextures;
 
         static ID3D11Device* g_pd3dDevice;
+
+        std::vector<std::string> availablePhotos;
     };
 }

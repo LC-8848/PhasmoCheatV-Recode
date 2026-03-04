@@ -405,7 +405,8 @@ void PlayerESP::OnMenuRender()
         constexpr auto colorEditFlags = ImGuiColorEditFlags_NoInputs;
 
         bool enabled = IsActive();
-        if (ImGui::Checkbox("Enabled##playerESP", &enabled))
+        std::string enabledLabel = std::string(LANG("EnablePlayerESP")) + "###playerESP";
+        if (ImGui::Checkbox(enabledLabel.c_str(), &enabled))
         {
             SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
             if (enabled) OnActivate();
@@ -415,8 +416,9 @@ void PlayerESP::OnMenuRender()
         if (enabled) {
             ImGui::SameLine();
             ImColor currentColor = CONFIG_COLOR(GetConfigManager(), "Color");
+            std::string colorLabel = std::string(LANG("Color")) + "###playerESP";
             if (ImGui::ColorEdit4(
-                "Color##playerESP",
+                colorLabel.c_str(),
                 reinterpret_cast<float*>(&currentColor.Value),
                 colorEditFlags
             ))
@@ -424,45 +426,34 @@ void PlayerESP::OnMenuRender()
                 SET_CONFIG_VALUE(GetConfigManager(), "Color", ImColor, currentColor);
             }
 
-            bool showBox = CONFIG_BOOL(GetConfigManager(), "ShowBox");
-            if (ImGui::Checkbox("Show 2D box", &showBox))
-                SET_CONFIG_VALUE(GetConfigManager(), "ShowBox", bool, showBox);
+            struct BoolOption {
+                const char* configKey;
+                const char* langKey;
+            };
 
-            bool showSkeleton = CONFIG_BOOL(GetConfigManager(), "ShowSkeleton");
-            if (ImGui::Checkbox("Show skeleton", &showSkeleton))
-                SET_CONFIG_VALUE(GetConfigManager(), "ShowSkeleton", bool, showSkeleton);
+            BoolOption options[] = {
+                { "ShowBox", "Show2DBox" },
+                { "ShowSkeleton", "ShowSkeleton" },
+                { "ShowPlayerSanity", "ShowPlayerSanity" },
+                { "ShowDeadStatus", "ShowDeadStatus" },
+                { "ShowRoom", "ShowCurrentRoom" },
+                { "ShowPrestige", "ShowPrestige" },
+                { "ShowExperience", "ShowExperience" },
+                { "ShowLevel", "ShowLevel" },
+                { "ShowSprinting", "ShowSprinting" }
+            };
 
-            bool showSanity = CONFIG_BOOL(GetConfigManager(), "ShowPlayerSanity");
-            if (ImGui::Checkbox("Show player sanity", &showSanity))
-                SET_CONFIG_VALUE(GetConfigManager(), "ShowPlayerSanity", bool, showSanity);
-
-            bool showDeadStatus = CONFIG_BOOL(GetConfigManager(), "ShowDeadStatus");
-            if (ImGui::Checkbox("Show dead status", &showDeadStatus))
-                SET_CONFIG_VALUE(GetConfigManager(), "ShowDeadStatus", bool, showDeadStatus);
-
-            bool showRoom = CONFIG_BOOL(GetConfigManager(), "ShowRoom");
-            if (ImGui::Checkbox("Show current room", &showRoom))
-                SET_CONFIG_VALUE(GetConfigManager(), "ShowRoom", bool, showRoom);
-
-            bool showPrestige = CONFIG_BOOL(GetConfigManager(), "ShowPrestige");
-            if (ImGui::Checkbox("Show prestige", &showPrestige))
-                SET_CONFIG_VALUE(GetConfigManager(), "ShowPrestige", bool, showPrestige);
-
-            bool showExperience = CONFIG_BOOL(GetConfigManager(), "ShowExperience");
-            if (ImGui::Checkbox("Show experience", &showExperience))
-                SET_CONFIG_VALUE(GetConfigManager(), "ShowExperience", bool, showExperience);
-
-            bool showLevel = CONFIG_BOOL(GetConfigManager(), "ShowLevel");
-            if (ImGui::Checkbox("Show level", &showLevel))
-                SET_CONFIG_VALUE(GetConfigManager(), "ShowLevel", bool, showLevel);
-
-            bool showSprinting = CONFIG_BOOL(GetConfigManager(), "ShowSprinting");
-            if (ImGui::Checkbox("Show sprinting", &showSprinting))
-                SET_CONFIG_VALUE(GetConfigManager(), "ShowSprinting", bool, showSprinting);
+            for (const auto& opt : options)
+            {
+                bool value = CONFIG_BOOL(GetConfigManager(), opt.configKey);
+                std::string label = std::string(LANG(opt.langKey)) + "###playerESP_" + opt.configKey;
+                if (ImGui::Checkbox(label.c_str(), &value))
+                    SET_CONFIG_VALUE(GetConfigManager(), opt.configKey, bool, value);
+            }
         }
     }
     catch (const std::exception& e) {
         LOG_ERROR("Error in PlayerESP::OnMenu: " + std::string(e.what()));
-        ImGui::Text("Error loading PlayerESP settings");
+        ImGui::Text("%s", LANG("ErrorLoadingSettings"));
     }
 }

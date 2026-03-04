@@ -6,7 +6,7 @@ ExitVanOne::ExitVanOne() : FeatureCore("Exit Van Solo (host)", TYPE_MISC) {}
 void ExitVanOne::OnMenuRender()
 {
 	bool enabled = IsActive();
-	if (ImGui::Checkbox("Leave People", &enabled))
+	if (ImGui::Checkbox(LANG("EnableExitVanSolo"), &enabled))
 	{
 		SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
 		if (enabled) OnActivate();

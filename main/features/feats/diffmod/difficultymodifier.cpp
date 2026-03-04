@@ -39,7 +39,7 @@ void DifficultyModifier::OnMenuRender()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
     bool enabled = IsActive();
-    if (ImGui::Checkbox("Enable Difficulty Modifier##diffmod", &enabled))
+    if (ImGui::Checkbox(LANG("EnableDifficultyModifier"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -53,7 +53,7 @@ void DifficultyModifier::OnMenuRender()
     }
 
     static int selectedSetting = 0;
-    ImGui::Text("Add Setting to Modify:");
+    ImGui::Text(LANG("AddSettingToModify"));
 
     std::vector<const char*> settingNames;
     for (const auto& setting : m_availableSettings)
@@ -67,14 +67,14 @@ void DifficultyModifier::OnMenuRender()
     }
 
     ImGui::SameLine();
-    if (ImGui::Button("+ Add##diffmod"))
+    if (ImGui::Button(LANG("AddSetting")))
     {
         AddSettingToModify(selectedSetting);
     }
 
     ImGui::Separator();
 
-    ImGui::Text("Selected Settings:");
+    ImGui::Text(LANG("SelectedSettings"));
 
     for (size_t i = 0; i < m_selectedSettings.size(); i++)
     {
@@ -85,13 +85,13 @@ void DifficultyModifier::OnMenuRender()
     if (!m_selectedSettings.empty())
     {
         ImGui::Separator();
-        if (ImGui::Button("Apply Changes##diffmod"))
+        if (ImGui::Button(LANG("ApplyChanges")))
         {
             DifficultyModifierApply();
         }
 
         ImGui::SameLine();
-        if (ImGui::Button("Clear All##diffmod"))
+        if (ImGui::Button(LANG("ClearAll")))
         {
             m_selectedSettings.clear();
         }
@@ -177,7 +177,7 @@ void DifficultyModifier::RenderSettingEditor(int index)
     case 4:
     {
         int value = CONFIG_INT(GetConfigManager(), GetConfigKey(settingIndex));
-        const char* modes[] = { "Off", "On", "Infinite" };
+        const char* modes[] = { LANG("Off"), LANG("On"), LANG("Infinite") };
         if (ImGui::Combo("##Value", &value, modes, IM_ARRAYSIZE(modes)))
         {
             SET_CONFIG_VALUE(GetConfigManager(), GetConfigKey(settingIndex), int, value);
@@ -198,7 +198,17 @@ void DifficultyModifier::RenderSettingEditor(int index)
     case 21:
     {
         int value = CONFIG_INT(GetConfigManager(), GetConfigKey(settingIndex));
-        const char* weather[] = { "Random", "Light Rain", "Heavy Rain", "Snow", "Wind", "Clear", "Fog", "Sunrise", "Blood Moon" };
+        const char* weather[] = {
+            LANG("Random"),
+            LANG("LightRain"),
+            LANG("HeavyRain"),
+            LANG("Snow"),
+            LANG("Wind"),
+            LANG("Clear"),
+            LANG("Fog"),
+            LANG("Sunrise"),
+            LANG("BloodMoon")
+        };
         if (ImGui::Combo("##Value", &value, weather, IM_ARRAYSIZE(weather)))
         {
             SET_CONFIG_VALUE(GetConfigManager(), GetConfigKey(settingIndex), int, value);
@@ -209,7 +219,7 @@ void DifficultyModifier::RenderSettingEditor(int index)
     case 27:
     {
         int value = CONFIG_INT(GetConfigManager(), GetConfigKey(settingIndex));
-        const char* power[] = { "Broken", "Off", "On" };
+        const char* power[] = { LANG("Broken"), LANG("Off"), LANG("On") };
         if (ImGui::Combo("##Value", &value, power, IM_ARRAYSIZE(power)))
         {
             SET_CONFIG_VALUE(GetConfigManager(), GetConfigKey(settingIndex), int, value);
@@ -220,7 +230,13 @@ void DifficultyModifier::RenderSettingEditor(int index)
     case 9: case 10: case 11: case 12: case 17: case 18: case 22: case 23:
     {
         int value = CONFIG_INT(GetConfigManager(), GetConfigKey(settingIndex));
-        const char* difficulty[] = { "None", "Low", "Medium", "High", "Very High" };
+        const char* difficulty[] = {
+            LANG("None"),
+            LANG("Low"),
+            LANG("Medium"),
+            LANG("High"),
+            LANG("VeryHigh")
+        };
         if (ImGui::Combo("##Value", &value, difficulty, IM_ARRAYSIZE(difficulty)))
         {
             SET_CONFIG_VALUE(GetConfigManager(), GetConfigKey(settingIndex), int, value);
@@ -246,12 +262,12 @@ void DifficultyModifier::RenderSettingEditor(int index)
 const char* DifficultyModifier::GetConfigKey(int settingIndex) const
 {
     static const std::vector<const char*> configKeys = {
-        "RequiredLevel", "SanityPillRestoration", "StartingSanity", "SanityDrain", "Sprinting",
-        "Flashlights", "LoseItemsOnDeath", "PlayerSpeed", "EvidenceGiven", "ChangingFavouriteRoom",
-        "InteractionAmount", "EventFrequency", "HuntDuration", "GracePeriod", "FingerprintChance",
-        "FingerprintDuration", "FriendlyGhost", "KillsExtendHunt", "RoamingFrequency", "GhostSpeed",
-        "SetupTime", "SelectedWeather", "DoorsOpen", "HidingPlaces", "SanityMonitor",
-        "ActivityMonitor", "FuseBoxVisible", "FuseBoxStartPower"
+        LANG("RequiredLevel"), LANG("SanityPillRestoration"), LANG("StartingSanity"), LANG("SanityDrain"), LANG("Sprinting"),
+        LANG("Flashlights"), LANG("LoseItemsOnDeath"), LANG("PlayerSpeed"), LANG("EvidenceGiven"), LANG("ChangingFavouriteRoom"),
+        LANG("InteractionAmount"), LANG("EventFrequency"), LANG("HuntDuration"), LANG("GracePeriod"), LANG("FingerprintChance"),
+        LANG("FingerprintDuration"), LANG("FriendlyGhost"), LANG("KillsExtendHunt"), LANG("RoamingFrequency"), LANG("GhostSpeed"),
+        LANG("SetupTime"), LANG("SelectedWeather"), LANG("DoorsOpen"), LANG("HidingPlaces"), LANG("SanityMonitor"),
+        LANG("ActivityMonitor"), LANG("FuseBoxVisible"), LANG("FuseBoxStartPower")
     };
 
     return configKeys[settingIndex];
@@ -264,13 +280,13 @@ void DifficultyModifier::DifficultyModifierApply()
         SDK::LevelValues* instance = Utils::GetLevelValues();
         if (!instance)
         {
-            NOTIFY_ERROR_QUICK("LevelValues instance not found");
+            NOTIFY_ERROR_QUICK(LANG("LevelValuesNotFound"));
             return;
         }
 
         if (!instance->Fields.currentDifficulty)
         {
-            NOTIFY_ERROR_QUICK("No current difficulty set");
+            NOTIFY_ERROR_QUICK(LANG("NoCurrentDifficulty"));
             return;
         }
 
@@ -314,10 +330,10 @@ void DifficultyModifier::DifficultyModifierApply()
             }
         }
 
-        NOTIFY_SUCCESS_QUICK("Difficulty settings applied");
+        NOTIFY_SUCCESS_QUICK(LANG("DifficultySettingsApplied"));
     }
     catch (const std::exception& e)
     {
-        NOTIFY_ERROR_QUICK("Failed to apply difficulty settings");
+        NOTIFY_ERROR_QUICK(LANG("FailedApplyDifficultySettings"));
     }
 }

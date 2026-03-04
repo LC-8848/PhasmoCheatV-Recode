@@ -5,16 +5,16 @@ namespace SDK
 {
     struct MapFields
     {
-        char pad_000[8]; // Padding for ScriptableObject base fields
-        int32_t levelType; // Enum, 4 bytes (was void* - wrong)
-        int32_t levelSize; // Enum, 4 bytes (was void* - wrong)
+        char pad_000[8]; // ScriptableObject
+        int32_t levelType;
+        int32_t levelSize;
         String* mapName;
-        String* descriptionLocaliseID; // Fixed typo: LoacaliseID -> LocaliseID
+        String* descriptionLocaliseID;
         int32_t totalRooms;
         int32_t totalFloors;
-        void* mapSelectSprite; // Sprite*
-        void* loadingSpriteLarge; // Sprite*
-        void* loadingSpriteSmall; // Sprite* (was Sprite3 - probably typo, added missing)
+        void* mapSelectSprite;
+        void* loadingSpriteLarge;
+        void* loadingSpriteSmall;
         String* sceneName;
         String* easterSceneName;
         String* halloweenSceneName;

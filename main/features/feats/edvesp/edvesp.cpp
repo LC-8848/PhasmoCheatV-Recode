@@ -134,6 +134,11 @@ void EvidenceESP::OnMenuRender()
 {
     constexpr auto colorEditFlags = ImGuiColorEditFlags_NoInputs;
 
+    auto MakeLabel = [](const char* code, const char* id) -> std::string
+        {
+            return std::string(LANG(code)) + "##" + id;
+        };
+
     bool enabled = IsActive();
     bool cursedItemEnabled = CONFIG_BOOL(GetConfigManager(), "CursedItemShow");
     bool dnaEvidenceEnabled = CONFIG_BOOL(GetConfigManager(), "DNAEvidenceShow");
@@ -147,51 +152,72 @@ void EvidenceESP::OnMenuRender()
     ImColor emfColor = CONFIG_COLOR(GetConfigManager(), "EMFColor");
     ImColor otherEvidenceColor = CONFIG_COLOR(GetConfigManager(), "OtherEvidenceColor");
 
-    if (ImGui::Checkbox("Enable evidence ESP##evidenceESP", &enabled)) {
+    if (ImGui::Checkbox(LANG("EnableEvidenceESP"), &enabled))
+    {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
-        if (enabled) OnActivate();
-        else OnDeactivate();
+        enabled ? OnActivate() : OnDeactivate();
     }
 
-    if (enabled) {
-        if (ImGui::Checkbox("Cursed item##evidenceESP-cursedItem", &cursedItemEnabled)) {
-            SET_CONFIG_VALUE(GetConfigManager(), "CursedItemShow", bool, cursedItemEnabled);
-        }
-        ImGui::SameLine();
-        if (ImGui::ColorEdit4("Color##evidenceESP-cursedItem", reinterpret_cast<float*>(&cursedItemColor.Value), colorEditFlags)) {
-            SET_CONFIG_VALUE(GetConfigManager(), "CursedItemColor", ImColor, cursedItemColor);
-        }
+    if (!enabled)
+        return;
 
-        if (ImGui::Checkbox("DNA evidence##evidenceESP-dnaEvidence", &dnaEvidenceEnabled)) {
-            SET_CONFIG_VALUE(GetConfigManager(), "DNAEvidenceShow", bool, dnaEvidenceEnabled);
-        }
-        ImGui::SameLine();
-        if (ImGui::ColorEdit4("Color##evidenceESP-dnaEvidence", reinterpret_cast<float*>(&dnaEvidenceColor.Value), colorEditFlags)) {
-            SET_CONFIG_VALUE(GetConfigManager(), "DNAEvidenceColor", ImColor, dnaEvidenceColor);
-        }
+    if (ImGui::Checkbox(LANG("CursedItem"), &cursedItemEnabled))
+        SET_CONFIG_VALUE(GetConfigManager(), "CursedItemShow", bool, cursedItemEnabled);
 
-        if (ImGui::Checkbox("EMF spots##evidenceESP-emf", &emfEnabled)) {
-            SET_CONFIG_VALUE(GetConfigManager(), "EMFShow", bool, emfEnabled);
-        }
-        ImGui::SameLine();
-        if (ImGui::ColorEdit4("Color##evidenceESP-emf", reinterpret_cast<float*>(&emfColor.Value), colorEditFlags)) {
-            SET_CONFIG_VALUE(GetConfigManager(), "EMFColor", ImColor, emfColor);
-        }
+    ImGui::SameLine();
+    if (ImGui::ColorEdit4(
+        MakeLabel("Color", "cursed").c_str(),
+        reinterpret_cast<float*>(&cursedItemColor.Value),
+        colorEditFlags))
+    {
+        SET_CONFIG_VALUE(GetConfigManager(), "CursedItemColor", ImColor, cursedItemColor);
+    }
 
-        if (ImGui::Checkbox("Other evidence##evidenceESP-other", &otherEvidenceEnabled)) {
-            SET_CONFIG_VALUE(GetConfigManager(), "OtherEvidenceShow", bool, otherEvidenceEnabled);
-        }
-        ImGui::SameLine();
-        if (ImGui::ColorEdit4("Color##evidenceESP-other", reinterpret_cast<float*>(&otherEvidenceColor.Value), colorEditFlags)) {
-            SET_CONFIG_VALUE(GetConfigManager(), "OtherEvidenceColor", ImColor, otherEvidenceColor);
-        }
+    if (ImGui::Checkbox(LANG("DNAEvidence"), &dnaEvidenceEnabled))
+        SET_CONFIG_VALUE(GetConfigManager(), "DNAEvidenceShow", bool, dnaEvidenceEnabled);
 
-        if (ImGui::Checkbox("Ghost Orb##evidenceESP-ghostOrb", &ghostOrbEnabled)) {
-            SET_CONFIG_VALUE(GetConfigManager(), "GhostOrbShow", bool, ghostOrbEnabled);
-        }
-        ImGui::SameLine();
-        if (ImGui::ColorEdit4("Color##evidenceESP-ghostOrb", reinterpret_cast<float*>(&ghostOrbColor.Value), colorEditFlags)) {
-            SET_CONFIG_VALUE(GetConfigManager(), "GhostOrbColor", ImColor, ghostOrbColor);
-        }
+    ImGui::SameLine();
+    if (ImGui::ColorEdit4(
+        MakeLabel("Color", "dna").c_str(),
+        reinterpret_cast<float*>(&dnaEvidenceColor.Value),
+        colorEditFlags))
+    {
+        SET_CONFIG_VALUE(GetConfigManager(), "DNAEvidenceColor", ImColor, dnaEvidenceColor);
+    }
+
+    if (ImGui::Checkbox(LANG("EMFSpots"), &emfEnabled))
+        SET_CONFIG_VALUE(GetConfigManager(), "EMFShow", bool, emfEnabled);
+
+    ImGui::SameLine();
+    if (ImGui::ColorEdit4(
+        MakeLabel("Color", "emf").c_str(),
+        reinterpret_cast<float*>(&emfColor.Value),
+        colorEditFlags))
+    {
+        SET_CONFIG_VALUE(GetConfigManager(), "EMFColor", ImColor, emfColor);
+    }
+
+    if (ImGui::Checkbox(LANG("GhostOrb"), &ghostOrbEnabled))
+        SET_CONFIG_VALUE(GetConfigManager(), "GhostOrbShow", bool, ghostOrbEnabled);
+
+    ImGui::SameLine();
+    if (ImGui::ColorEdit4(
+        MakeLabel("Color", "ghostOrb").c_str(),
+        reinterpret_cast<float*>(&ghostOrbColor.Value),
+        colorEditFlags))
+    {
+        SET_CONFIG_VALUE(GetConfigManager(), "GhostOrbColor", ImColor, ghostOrbColor);
+    }
+
+    if (ImGui::Checkbox(LANG("OtherEvidence"), &otherEvidenceEnabled))
+        SET_CONFIG_VALUE(GetConfigManager(), "OtherEvidenceShow", bool, otherEvidenceEnabled);
+
+    ImGui::SameLine();
+    if (ImGui::ColorEdit4(
+        MakeLabel("Color", "other").c_str(),
+        reinterpret_cast<float*>(&otherEvidenceColor.Value),
+        colorEditFlags))
+    {
+        SET_CONFIG_VALUE(GetConfigManager(), "OtherEvidenceColor", ImColor, otherEvidenceColor);
     }
 }

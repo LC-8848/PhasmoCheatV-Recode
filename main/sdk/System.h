@@ -15,5 +15,5 @@ namespace SDK
         TypeFields Fields;
     };
 
-	DEC_MET(System_Type_GetType, SDK::Type* (*)(String* typeName, SDK::MethodInfo* method), "mscorlib", "System", "Type", "GetType", 1);
+	DEC_MET(System_Type_GetType, SDK::Type* (*)(String* typeName, SDK::MethodInfo* methodInfo), "mscorlib", "System", "Type", "GetType", 1);
 }

@@ -9,12 +9,12 @@ GrabKeys::GrabKeys() : FeatureCore("Grab Keys", TYPE_MAP)
 
 void GrabKeys::OnMenuRender()
 {
-	if (ImGui::Button("Grab all keys"))
+	if (ImGui::Button(LANG("GrabAllKeys")))
 	{
 		GrabKeysAll();
 	}
 	bool autoGrabKeys = CONFIG_BOOL(GetConfigManager(), "AutoGrabKeys");
-	if (ImGui::Checkbox("Auto grab all keys", &autoGrabKeys))
+	if (ImGui::Checkbox(LANG("AutoGrabAllKeys"), &autoGrabKeys))
 		SET_CONFIG_VALUE(GetConfigManager(), "AutoGrabKeys", bool, autoGrabKeys);
 }
 
@@ -22,7 +22,7 @@ void GrabKeys::GrabKeysAll()
 {
 	if (InGame::keys.empty())
 	{
-		NOTIFY_ERROR_QUICK("No keys found.");
+		NOTIFY_ERROR_QUICK(LANG("NoKeysFound"));
 		return;
 	}
 

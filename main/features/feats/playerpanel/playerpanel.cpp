@@ -131,7 +131,7 @@ void PlayersPanel::OnMenuRender()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
     bool enabled = IsActive();
-    if (ImGui::Checkbox("Enable Players Panel", &enabled))
+    if (ImGui::Checkbox(LANG("EnablePlayersPanel"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -150,21 +150,21 @@ void PlayersPanel::OnMenuRender()
         bool showHacker = CONFIG_BOOL(GetConfigManager(), "ShowHackerFlag");
         bool showAverageSanity = CONFIG_BOOL(GetConfigManager(), "ShowAverageSanity");
 
-        if (ImGui::Checkbox("Show Sanity", &showSanity))
+        if (ImGui::Checkbox(LANG("ShowSanity"), &showSanity))
             SET_CONFIG_VALUE(GetConfigManager(), "ShowSanity", bool, showSanity);
-        if (ImGui::Checkbox("Show Current Room", &showRoom))
+        if (ImGui::Checkbox(LANG("ShowCurrentRoom"), &showRoom))
             SET_CONFIG_VALUE(GetConfigManager(), "ShowCurrentRoom", bool, showRoom);
-        if (ImGui::Checkbox("Show Temperature", &showTemp))
+        if (ImGui::Checkbox(LANG("ShowTemperature"), &showTemp))
             SET_CONFIG_VALUE(GetConfigManager(), "ShowTemperature", bool, showTemp);
-        if (ImGui::Checkbox("Show Level", &showLevel))
+        if (ImGui::Checkbox(LANG("ShowLevel"), &showLevel))
             SET_CONFIG_VALUE(GetConfigManager(), "ShowLevel", bool, showLevel);
-        if (ImGui::Checkbox("Show Experience", &showExp))
+        if (ImGui::Checkbox(LANG("ShowExperience"), &showExp))
             SET_CONFIG_VALUE(GetConfigManager(), "ShowExperience", bool, showExp);
-        if (ImGui::Checkbox("Show Prestige", &showPrestige))
+        if (ImGui::Checkbox(LANG("ShowPrestige"), &showPrestige))
             SET_CONFIG_VALUE(GetConfigManager(), "ShowPrestige", bool, showPrestige);
-        if (ImGui::Checkbox("Show Hacker Flag", &showHacker))
+        if (ImGui::Checkbox(LANG("ShowHackerFlag"), &showHacker))
             SET_CONFIG_VALUE(GetConfigManager(), "ShowHackerFlag", bool, showHacker);
-        if (ImGui::Checkbox("Show Average Sanity", &showAverageSanity))
+        if (ImGui::Checkbox(LANG("ShowAverageSanity"), &showAverageSanity))
             SET_CONFIG_VALUE(GetConfigManager(), "ShowAverageSanity", bool, showAverageSanity);
     }
 

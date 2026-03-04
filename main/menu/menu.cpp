@@ -3,8 +3,9 @@
 #include <random>
 #include <chrono>
 #include "../features/features_includes.h"
+#include <filesystem>
 
-using namespace PhasmoCheatV;
+using namespace PhasmoCheatV; namespace fs = std::filesystem;
 
 SDK::CursorLockMode Menu::previousCursorLockMode = SDK::CursorLockMode::None;
 
@@ -56,8 +57,6 @@ void Menu::Render()
     ImGui::SetNextWindowSize(ImVec2(menuWidth * dpiScale, menuHeight * dpiScale), ImGuiCond_Once);
     ImGui::SetNextWindowBgAlpha(1.0f);
 
-    NewYear();
-
     ImGui::Begin("##MainMenu", nullptr, windowFlags);
 
     ImVec2 contentSize = ImGui::GetContentRegionAvail();
@@ -105,10 +104,11 @@ void Menu::Render()
             ImGui::PopStyleColor(4);
             };
 
-        DrawTabButton("FEATURES", 0);
-        DrawTabButton("SETTINGS", 1);
+        DrawTabButton(LANG("Menu_Features"), 0);
+        DrawTabButton(LANG("Menu_Settings"), 1);
+        DrawTabButton(LANG("Menu_About"), 2);
         if (IsDebugging)
-            DrawTabButton("TEST", 2);
+            DrawTabButton("TEST", 3);
 
         float bottomBlock = 120 * dpiScale;
 
@@ -126,7 +126,7 @@ void Menu::Render()
         float x = (tabBarWidth * dpiScale - sz.x) * 0.5f;
         ImGui::SetCursorPosX(x);
 
-        if (ImGui::Button("UNLOAD CHEAT", sz)) {
+        if (ImGui::Button(LANG("Menu_Unload"), sz)) {
             menu.Toggle();
             CheatWork = false;
         }
@@ -137,8 +137,8 @@ void Menu::Render()
         ImGui::Separator();
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5 * dpiScale);
-        ImGui::SetCursorPosX((tabBarWidth * dpiScale - ImGui::CalcTextSize("v2.3 | MIT License").x) * 0.5f);
-        ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.6f, 0.7f), "v2.3 | MIT License");
+        ImGui::SetCursorPosX((tabBarWidth * dpiScale - ImGui::CalcTextSize("v2.4 | MIT License").x) * 0.5f);
+        ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.6f, 0.7f), "v2.4 | MIT License");
 
         ImGui::PopStyleVar();
     }
@@ -163,61 +163,81 @@ void Menu::Render()
                 else
                 {
                     ImGui::SetCursorPos(ImVec2(
-                        (ImGui::GetWindowWidth() - ImGui::CalcTextSize("Features not available").x) * 0.5f,
+                        (ImGui::GetWindowWidth() - ImGui::CalcTextSize(LANG("Menu_NoFeatures")).x) * 0.5f,
                         (ImGui::GetWindowHeight() - ImGui::GetTextLineHeight()) * 0.5f
                     ));
-                    ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "Features not available");
+                    ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), LANG("Menu_NoFeatures"));
                 }
             }
             ImGui::EndChild();
             break;
 
         case 1:
+        {
             ImGui::SetCursorPosY(20 * dpiScale);
             ImGui::SetCursorPosX(25 * dpiScale);
             ImGui::BeginGroup();
-
             ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
-            ImGui::TextColored(accentPurple, "SETTINGS");
+            ImGui::TextColored(accentPurple, LANG("Menu_Settings"));
             ImGui::PopFont();
             ImGui::Separator();
             ImGui::Dummy(ImVec2(0, 15));
 
-            ImGui::BeginChild("GeneralSettings", ImVec2(0, 67 * dpiScale), true);
+            // Растягиваем child на весь доступный размер меню
+            ImGui::BeginChild("GeneralSettings", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
             {
                 ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[7]);
-                ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), "General Settings");
+                ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), LANG("Menu_General"));
                 ImGui::PopFont();
 
-                ImGui::Dummy(ImVec2(0, 5));
-                ImGui::Text("Menu Toggle Key:");
+                ImGui::Dummy(ImVec2(0, 6));
+
+                ImGui::Text(LANG("Menu_ToggleKey"));
                 ImGui::SameLine(150 * dpiScale);
 
                 ImGui::PushStyleColor(ImGuiCol_Button, accentPurpleDark);
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, accentPurple);
-                if (ImGui::Button("Set New Key", ImVec2(120 * dpiScale, 30 * dpiScale)))
+
+                if (ImGui::Button(LANG("Menu_SetKey"), ImVec2(115 * dpiScale, 28 * dpiScale)))
                 {
                     static bool waitingForInput = false;
                     waitingForInput = !waitingForInput;
                     if (waitingForInput)
-                    {
                         ImGui::OpenPopup("Set Menu Key");
-                    }
                 }
+
                 ImGui::PopStyleColor(2);
 
                 ImGui::SameLine();
                 ImGui::TextColored(accentPurpleLight, Utils::getKeyName(MenuToggleKey).c_str());
 
-                if (ImGui::BeginPopupModal("Set Menu Key", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+                ImGui::SameLine(360 * dpiScale);
+
+                static const char* langItems[] = { "EN", reinterpret_cast<const char*>(u8"RU") };
+                static int currentLang = (LanguageManager::GetCurrentLanguage() == Language::RU) ? 1 : 0;
+
+                ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.12f, 0.12f, 0.18f, 1.00f));
+                ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.18f, 0.18f, 0.25f, 1.00f));
+                ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.22f, 0.22f, 0.30f, 1.00f));
+                ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.10f, 0.10f, 0.16f, 0.95f));
+
+                ImGui::SetNextItemWidth(70 * dpiScale);
+                if (ImGui::Combo("##LanguageCombo", &currentLang, langItems, IM_ARRAYSIZE(langItems)))
                 {
-                    ImGui::Text("Press any key to set as menu toggle...");
+                    Language newLang = (currentLang == 1) ? Language::RU : Language::EN;
+                    LanguageManager::SetLanguage(newLang);
+                    LanguageManager::SaveLanguage();
+                }
+
+                ImGui::PopStyleColor(4);
+
+                if (ImGui::BeginPopupModal("Set Menu Key", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+                {
+                    ImGui::Text(LANG("Menu_PressKey"));
                     ImGui::Separator();
 
-                    if (ImGui::Button("Cancel", ImVec2(120, 0)))
-                    {
+                    if (ImGui::Button(LANG("Menu_Cancel"), ImVec2(120, 0)))
                         ImGui::CloseCurrentPopup();
-                    }
 
                     for (int key = 0; key < 256; key++)
                     {
@@ -228,35 +248,89 @@ void Menu::Render()
                             break;
                         }
                     }
+
                     ImGui::EndPopup();
+                }
+
+                if (ImGui::Button(LANG("Menu_ClearCache")))
+                {
+                    std::string logsPath = Utils::GetPhasmoCheatVDirectory() + "\\logs";
+
+                    try
+                    {
+                        if (!fs::exists(logsPath))
+                        {
+                            LOG_WARN("Logs folder does not exist");
+                            return;
+                        }
+
+                        int deletedCount = 0;
+
+                        for (const auto& entry : fs::directory_iterator(logsPath))
+                        {
+                            try
+                            {
+                                if (!entry.is_regular_file())
+                                    continue;
+
+                                if (fs::remove(entry.path()))
+                                {
+                                    deletedCount++;
+                                }
+                            }
+                            catch (const fs::filesystem_error&)
+                            {
+                                continue;
+                            }
+                        }
+
+                        LOG_INFO("Logs cleaned. Deleted files: ", deletedCount);
+                    }
+                    catch (const std::exception& ex)
+                    {
+                        LOG_ERROR("Clear logs failed: ", ex.what());
+                    }
                 }
             }
             ImGui::EndChild();
+            ImGui::EndGroup();
+        }
+        break;
+        case 2:
+        {
+            ImGui::SetCursorPosY(20 * dpiScale);
+            ImGui::SetCursorPosX(25 * dpiScale);
+            ImGui::BeginGroup();
 
-            ImGui::Dummy(ImVec2(0, 20));
+            ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+            ImGui::TextColored(accentPurple, LANG("Menu_About"));
+            ImGui::PopFont();
+            ImGui::Separator();
+            ImGui::Dummy(ImVec2(0, 15));
 
-            ImGui::BeginChild("OpenSource", ImVec2(0, 136 * dpiScale), true);
+            ImGui::BeginChild("OpenSource", ImVec2(0, 150 * dpiScale), true);
             {
                 ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[7]);
-                ImGui::TextColored(accentPurple, "OPEN SOURCE");
+                ImGui::TextColored(accentPurple, LANG("Menu_OpenSource"));
                 ImGui::PopFont();
                 ImGui::Separator();
                 ImGui::Dummy(ImVec2(0, 9));
 
-                ImGui::TextColored(ImVec4(0.6f, 0.8f, 1.0f, 1.0f), "GitHub Repository");
+                ImGui::TextColored(ImVec4(0.6f, 0.8f, 1.0f, 1.0f), LANG("Menu_GitHubRepo"));
                 ImGui::SameLine(200 * dpiScale);
 
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.2f, 0.3f, 1.0f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.4f, 1.0f));
-                if (ImGui::Button("Open GitHub", ImVec2(120 * dpiScale, 25 * dpiScale)))
+
+                if (ImGui::Button(LANG("Menu_OpenGitHub"), ImVec2(120 * dpiScale, 25 * dpiScale)))
                 {
                     ShellExecuteA(0, "open", "https://github.com/PlayerGames12/PhasmoCheatV-Recode", 0, 0, SW_SHOW);
                 }
+
                 ImGui::PopStyleColor(2);
 
-                ImGui::Dummy(ImVec2(0, 8));
-                ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "License: MIT");
-                ImGui::TextWrapped("This project is open source and available under MIT License. Feel free to contribute!");
+                ImGui::Dummy(ImVec2(0, 5));
+                ImGui::TextWrapped(LANG("Menu_OpenSourceDesc"));
             }
             ImGui::EndChild();
 
@@ -265,18 +339,15 @@ void Menu::Render()
             ImGui::BeginChild("Credits", ImVec2(0, 0), true);
             {
                 ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[7]);
-                ImGui::TextColored(accentPurple, " CREDITS");
+                ImGui::TextColored(accentPurple, LANG("Menu_Credits"));
                 ImGui::PopFont();
                 ImGui::Separator();
                 ImGui::Dummy(ImVec2(0, 10));
 
-                ImGui::TextColored(ImVec4(0.8f, 0.6f, 1.0f, 1.0f), " VCom Team");
-                ImGui::Dummy(ImVec2(0, 5));
-
                 ImGui::Columns(2, "TeamColumns", false);
                 ImGui::SetColumnWidth(0, 250 * dpiScale);
 
-                ImGui::BulletText("Artur - Coder");
+                ImGui::BulletText("Artur - Lead");
                 ImGui::BulletText("Nastya - Designer");
                 ImGui::BulletText("Anna - Designer");
                 ImGui::BulletText("ViniLog - Lead Coder");
@@ -291,34 +362,74 @@ void Menu::Render()
 
                 ImGui::Columns(1);
 
-                ImGui::Dummy(ImVec2(0, 5));
-
-                ImGui::TextColored(ImVec4(0.6f, 0.8f, 1.0f, 1.0f), " Special Thanks");
-                ImGui::Dummy(ImVec2(0, 5));
-                ImGui::TextWrapped("@DashaAngelBars, @TraKKRR_lIo, @MT_FORGET, @nypdgov");
-                ImGui::TextWrapped("Evelien for some functions, as well as the design of the function system");
+                ImGui::Dummy(ImVec2(0, 8));
+                ImGui::TextColored(ImVec4(0.6f, 0.8f, 1.0f, 1.0f), LANG("Menu_SpecialThanks"));
+                ImGui::TextWrapped("@DashaAngelBars, @TraKKRR_lIo, @MT_FORGET, Evelien, @nypdgov, @nezuukichi");
             }
             ImGui::EndChild();
 
             ImGui::EndGroup();
-            break;
-        case 2:
+        }
+        break;
+        case 3:
             if (IsDebugging)
             {
                 ImGui::BeginChild("TestContent", ImVec2(0, 0), true);
 
-                if (ImGui::Button("Test set Ghost"))
+                if (ImGui::Button("Dump contracts (map + id)"))
                 {
-                    // Work good, but UI not updated
-                    auto* jc = Utils::GetMainMenuJournal();
-                    SDK::JournalController_SelectGhost(jc, SDK::GhostType::Demon, nullptr);
-                    LOG_INFO("JournalController_SelectGhost is called");
+                    auto* array = reinterpret_cast<SDK::ContractsArray*>(
+                        InGame::levelSelectionManager->Fields.contracts
+                        );
+
+                    if (!array || array->max_length == 0)
+                    {
+                        LOG_ERROR("Empty contracts");
+                        return;
+                    }
+
+                    for (uint32_t i = 0; i < array->max_length; i++)
+                    {
+                        auto* contract = array->vector[i];
+                        if (!contract || !contract->Fields.info)
+                            continue;
+
+                        auto* mapName = contract->Fields.info->Fields.mapName;
+                        auto uniqueId = contract->Fields.info->Fields.uniqueMapID;
+
+                        std::string mapNameStr = Utils::UnityStrToSysStr(*mapName);
+
+                        LOG_INFO("[", i, "] map=", mapNameStr, " id=", uniqueId);
+                    }
                 }
-                
+
+                if (ImGui::Button("Test Crosshair"))
+                {
+                    auto* lp = Utils::GetLocalPlayer(); if (!lp) return;
+                    auto* obj_cr = Utils::GetPlayerCrosshairObj(lp); if (!obj_cr) return;
+
+                    auto* comp_cr = SDK::GameObject_GetComponentByName(obj_cr, Utils::SysStrToUnityStr("UnityEngine.UI.Image"), nullptr);
+
+                    if (!comp_cr)
+                    {
+                        LOG_ERROR("Comp cr not found!");
+                        return;
+                    }
+
+                    SDK::Color color = { 255, 100, 255, 255 };
+                    SDK::Graphic_set_Color((SDK::Graphic*)(comp_cr), color, nullptr);
+                }
+
                 if (ImGui::Button("Call test"))
                 {
-					ForTestsFlag = true;
+                    ForTestsFlag = true;
                 }
+
+                if (ImGui::Button("Dump All Layers"))
+                {
+                    Utils::DumpAllLayers();
+                }
+
                 ImGui::EndChild();
             }
             break;

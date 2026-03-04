@@ -12,7 +12,7 @@ void Fullbright::OnMenuRender()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
     bool enabled = IsActive();
-    if (ImGui::Checkbox("Enable Fullbright", &enabled))
+    if (BCheckBox(LANG("EnableFullbright"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -25,7 +25,7 @@ void Fullbright::OnMenuRender()
         if (ImGui::SliderFloat("##Intensity", &intensity, 0.1f, 100.f, "%.1f intensity"))
             SET_CONFIG_VALUE(GetConfigManager(), "Intensity", float, intensity);
 
-        if (ImGui::Button("Force Apply"))
+        if (ImGui::Button(LANG("ForceApply")))
             FullbrightMain();
     }
 

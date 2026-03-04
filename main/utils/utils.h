@@ -7,6 +7,7 @@ using namespace PhasmoCheatV;
 namespace Utils {
 	std::string GetPhasmoCheatVDirectory();
 	void CreatePhasmoCheatVDirectory();
+	ImVec4 HSV2RGB(float h, float s, float v);
 	SDK::NetworkPlayerSpot* GetNetworkPlayerSpot(const SDK::Player* player);
 	SDK::Network* GetNetwork();
 	SDK::Player* GetLocalPlayer();
@@ -47,4 +48,12 @@ namespace Utils {
 	std::string GetTagOnGObject(SDK::GameObject* gameObject);
 	bool CheckIsValidObjectByTag(SDK::GameObject* gameObject, const std::string& tag);
 	void GetComponentsInChildren(SDK::GameObject* root, const char* componentName, std::vector<SDK::Component*>& outComponents, bool includeInactive);
+	void DumpAllMethodsByClass(const char* className, const char* namespaze, const char* assemblyName);
+	SDK::HandCamera* get_PlayerHandCamera(SDK::Player* player);
+	bool IsGhostVisible(SDK::GhostAI* ghostAI);
+	bool IsPlayerVisibleGhost(SDK::Camera* camera, SDK::Transform* transform);
+	void DumpAllLayers();
+	SDK::GameObject* GetPlayerCrosshairObj(SDK::Player* player);
+	SDK::GhostAI* GetGhostAI();
+	SDK::Transform* GetPotatoe();
 }

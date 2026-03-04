@@ -52,42 +52,66 @@ FeatureHandler::FeatureHandler() : CurrentType(TYPE_NONE)
 {
     FeatureRegistry = std::vector<std::pair<std::string, std::unique_ptr<FeatureCore>>>();
 
+    // Visuals
     ADD_FEATURE(this, Watermark);
     ADD_FEATURE(this, GhostPanel);
     ADD_FEATURE(this, GhostESP);
     ADD_FEATURE(this, FuseBoxESP);
     ADD_FEATURE(this, EvidenceESP);
     ADD_FEATURE(this, Fullbright);
+    ADD_FEATURE(this, TemperaturePanel);
     ADD_FEATURE(this, NotifyInfo);
+    ADD_FEATURE(this, PotatoeEsp);
     ADD_FEATURE(this, PlayersPanel);
     ADD_FEATURE(this, StatsPanel);
     ADD_FEATURE(this, PlayerESP);
     ADD_FEATURE(this, ActivityMonitor);
-    ADD_FEATURE(this, ConfigsManager);
+
+    // Players
     ADD_FEATURE(this, GodMode);
     ADD_FEATURE(this, Pickup);
     ADD_FEATURE(this, FoVEditor);
+    ADD_FEATURE(this, CrosshairModifier);
     ADD_FEATURE(this, CustomLookLimits);
     ADD_FEATURE(this, CustomName);
     ADD_FEATURE(this, PlayerModifier);
+
+    // Ghost
     ADD_FEATURE(this, GhostModifier);
     ADD_FEATURE(this, GhostInteractor);
     ADD_FEATURE(this, GhostDesigner);
+
+    // Cursed
     ADD_FEATURE(this, CursedItemsControll);
+
+    // Movement
     ADD_FEATURE(this, InfinityStamina);
     ADD_FEATURE(this, NoClip);
     ADD_FEATURE(this, CustomSpeed);
     ADD_FEATURE(this, Teleport);
+
+    // Misc
     ADD_FEATURE(this, AntiKick);
     ADD_FEATURE(this, ExitVanOne);
+    ADD_FEATURE(this, LiftButtonSkipAnim);
+    ADD_FEATURE(this, AutoPhoto);
+    ADD_FEATURE(this, FastThermometer);
+    ADD_FEATURE(this, NoEndGame);
     ADD_FEATURE(this, RewardModifier);
     ADD_FEATURE(this, ForceStart);
     ADD_FEATURE(this, ShopModifier);
-    ADD_FEATURE(this, DifficultyModifier);
+
+    // Difficulty
+    // ADD_FEATURE(this, DifficultyModifier); // Temporarily disabled
+
+    // Map
     ADD_FEATURE(this, MapModifier);
 	ADD_FEATURE(this, DoorModifier);
     ADD_FEATURE(this, GrabKeys);
     ADD_FEATURE(this, SaltModifier);
+
+    // Configs
+    ADD_FEATURE(this, ConfigsManager);
 
     MainFeatureHandler = this;
 }
@@ -151,7 +175,7 @@ void FeatureHandler::ShowTypeSelector()
     const ImVec2 size(btnSize, btnSize);
 
     ImGui::SetNextItemWidth(width - 20.f);
-    ImGui::InputTextWithHint("##SearchFeatures", "Search features...", SearchBuffer, sizeof(SearchBuffer));
+    ImGui::InputTextWithHint("##SearchFeatures", LANG("SearchFeatures"), SearchBuffer, sizeof(SearchBuffer));
     ImGui::Spacing();
     ImGui::Separator();
     ImGui::Spacing();
@@ -186,7 +210,7 @@ void FeatureHandler::ShowTypeSelector()
 
         if (!foundAny)
         {
-            ImGui::TextDisabled("No features found matching '%s'", SearchBuffer);
+            ImGui::TextDisabled(LANG("NoFeaturesFound"), SearchBuffer);
         }
 
         ImGui::EndChild();
@@ -205,19 +229,19 @@ void FeatureHandler::ShowTypeSelector()
             ImGui::SameLine();
 
         const char* icon = GetFeatureTypeName(type);
-        const char* label = "Unknown";
 
+        const char* label = LANG("Unknown");
         switch (type)
         {
-        case TYPE_VISUALS: label = "Visuals"; break;
-        case TYPE_PLAYERS: label = "Players"; break;
-        case TYPE_GHOST: label = "Ghost"; break;
-        case TYPE_CURSED: label = "Cursed"; break;
-        case TYPE_MOVEMENT: label = "Movement"; break;
-        case TYPE_MISC: label = "Misc"; break;
-        case TYPE_CONFIGS: label = "Configs"; break;
-        case TYPE_DIFFICULTY: label = "Difficulty"; break;
-        case TYPE_MAP: label = "Map"; break;
+        case TYPE_VISUALS: label = LANG("Visuals"); break;
+        case TYPE_PLAYERS: label = LANG("Players"); break;
+        case TYPE_GHOST: label = LANG("Ghost"); break;
+        case TYPE_CURSED: label = LANG("Cursed"); break;
+        case TYPE_MOVEMENT: label = LANG("Movement"); break;
+        case TYPE_MISC: label = LANG("Misc"); break;
+        case TYPE_CONFIGS: label = LANG("Configs"); break;
+        case TYPE_DIFFICULTY: label = LANG("Difficulty"); break;
+        case TYPE_MAP: label = LANG("Map"); break;
         }
 
         if (ImGui::Button(("##btn_" + std::to_string(count)).c_str(), size))
@@ -266,7 +290,7 @@ void FeatureHandler::ShowFeaturesByType()
     ImGui::PopFont();
     ImGui::Separator();
     ImGui::Spacing();
-    if (ImGui::Button("<- Back to Categories", ImVec2(150, 30)))
+    if (ImGui::Button(LANG("BackToCategories"), ImVec2(150, 30)))
     {
         CurrentType = TYPE_NONE;
         return;

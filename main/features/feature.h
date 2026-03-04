@@ -115,4 +115,17 @@ namespace PhasmoCheatV
      GET_FEATURE_HANDLER()->GetFeature<PhasmoCheatV::Features::Category::FeatureName>(#FeatureName)->IsActive())
 
     inline FeatureHandler* MainFeatureHandler{};
+
+    inline ConfigManager* GetConfigManagerByName(std::string_view featureName)
+    {
+        if (!MainFeatureHandler)
+            return nullptr;
+
+        if (auto* feature = MainFeatureHandler->FindFeature(featureName))
+            return feature->GetConfigManager();
+
+        return nullptr;
+    }
 }
+
+#include "../main/config/BindSystem.h"

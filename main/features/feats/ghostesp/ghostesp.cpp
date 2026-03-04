@@ -3,6 +3,8 @@
 #include <vector>
 #include <cmath>
 #include <chrono>
+#define STB_IMAGE_IMPLEMENTATION
+#include "imgui/stb_image.h" 
 
 using namespace std::chrono;
 
@@ -70,7 +72,7 @@ GhostESP::GhostESP() : FeatureCore("Ghost ESP", TYPE_VISUALS)
     DECLARE_CONFIG(GetConfigManager(), "PhotoWidth", float, 1.0f);
     DECLARE_CONFIG(GetConfigManager(), "PhotoHeight", float, 1.0f);
 
-    //LoadAvailablePhotos();
+    LoadAvailablePhotos();
 }
 
 void GhostESP::OnRender()
@@ -106,14 +108,13 @@ void GhostESP::OnRender()
             CONFIG_FLOAT(GetConfigManager(), "SkeletonThickness"));
     }
 
-    //if (CONFIG_BOOL(GetConfigManager(), "ShowPhotoESP"))
-    //{
-    //    DrawPhotoESP(InGame::ghostAI);
-    //}
+    if (CONFIG_BOOL(GetConfigManager(), "ShowPhotoESP"))
+    {
+        DrawPhotoESP(InGame::ghostAI);
+    }
 }
 
 // ====================== Photo ESP Methods ======================
-/*
 void GhostESP::SetD3D11Device(ID3D11Device* device)
 {
     g_pd3dDevice = device;
@@ -243,7 +244,7 @@ void GhostESP::DrawPhotoESP(const SDK::GhostAI* ghostAI)
     if (!ghostAI || !ghostAI->Fields.raycastPoint || !ghostAI->Fields.feetRaycastPoint)
         return;
 
-    int photoType = std::get<int>(PhotoESPTypeSetting->GetValue());
+    int photoType = CONFIG_INT(GetConfigManager(), "PhotoESPType");
     if (photoType < 0 || photoType >= availablePhotos.size())
         return;
 
@@ -274,8 +275,8 @@ void GhostESP::DrawPhotoESP(const SDK::GhostAI* ghostAI)
     float height = fabsf(topScreen.Y - bottomScreen.Y);
     float width = height / 2.0f;
 
-    float photoWidthMultiplier = std::get<float>(PhotoWidthSetting->GetValue());
-    float photoHeightMultiplier = std::get<float>(PhotoHeightSetting->GetValue());
+    float photoWidthMultiplier = CONFIG_FLOAT(GetConfigManager(), "PhotoWidth");
+    float photoHeightMultiplier = CONFIG_FLOAT(GetConfigManager(), "PhotoHeight");
 
     width = width * photoWidthMultiplier;
     height = height * photoHeightMultiplier;
@@ -308,7 +309,7 @@ void GhostESP::CleanupTextures()
     }
     loadedTextures.clear();
     LOG_INFO("Cleaned up D3D11 textures");
-}*/
+}
 
 // ====================== SKELETON ESP ======================
 void GhostESP::DrawSkeleton(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness)
@@ -319,7 +320,7 @@ void GhostESP::DrawSkeleton(const SDK::GhostAI* ghostAI, const ImColor& color, f
         return;
     }
 
-    auto model = ghostAI->Fields.NormalModel;
+    auto model = ghostAI->Fields.currentModel;
     if (!model)
     {
         LOG_WARN("GhostESP::DrawSkeleton failed to get model");
@@ -732,94 +733,172 @@ void GhostESP::OnMenuRender()
 {
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
+    auto MakeLabel = [](const char* code, const char* id) -> std::string
+        {
+            return std::string(LANG(code)) + "##" + id;
+        };
+
     bool enabled = IsActive();
-    if (ImGui::Checkbox("Enable Ghost ESP", &enabled))
+    if (ImGui::Checkbox(LANG("EnableGhostESP"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
-        if (enabled) OnActivate();
-        else OnDeactivate();
+        enabled ? OnActivate() : OnDeactivate();
     }
 
-    if (enabled) {
-        constexpr auto colorEditFlags = ImGuiColorEditFlags_NoInputs;
+    if (!enabled)
+    {
+        ImGui::PopStyleVar();
+        return;
+    }
 
-        ImColor espColor = CONFIG_COLOR(GetConfigManager(), "ESPColor");
-        if (ImGui::ColorEdit4("Color##ghostESP", reinterpret_cast<float*>(&espColor.Value), colorEditFlags))
-            SET_CONFIG_VALUE(GetConfigManager(), "ESPColor", ImColor, espColor);
+    constexpr auto colorEditFlags = ImGuiColorEditFlags_NoInputs;
 
-        const char* boxTypes[] = {
-            "2D Box", "3D Box", "Corner Box", "Circle",
-            "Filled Box", "Cross", "Diamond", "Triangle", "Arrow", "None"
-        };
-        int boxType = CONFIG_INT(GetConfigManager(), "BoxType");
-        if (ImGui::Combo("Box Type##ghostESP", &boxType, boxTypes, IM_ARRAYSIZE(boxTypes)))
-            SET_CONFIG_VALUE(GetConfigManager(), "BoxType", int, boxType);
+    // ESP Color
+    ImColor espColor = CONFIG_COLOR(GetConfigManager(), "ESPColor");
+    if (ImGui::ColorEdit4(MakeLabel("Color", "ghostESP").c_str(),
+        reinterpret_cast<float*>(&espColor.Value),
+        colorEditFlags))
+    {
+        SET_CONFIG_VALUE(GetConfigManager(), "ESPColor", ImColor, espColor);
+    }
 
-        float boxThickness = CONFIG_FLOAT(GetConfigManager(), "BoxThickness");
-        if (ImGui::SliderFloat("Box Thickness##ghostESP", &boxThickness, 0.5f, 5.0f))
-            SET_CONFIG_VALUE(GetConfigManager(), "BoxThickness", float, boxThickness);
+    // Box Type
+    const char* boxTypes[] = {
+        "2D Box", "3D Box", "Corner Box", "Circle",
+        "Filled Box", "Cross", "Diamond", "Triangle", "Arrow", "None"
+    };
+    int boxType = CONFIG_INT(GetConfigManager(), "BoxType");
+    if (ImGui::Combo(MakeLabel("BoxType", "ghostESP").c_str(),
+        &boxType,
+        boxTypes,
+        IM_ARRAYSIZE(boxTypes)))
+    {
+        SET_CONFIG_VALUE(GetConfigManager(), "BoxType", int, boxType);
+    }
+
+    // Box Thickness
+    float boxThickness = CONFIG_FLOAT(GetConfigManager(), "BoxThickness");
+    if (ImGui::SliderFloat(MakeLabel("BoxThickness", "ghostESP").c_str(),
+        &boxThickness, 0.5f, 5.0f))
+    {
+        SET_CONFIG_VALUE(GetConfigManager(), "BoxThickness", float, boxThickness);
+    }
+
+    ImGui::Separator();
+
+    // Skeleton
+    bool showSkeleton = CONFIG_BOOL(GetConfigManager(), "ShowSkeleton");
+    if (ImGui::Checkbox(MakeLabel("ShowSkeleton", "ghostESP").c_str(), &showSkeleton))
+        SET_CONFIG_VALUE(GetConfigManager(), "ShowSkeleton", bool, showSkeleton);
+
+    if (showSkeleton)
+    {
+        ImColor skeletonColor = CONFIG_COLOR(GetConfigManager(), "SkeletonColor");
+        if (ImGui::ColorEdit4(MakeLabel("SkeletonColor", "ghostESP").c_str(),
+            reinterpret_cast<float*>(&skeletonColor.Value),
+            colorEditFlags))
+        {
+            SET_CONFIG_VALUE(GetConfigManager(), "SkeletonColor", ImColor, skeletonColor);
+        }
+
+        float skeletonThickness = CONFIG_FLOAT(GetConfigManager(), "SkeletonThickness");
+        if (ImGui::SliderFloat(MakeLabel("SkeletonThickness", "ghostESP").c_str(),
+            &skeletonThickness, 0.5f, 3.0f))
+        {
+            SET_CONFIG_VALUE(GetConfigManager(), "SkeletonThickness", float, skeletonThickness);
+        }
+    }
+
+    ImGui::Separator();
+
+    // Photo ESP
+    bool showPhotoESP = CONFIG_BOOL(GetConfigManager(), "ShowPhotoESP");
+    if (ImGui::Checkbox(MakeLabel("ShowPhotoESP", "ghostESP").c_str(), &showPhotoESP))
+        SET_CONFIG_VALUE(GetConfigManager(), "ShowPhotoESP", bool, showPhotoESP);
+
+    if (showPhotoESP)
+    {
+        float photoWidth = CONFIG_FLOAT(GetConfigManager(), "PhotoWidth");
+        if (ImGui::SliderFloat(MakeLabel("PhotoWidth", "ghostESP").c_str(),
+            &photoWidth, 0.1f, 3.0f, "%.2f"))
+        {
+            SET_CONFIG_VALUE(GetConfigManager(), "PhotoWidth", float, photoWidth);
+        }
+
+        float photoHeight = CONFIG_FLOAT(GetConfigManager(), "PhotoHeight");
+        if (ImGui::SliderFloat(MakeLabel("PhotoHeight", "ghostESP").c_str(),
+            &photoHeight, 0.1f, 3.0f, "%.2f"))
+        {
+            SET_CONFIG_VALUE(GetConfigManager(), "PhotoHeight", float, photoHeight);
+        }
+
+        if (ImGui::Button(MakeLabel("ResetPhotoSize", "ghostESP").c_str(), ImVec2(120, 25)))
+        {
+            SET_CONFIG_VALUE(GetConfigManager(), "PhotoWidth", float, 1.0f);
+            SET_CONFIG_VALUE(GetConfigManager(), "PhotoHeight", float, 1.0f);
+        }
+        ImGui::SameLine();
+        ImGui::Text("%s", LANG("DefaultPhotoSize"));
 
         ImGui::Separator();
 
-        bool showSkeleton = CONFIG_BOOL(GetConfigManager(), "ShowSkeleton");
-        if (ImGui::Checkbox("Show Skeleton##ghostESP", &showSkeleton))
-            SET_CONFIG_VALUE(GetConfigManager(), "ShowSkeleton", bool, showSkeleton);
-
-        if (showSkeleton) {
-            ImColor skeletonColor = CONFIG_COLOR(GetConfigManager(), "SkeletonColor");
-            if (ImGui::ColorEdit4("Skeleton Color##ghostESP", reinterpret_cast<float*>(&skeletonColor.Value), colorEditFlags))
-                SET_CONFIG_VALUE(GetConfigManager(), "SkeletonColor", ImColor, skeletonColor);
-
-            float skeletonThickness = CONFIG_FLOAT(GetConfigManager(), "SkeletonThickness");
-            if (ImGui::SliderFloat("Skeleton Thickness##ghostESP", &skeletonThickness, 0.5f, 3.0f))
-                SET_CONFIG_VALUE(GetConfigManager(), "SkeletonThickness", float, skeletonThickness);
-        }
-
-        ImGui::Separator();
-
-        bool showPhotoESP = CONFIG_BOOL(GetConfigManager(), "ShowPhotoESP");
-        if (ImGui::Checkbox("Show Photo ESP##ghostESP", &showPhotoESP))
-            SET_CONFIG_VALUE(GetConfigManager(), "ShowPhotoESP", bool, showPhotoESP);
-
-        if (showPhotoESP) {
-            float photoWidth = CONFIG_FLOAT(GetConfigManager(), "PhotoWidth");
-            if (ImGui::SliderFloat("Photo Width##ghostESP", &photoWidth, 0.1f, 3.0f, "%.2f"))
-                SET_CONFIG_VALUE(GetConfigManager(), "PhotoWidth", float, photoWidth);
-
-            float photoHeight = CONFIG_FLOAT(GetConfigManager(), "PhotoHeight");
-            if (ImGui::SliderFloat("Photo Height##ghostESP", &photoHeight, 0.1f, 3.0f, "%.2f"))
-                SET_CONFIG_VALUE(GetConfigManager(), "PhotoHeight", float, photoHeight);
-
-            if (ImGui::Button("Reset Photo Size##ghostESP", ImVec2(120, 25))) {
-                SET_CONFIG_VALUE(GetConfigManager(), "PhotoWidth", float, 1.0f);
-                SET_CONFIG_VALUE(GetConfigManager(), "PhotoHeight", float, 1.0f);
-            }
-            ImGui::SameLine();
-            ImGui::Text("Default: 1.0 x 1.0");
-        }
-        /*
-        if (!availablePhotos.empty()) {
+        if (!availablePhotos.empty())
+        {
             std::vector<const char*> photoNames;
-            for (const auto& photo : availablePhotos) {
+            photoNames.reserve(availablePhotos.size());
+
+            for (const auto& photo : availablePhotos)
                 photoNames.push_back(photo.c_str());
-            }
 
             int photoType = CONFIG_INT(GetConfigManager(), "PhotoESPType");
-            if (ImGui::Combo("Photo Type##ghostESP", &photoType, photoNames.data(), photoNames.size()))
+            if (ImGui::Combo(
+                MakeLabel("PhotoType", "ghostESP").c_str(),
+                &photoType,
+                photoNames.data(),
+                static_cast<int>(photoNames.size())))
+            {
                 SET_CONFIG_VALUE(GetConfigManager(), "PhotoESPType", int, photoType);
+            }
 
-            if (ImGui::Button("Refresh Images##ghostESP")) {
+            if (ImGui::Button(MakeLabel("RefreshImages", "ghostESP").c_str(), ImVec2(160, 25)))
+            {
                 LoadAvailablePhotos();
             }
         }
-        else {
-            ImGui::Text("No images found in Images folder");
-            if (ImGui::Button("Refresh Images##ghostESP")) {
+        else
+        {
+            ImGui::TextColored(ImVec4(1.f, 0.4f, 0.4f, 1.f), "%s", LANG("NoImagesFound"));
+            ImGui::TextDisabled("%s", LANG("ImagesFolderHint"));
+
+            if (ImGui::Button(MakeLabel("RefreshImages", "ghostESP").c_str(), ImVec2(160, 25)))
+            {
                 LoadAvailablePhotos();
             }
         }
-        */
     }
 
     ImGui::PopStyleVar();
 }
+
+/*
+if (!availablePhotos.empty()) {
+    std::vector<const char*> photoNames;
+    for (const auto& photo : availablePhotos) {
+        photoNames.push_back(photo.c_str());
+    }
+
+    int photoType = CONFIG_INT(GetConfigManager(), "PhotoESPType");
+    if (ImGui::Combo("Photo Type##ghostESP", &photoType, photoNames.data(), photoNames.size()))
+        SET_CONFIG_VALUE(GetConfigManager(), "PhotoESPType", int, photoType);
+
+    if (ImGui::Button("Refresh Images##ghostESP")) {
+        LoadAvailablePhotos();
+    }
+}
+else {
+    ImGui::Text("No images found in Images folder");
+    if (ImGui::Button("Refresh Images##ghostESP")) {
+        LoadAvailablePhotos();
+    }
+}
+*/

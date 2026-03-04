@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <chrono>
 #include <iomanip>
+#include <regex>
 #include "../Globals.h"
 using namespace PhasmoCheatV::Globals;
 
@@ -26,6 +27,7 @@ namespace PhasmoCheatV
         case Level::UInfo: return "[Unity Info]";
         case Level::UWarning: return "[Unity Warning]";
         case Level::UError: return "[Unity Error]";
+        case Level::RPC: return "[RPC]";
         default: return "[Unknown]";
         }
     }
@@ -52,9 +54,17 @@ namespace PhasmoCheatV
             return FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
         case Level::UError:
             return FOREGROUND_RED | FOREGROUND_INTENSITY;
+        case Level::RPC:
+            return FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
         default:
             return FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
         }
+    }
+
+    bool Logger::ContainsPrintfFormat(const std::string& format)
+    {
+        std::regex pattern(R"(%[+-]?\d*(?:\.\d+)?[hlLzjt]*(?:[hl]{1,2})?[diufFeEgGxXoscpaAn])");
+        return std::regex_search(format, pattern);
     }
 
     bool Logger::InitializeLogDirectory()
@@ -172,30 +182,42 @@ namespace PhasmoCheatV
     {
         if (level < MinLevel)
             return;
+
         if ((level == Level::Call || level == Level::Debug) && !IsCalledLogs)
             return;
-        if ((level == Level::Info || level == Level::Warning) && !IsDebugging)
+
+        bool isBasicLevel =
+            level == Level::Info ||
+            level == Level::Warning ||
+            level == Level::Error;
+
+        if (ConsoleExists)
+        {
+            if ((level == Level::Info || level == Level::Warning) && !IsDebugging)
+                return;
+        }
+
+        if (!ConsoleExists && !isBasicLevel)
             return;
 
         std::string t = GetTimestamp();
         std::string s = std::string(LevelToString(level));
         std::string line = "[" + t + "] " + s + " " + std::string(msg);
 
+        std::lock_guard lock(LogMutex);
+
+        if (HConsole && HConsole != INVALID_HANDLE_VALUE)
         {
-            std::lock_guard lock(LogMutex);
+            SetConsoleTextAttribute(HConsole, LevelToColor(level));
+            std::cout << line << std::endl;
+            SetConsoleTextAttribute(HConsole,
+                FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+        }
 
-            if (HConsole && HConsole != INVALID_HANDLE_VALUE)
-            {
-                SetConsoleTextAttribute(HConsole, LevelToColor(level));
-                std::cout << line << std::endl;
-                SetConsoleTextAttribute(HConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-            }
-
-            if (FileOut.is_open() && FileOut.good())
-            {
-                FileOut << line << "\n";
-                FileOut.flush();
-            }
+        if (FileOut.is_open() && FileOut.good())
+        {
+            FileOut << line << "\n";
+            FileOut.flush();
         }
     }
 }

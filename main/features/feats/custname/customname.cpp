@@ -18,7 +18,7 @@ void CustomName::OnMenuRender()
     }
 
     ImGui::SameLine();
-    if (ImGui::Button("Set name##custname"))
+    if (ImGui::Button(LANG("SetName")))
     {
         SDK::PhotonNetwork_Set_NickName(Utils::SysStrToUnityStr(std::string(Name_Buff)), nullptr);
     }

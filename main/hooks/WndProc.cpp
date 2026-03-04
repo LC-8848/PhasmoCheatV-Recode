@@ -20,8 +20,15 @@ LRESULT __stdcall Hooks::HkWndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
     if (uMsg == WM_KEYUP && wParam == VK_END)
     {
+        NOTIFY_WARNING_QUICK("You have pressed the emergency unload button. Goodbye.");
         Globals::CheatWork = false;
 	}
+
+    if (uMsg == WM_KEYUP && wParam == VK_HOME)
+    {
+        Globals::MenuToggleKey = VK_RETURN;
+        NOTIFY_INFO_QUICK("The menu opening button has been reset.");
+    }
 
     if (menu.Open)
     {

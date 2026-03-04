@@ -7,5 +7,8 @@ std::nullptr_t Hooks::hkLevelSelectionManager_Start(SDK::LevelSelectionManager* 
 
 	CALL_METHOD_ARGS(Map, MapModifier, MapModifierMainAutoVote, levelSelectionManager);
 
+	if (CheatWork)
+		InGame::levelSelectionManager = levelSelectionManager;
+
 	return SDK::LevelSelectionManager_Start(levelSelectionManager, methodInfo);
 }

@@ -12,14 +12,14 @@ void NoClip::OnMenuRender()
 	bool enabled = IsActive();
 	float noClipSpeed = CONFIG_FLOAT(GetConfigManager(), "NoClipSpeed");
 
-	ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Thanks to Evelien for the NoClip feature!");
-	if (ImGui::Checkbox("Enabled##noclip", &enabled))
+	ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), LANG("CreditNoClip"));
+	if (BCheckBox(LANG("EnabledNoClip"), &enabled))
 	{
 		SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
 		if (enabled) OnActivate();
 		else OnDeactivate();
 	}
-	if (ImGui::SliderFloat("Speed##noclip", &noClipSpeed, 0.0f, 10.0f, "%.1f"))
+	if (ImGui::SliderFloat(LANG("NoClipSpeed"), &noClipSpeed, 0.0f, 10.0f, "%.1f"))
 		SET_CONFIG_VALUE(GetConfigManager(), "NoClipSpeed", float, noClipSpeed);
 }
 

@@ -45,7 +45,7 @@ namespace SDK
         void* GhostAudio;
         void* GhostInteraction;
         GhostActivity* GhostActivity;
-        GhostModel* NormalModel;
+        GhostModel* currentModel;
         GhostModel* HalloweenModel;
         GhostModel* HolidayModel;
         GhostModel* EasterModel;

@@ -11,13 +11,13 @@ void CustomSpeed::OnMenuRender()
 {
 	bool enabled = IsActive();
 	float custSpeed = CONFIG_FLOAT(GetConfigManager(), "Speed");
-	if (ImGui::Checkbox("Enabled##custSpeed", &enabled))
+	if (BCheckBox(LANG("CustomSpeedEnabled"), &enabled))
 	{
 		SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
 		if (enabled) OnActivate();
 		else OnDeactivate();
 	}
-	if (ImGui::SliderFloat("Custom speed##custSpeed", &custSpeed, 0.f, 20.f, "%.1f"))
+	if (ImGui::SliderFloat(LANG("CustomSpeedSlider"), &custSpeed, 0.f, 20.f, "%.1f"))
 		SET_CONFIG_VALUE(GetConfigManager(), "Speed", float, custSpeed);
 }
 

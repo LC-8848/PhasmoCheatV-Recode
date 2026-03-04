@@ -8,13 +8,13 @@ static bool CanTrigger()
 {
     if (!InGame::ghostAI)
     {
-        NOTIFY_ERROR_QUICK("You need to be in the game.");
+        NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
         return false;
     }
 
     if (!Utils::IsLocalMasterClient())
     {
-        NOTIFY_ERROR_QUICK("You must be host to use this feature.");
+        NOTIFY_ERROR_QUICK(LANG("NeedMustBeHost"));
         return false;
     }
 
@@ -25,23 +25,25 @@ void GhostInteractor::OnMenuRender()
 {
     struct BtnDef
     {
-        const char* label;
+        const char* code;
         bool* flag;
     };
 
     BtnDef buttons[] = {
-        { "Trigger ability",         &TriggerAbility     },
-        { "Generic interaction",     &TriggerGeneric     },
-        { "Random light switch",     &TriggerLight       },
-        { "Random door interaction", &TriggerDoor        },
-        { "Random prop interaction", &TriggerProp        },
-        { "Standard interaction",    &TriggerStandard    },
-        { "Twin interaction",        &TriggerTwin        },
+        { "TriggerAbility",         &TriggerAbility     },
+        { "GenericInteraction",     &TriggerGeneric     },
+        { "RandomLightSwitch",      &TriggerLight       },
+        { "RandomDoorInteraction",  &TriggerDoor        },
+        { "RandomPropInteraction",  &TriggerProp        },
+        { "StandardInteraction",    &TriggerStandard    },
+        { "TwinInteraction",        &TriggerTwin        },
     };
 
     for (size_t i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++)
     {
-        if (ImGui::Button(buttons[i].label, ImVec2(220, 0)))
+        std::string label = std::string(LANG(buttons[i].code)) + "##ghostInteractor_" + std::to_string(i);
+
+        if (ImGui::Button(label.c_str(), ImVec2(220, 0)))
         {
             if (CanTrigger())
                 *buttons[i].flag = true;
@@ -51,7 +53,6 @@ void GhostInteractor::OnMenuRender()
             ImGui::SameLine();
     }
 }
-
 
 void GhostInteractor::GhostInteractorMain()
 {

@@ -18,6 +18,7 @@ void Hooks::hkGhostAI_Update(SDK::GhostAI* ghostAI, SDK::MethodInfo* methodInfo)
 	CALL_METHOD(Map, MapModifier, MapModifierMain);
 	CALL_METHOD(Map, SaltModifier, SaltModifierMain);
 	CALL_METHOD(Visuals, StatsPanel, StatsPanelCollectBone);
+	CALL_METHOD(Misc, AutoPhoto, AutoPhotoMain);
 
 	if (ForTestsFlag && IsDebugging)
 		Test::TestFeatures1();

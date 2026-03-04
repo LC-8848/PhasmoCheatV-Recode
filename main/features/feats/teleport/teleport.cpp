@@ -1,4 +1,5 @@
 #include "teleport.h"
+
 using namespace PhasmoCheatV::Features::Movement;
 
 Teleport::Teleport() : FeatureCore("Teleport", TYPE_MOVEMENT)
@@ -12,159 +13,175 @@ Teleport::Teleport() : FeatureCore("Teleport", TYPE_MOVEMENT)
 
 void Teleport::OnMenuRender()
 {
-    auto config = GetConfigManager();
-    if (ImGui::Button("Save current position##teleport"))
+    if (ImGui::Button(LANG("Teleport_SavePos")))
         SaveCurrentPosition();
+
     ImGui::SameLine();
-    if (ImGui::Button("Teleport to saved point##teleport"))
+
+    if (ImGui::Button(LANG("Teleport_ToSaved")))
         TeleportToSavedPoint();
-    static float customX = 0.0f, customY = 0.0f, customZ = 0.0f;
-    ImGui::InputFloat("X##teleport", &customX, 0.1f, 1.0f, "%.2f");
-    ImGui::InputFloat("Y##teleport", &customY, 0.1f, 1.0f, "%.2f");
-    ImGui::InputFloat("Z##teleport", &customZ, 0.1f, 1.0f, "%.2f");
-    if (ImGui::Button("Teleport to coordinates##teleport"))
+
+    static float customX = 0.f, customY = 0.f, customZ = 0.f;
+    ImGui::InputFloat("X##teleport", &customX, 0.1f, 1.f, "%.2f");
+    ImGui::InputFloat("Y##teleport", &customY, 0.1f, 1.f, "%.2f");
+    ImGui::InputFloat("Z##teleport", &customZ, 0.1f, 1.f, "%.2f");
+
+    if (ImGui::Button(LANG("Teleport_ToCoords")))
         TeleportToCoordinates(customX, customY, customZ);
-    ImGui::Separator();
-    ImGui::Text("Items Teleport:");
-    if (InGame::mapController)
-        TeleportItems();
-    ImGui::Separator();
-    if (ImGui::Button("Teleport bone##teleport"))
-        TeleportBone();
-    if (ImGui::Button("Teleport to Truck"))
-        TeleportToTruck();
-    ImGui::SameLine();
-    if (ImGui::Button("Teleport to Ghost"))
-        TeleportToGhost();
 
     ImGui::Separator();
-    ImGui::Text("Winter Boxes:");
-    if (ImGui::Button("Active all winter boxs (WARNING)"))
-        ActivateAllWinterBoxes();
-    if (ImGui::Button("Teleport winter boxs"))
-        TeleportWinterBoxes();
-    if (ImGui::Button("Use all winter boxs (WARNING)"))
-        UseAllWinterBoxes();
+    ImGui::Text(LANG("Teleport_Items"));
+
+    if (InGame::mapController)
+        TeleportItems();
+
+    ImGui::Separator();
+
+    if (ImGui::Button(LANG("Teleport_Bone")))
+        TeleportBone();
+
+    if (ImGui::Button(LANG("Teleport_Truck")))
+        TeleportToTruck();
+
+    ImGui::SameLine();
+
+    if (ImGui::Button(LANG("Teleport_Ghost")))
+        TeleportToGhost();
 }
 
 void Teleport::TeleportItems()
 {
     const auto localPlayer = Utils::GetLocalPlayer();
     if (!localPlayer)
-        return;
-    auto objects = SDK::GameObject_FindGameObjectsWithTag(Utils::SysStrToUnityStr("Item"), nullptr);
+        return NOTIFY_ERROR_QUICK(LANG("TP_LocalPlayerMissing"));
+
+    auto objects = SDK::GameObject_FindGameObjectsWithTag(
+        Utils::SysStrToUnityStr("Item"), nullptr);
     if (!objects)
         return;
+
     uint32_t length = 0;
     memcpy(&length, reinterpret_cast<uint8_t*>(objects) + 0x18, sizeof(uint32_t));
     if (length == 0)
-        return;
+        return NOTIFY_WARNING_QUICK(LANG("TP_NoItems"));
+
     const auto localPosition = Utils::GetPosVec3(localPlayer);
+
     static int selectedItemIndex = 0;
     static std::vector<std::string> itemNames;
     static std::vector<SDK::GameObject*> itemObjects;
     static bool itemsCached = false;
-    if (ImGui::Button("Refresh items list##teleport"))
+
+    if (ImGui::Button(LANG("Teleport_RefreshItems")))
     {
         itemNames.clear();
         itemObjects.clear();
+
         for (uint32_t i = 0; i < length; ++i)
         {
             SDK::GameObject* object = nullptr;
-            memcpy(&object, reinterpret_cast<uint8_t*>(objects) + 0x20 + i * sizeof(void*), sizeof(void*));
+            memcpy(&object,
+                reinterpret_cast<uint8_t*>(objects) + 0x20 + i * sizeof(void*),
+                sizeof(void*));
             if (!object)
                 continue;
-            auto namePtr = SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(object), nullptr);
-            if (namePtr)
-            {
-                std::string itemName = Utils::UnityStrToSysStr(*namePtr);
-                itemNames.push_back(itemName + "##" + std::to_string(i));
-                itemObjects.push_back(object);
-            }
+
+            auto namePtr = SDK::Object_Get_Name(
+                reinterpret_cast<SDK::Object*>(object), nullptr);
+            if (!namePtr)
+                continue;
+
+            std::string name = Utils::UnityStrToSysStr(*namePtr);
+            itemNames.push_back(name + "##" + std::to_string(i));
+            itemObjects.push_back(object);
         }
+
         if (!itemNames.empty())
         {
             selectedItemIndex = 0;
             itemsCached = true;
-            NOTIFY_INFO_QUICK("Items list refreshed!");
+            NOTIFY_INFO_QUICK(LANG("TP_ItemsRefreshed"));
         }
         else
         {
-            NOTIFY_WARNING_QUICK("No items found.");
+            NOTIFY_WARNING_QUICK(LANG("TP_NoItems"));
         }
     }
+
     if (itemsCached && !itemNames.empty())
     {
         ImGui::Separator();
-        ImGui::Text("Select item to teleport:");
+        ImGui::Text(LANG("Teleport_SelectItem"));
+
         static std::vector<const char*> itemNamesCStr;
         itemNamesCStr.clear();
-        for (const auto& name : itemNames)
-        {
-            itemNamesCStr.push_back(name.c_str());
-        }
-        ImGui::Combo("##ItemSelect", &selectedItemIndex, itemNamesCStr.data(), itemNamesCStr.size());
+        for (auto& s : itemNames)
+            itemNamesCStr.push_back(s.c_str());
+
+        ImGui::Combo("##ItemSelect", &selectedItemIndex,
+            itemNamesCStr.data(),
+            static_cast<int>(itemNamesCStr.size()));
+
         ImGui::SameLine();
-        if (ImGui::Button("Teleport selected##teleport"))
+
+        if (ImGui::Button(LANG("Teleport_Selected")))
         {
-            if (selectedItemIndex >= 0 && selectedItemIndex < itemObjects.size())
+            if (selectedItemIndex >= 0 &&
+                selectedItemIndex < static_cast<int>(itemObjects.size()))
             {
                 auto object = itemObjects[selectedItemIndex];
                 auto transform = SDK::GameObject_get_transform(object, nullptr);
                 if (transform)
                 {
-                    auto photonViewType = SDK::System_Type_GetType(Utils::SysStrToUnityStr("Photon.Pun.PhotonView"), nullptr);
-                    auto photonView = reinterpret_cast<SDK::PhotonView*>(SDK::GameObject_GetComponent(object, photonViewType, nullptr));
+                    auto pvType = SDK::System_Type_GetType(
+                        Utils::SysStrToUnityStr("Photon.Pun.PhotonView"), nullptr);
+                    auto photonView = reinterpret_cast<SDK::PhotonView*>(
+                        SDK::GameObject_GetComponent(object, pvType, nullptr));
                     if (photonView)
-                    {
                         SDK::PhotonView_RequestOwnership(photonView, nullptr);
-                    }
 
-                    SDK::Vector3 newPosition = localPosition;
-                    newPosition.Y += 0.5f;
-                    SDK::Transform_Set_Position(transform, newPosition, nullptr);
-                    NOTIFY_INFO_QUICK("Item teleported!");
+                    SDK::Vector3 pos = localPosition;
+                    pos.Y += 0.5f;
+                    SDK::Transform_Set_Position(transform, pos, nullptr);
+                    NOTIFY_INFO_QUICK(LANG("TP_ItemTeleported"));
                 }
             }
         }
-        ImGui::SameLine();
-    }
-    else if (!itemsCached)
-    {
-        ImGui::Text("Click 'Refresh items list' to see available items");
-    }
-    else
-    {
-        ImGui::Text("No items found in the game");
     }
 
-    if (ImGui::Button("Teleport all items##teleport"))
+    if (ImGui::Button(LANG("Teleport_AllItems")))
     {
-        int teleportedCount = 0;
+        int count = 0;
+
         for (uint32_t i = 0; i < length; ++i)
         {
             SDK::GameObject* object = nullptr;
-            memcpy(&object, reinterpret_cast<uint8_t*>(objects) + 0x20 + i * sizeof(void*), sizeof(void*));
+            memcpy(&object,
+                reinterpret_cast<uint8_t*>(objects) + 0x20 + i * sizeof(void*),
+                sizeof(void*));
             if (!object)
                 continue;
+
             auto transform = SDK::GameObject_get_transform(object, nullptr);
             if (!transform)
                 continue;
 
-            auto photonViewType = SDK::System_Type_GetType(Utils::SysStrToUnityStr("Photon.Pun.PhotonView"), nullptr);
-            auto photonView = reinterpret_cast<SDK::PhotonView*>(SDK::GameObject_GetComponent(object, photonViewType, nullptr));
+            auto pvType = SDK::System_Type_GetType(
+                Utils::SysStrToUnityStr("Photon.Pun.PhotonView"), nullptr);
+            auto photonView = reinterpret_cast<SDK::PhotonView*>(
+                SDK::GameObject_GetComponent(object, pvType, nullptr));
             if (photonView)
-            {
                 SDK::PhotonView_RequestOwnership(photonView, nullptr);
-            }
 
-            SDK::Vector3 newPosition = localPosition;
-            newPosition.Y += 0.5f;
-            SDK::Transform_Set_Position(transform, newPosition, nullptr);
-            teleportedCount++;
+            SDK::Vector3 pos = localPosition;
+            pos.Y += 0.5f;
+            SDK::Transform_Set_Position(transform, pos, nullptr);
+            count++;
         }
+
         char msg[128];
-        snprintf(msg, sizeof(msg), "Teleported %d items to your position!", teleportedCount);
+        snprintf(msg, sizeof(msg),
+            "Teleported %d items to your position!", count);
         NOTIFY_INFO(msg, 3.0f);
     }
 }
@@ -172,242 +189,164 @@ void Teleport::TeleportItems()
 void Teleport::TeleportBone()
 {
     if (!InGame::mapController || !InGame::evidenceController)
-        return NOTIFY_ERROR_QUICK("You need to be in the game.");
+        return NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
+
     const auto localPlayer = Utils::GetLocalPlayer();
     if (!localPlayer)
-        return;
-    const auto localPosition = Utils::GetPosVec3(localPlayer);
+        return NOTIFY_ERROR_QUICK(LANG("TP_LocalPlayerMissing"));
+
+    const auto localPos = Utils::GetPosVec3(localPlayer);
     const auto evidenceList = InGame::evidenceController->Fields.EvidenceList;
+
     if (!evidenceList || !evidenceList->Fields.Items || evidenceList->Fields.Size <= 0)
         return;
+
     const auto& items = evidenceList->Fields.Items->Vector;
     const uint32_t count = evidenceList->Fields.Size;
+
     for (uint32_t i = 0; i < count; i++)
     {
-        const auto evidence = items[i];
-        if (!evidence || !evidence->Fields.MediaValues)
+        const auto ev = items[i];
+        if (!ev || !ev->Fields.MediaValues)
             continue;
-        const auto evidenceType = evidence->Fields.MediaValues->Fields.EvidenceType;
-        if (evidenceType != SDK::EvidenceType::DNA)
+
+        if (ev->Fields.MediaValues->Fields.EvidenceType != SDK::EvidenceType::DNA)
             continue;
-        auto transform = SDK::Component_Get_Transform(reinterpret_cast<SDK::Component*>(evidence), nullptr);
+
+        auto transform = SDK::Component_Get_Transform(
+            reinterpret_cast<SDK::Component*>(ev), nullptr);
         if (!transform)
             continue;
 
-        auto gameObject = SDK::Component_Get_GameObject(reinterpret_cast<SDK::Component*>(evidence), nullptr);
-        if (gameObject)
+        auto go = SDK::Component_Get_GameObject(
+            reinterpret_cast<SDK::Component*>(ev), nullptr);
+        if (go)
         {
-            auto photonViewType = SDK::System_Type_GetType(Utils::SysStrToUnityStr("Photon.Pun.PhotonView"), nullptr);
-            auto photonView = reinterpret_cast<SDK::PhotonView*>(SDK::GameObject_GetComponent(gameObject, photonViewType, nullptr));
+            auto pvType = SDK::System_Type_GetType(
+                Utils::SysStrToUnityStr("Photon.Pun.PhotonView"), nullptr);
+            auto photonView = reinterpret_cast<SDK::PhotonView*>(
+                SDK::GameObject_GetComponent(go, pvType, nullptr));
             if (photonView)
-            {
                 SDK::PhotonView_RequestOwnership(photonView, nullptr);
-            }
+            else
+                LOG_ERROR("PhotonView not found!");
         }
 
-        SDK::Vector3 newPosition = localPosition;
-        newPosition.Y += 0.5f;
-        SDK::Transform_Set_Position(transform, newPosition, nullptr);
-        NOTIFY_INFO_QUICK("Bone teleported!");
+        SDK::Vector3 pos = localPos;
+        pos.Y += 0.5f;
+        SDK::Transform_Set_Position(transform, pos, nullptr);
+        NOTIFY_INFO_QUICK(LANG("TP_BoneTeleported"));
         return;
     }
-    NOTIFY_WARNING_QUICK("Bone not found.");
+
+    NOTIFY_WARNING_QUICK(LANG("BoneNotFound"));
 }
 
 void Teleport::SaveCurrentPosition()
 {
     const auto localPlayer = Utils::GetLocalPlayer();
     if (!localPlayer)
-        return NOTIFY_ERROR_QUICK("Local player not found.");
-    SDK::Vector3 savedPoint = Utils::GetPosVec3(localPlayer);
-    auto config = GetConfigManager();
-    SET_CONFIG_VALUE(config, "SavedPointX", float, savedPoint.X);
-    SET_CONFIG_VALUE(config, "SavedPointY", float, savedPoint.Y);
-    SET_CONFIG_VALUE(config, "SavedPointZ", float, savedPoint.Z);
-    SET_CONFIG_VALUE(config, "HasSavedPoint", bool, true);
-    NOTIFY_INFO_QUICK("Saved current position!");
+        return NOTIFY_ERROR_QUICK(LANG("TP_LocalPlayerMissing"));
+
+    SDK::Vector3 pos = Utils::GetPosVec3(localPlayer);
+    auto cfg = GetConfigManager();
+
+    SET_CONFIG_VALUE(cfg, "SavedPointX", float, pos.X);
+    SET_CONFIG_VALUE(cfg, "SavedPointY", float, pos.Y);
+    SET_CONFIG_VALUE(cfg, "SavedPointZ", float, pos.Z);
+    SET_CONFIG_VALUE(cfg, "HasSavedPoint", bool, true);
+
+    NOTIFY_INFO_QUICK(LANG("TP_PosSaved"));
 }
 
 void Teleport::TeleportToSavedPoint()
 {
-    auto config = GetConfigManager();
-    if (!CONFIG_BOOL(config, "HasSavedPoint"))
-        return NOTIFY_WARNING_QUICK("No saved point found.");
+    auto cfg = GetConfigManager();
+    if (!CONFIG_BOOL(cfg, "HasSavedPoint"))
+        return NOTIFY_WARNING_QUICK(LANG("TP_NoSavedPoint"));
+
     const auto localPlayer = Utils::GetLocalPlayer();
     if (!localPlayer)
-        return NOTIFY_ERROR_QUICK("Local player not found.");
-    SDK::Vector3 savedPoint;
-    savedPoint.X = CONFIG_FLOAT(config, "SavedPointX");
-    savedPoint.Y = CONFIG_FLOAT(config, "SavedPointY");
-    savedPoint.Z = CONFIG_FLOAT(config, "SavedPointZ");
-    Utils::TpPlayerToVec3(localPlayer, savedPoint);
-    NOTIFY_INFO_QUICK("Teleported to saved point!");
+        return NOTIFY_ERROR_QUICK(LANG("TP_LocalPlayerMissing"));
+
+    SDK::Vector3 pos{
+        CONFIG_FLOAT(cfg, "SavedPointX"),
+        CONFIG_FLOAT(cfg, "SavedPointY"),
+        CONFIG_FLOAT(cfg, "SavedPointZ")
+    };
+
+    Utils::TpPlayerToVec3(localPlayer, pos);
+    NOTIFY_INFO_QUICK(LANG("TP_ToSaved"));
 }
 
 void Teleport::TeleportToCoordinates(float x, float y, float z)
 {
     const auto localPlayer = Utils::GetLocalPlayer();
     if (!localPlayer)
-        return NOTIFY_ERROR_QUICK("Local player not found.");
-    SDK::Vector3 position{ x, y, z };
-    Utils::TpPlayerToVec3(localPlayer, position);
+        return NOTIFY_ERROR_QUICK(LANG("TP_LocalPlayerMissing"));
+
+    Utils::TpPlayerToVec3(localPlayer, SDK::Vector3{ x, y, z });
+
     char msg[128];
-    snprintf(msg, sizeof(msg), "Teleported to: X=%.2f Y=%.2f Z=%.2f", x, y, z);
+    snprintf(msg, sizeof(msg),
+        "Teleported to: X=%.2f Y=%.2f Z=%.2f", x, y, z);
     NOTIFY_INFO(msg, 3.0f);
 }
 
 void Teleport::TeleportToTruck()
 {
-    auto localPlayer = Utils::GetLocalPlayer();
+    const auto localPlayer = Utils::GetLocalPlayer();
     if (!localPlayer)
-        return NOTIFY_ERROR_QUICK("Local player not found.");
-    if (!InGame::mapController) // Not necessarily
-        return NOTIFY_ERROR_QUICK("You need to be in the game."); 
+        return NOTIFY_ERROR_QUICK(LANG("TP_LocalPlayerMissing"));
 
-    SDK::String* tagName = Utils::SysStrToUnityStr("Truck");
-    SDK::GameObjectArray* truckObjects = SDK::GameObject_FindGameObjectsWithTag(tagName, nullptr);
-    if (!truckObjects)
-        return NOTIFY_ERROR_QUICK("Truck not found.");
+    if (!InGame::mapController)
+        return NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
+
+    auto trucks = SDK::GameObject_FindGameObjectsWithTag(
+        Utils::SysStrToUnityStr("Truck"), nullptr);
+    if (!trucks)
+        return NOTIFY_ERROR_QUICK(LANG("TP_TruckNotFound"));
 
     for (uint32_t i = 0; i < 65535; i++)
     {
-        SDK::GameObject* object = nullptr;
-        memcpy(&object, reinterpret_cast<uint8_t*>(truckObjects) + 0x20 + i * sizeof(void*), sizeof(void*));
-        if (!object)
+        SDK::GameObject* obj = nullptr;
+        memcpy(&obj,
+            reinterpret_cast<uint8_t*>(trucks) + 0x20 + i * sizeof(void*),
+            sizeof(void*));
+        if (!obj)
             break;
 
-        auto namePtr = SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(object), nullptr);
+        auto namePtr = SDK::Object_Get_Name(
+            reinterpret_cast<SDK::Object*>(obj), nullptr);
         if (!namePtr)
             continue;
 
-        std::string objectName = Utils::UnityStrToSysStr(*namePtr);
+        if (Utils::UnityStrToSysStr(*namePtr).find("Truck") == std::string::npos)
+            continue;
 
-        if (objectName == "Truck Floor Collider" && objectName.find("Truck") != std::string::npos)
-        {
-            auto transform = SDK::GameObject_get_transform(object, nullptr);
-            if (transform)
-            {
-                auto position = SDK::Transform_Get_Position(transform, nullptr);
-                Utils::TpPlayerToVec3(localPlayer, position);
-                NOTIFY_INFO_QUICK("Teleported to Truck.");
-                return;
-            }
-        }
+        auto transform = SDK::GameObject_get_transform(obj, nullptr);
+        if (!transform)
+            continue;
+
+        Utils::TpPlayerToVec3(localPlayer,
+            SDK::Transform_Get_Position(transform, nullptr));
+        NOTIFY_INFO_QUICK(LANG("TP_ToTruck"));
+        return;
     }
 
-    NOTIFY_ERROR_QUICK("Truck not found.");
+    NOTIFY_ERROR_QUICK(LANG("TP_TruckNotFound"));
 }
 
 void Teleport::TeleportToGhost()
 {
-    auto localPlayer = Utils::GetLocalPlayer();
+    const auto localPlayer = Utils::GetLocalPlayer();
     if (!localPlayer)
-        return NOTIFY_ERROR_QUICK("Local player not found.");
+        return NOTIFY_ERROR_QUICK(LANG("TP_LocalPlayerMissing"));
+
     if (!InGame::ghostAI)
-        return NOTIFY_ERROR_QUICK("Ghost not found.");
-	auto ghostVec3 = Utils::GetPosVec3(InGame::ghostAI);
-    Utils::TpPlayerToVec3(localPlayer, ghostVec3);
-    NOTIFY_INFO_QUICK("Teleported to Ghost.");
-}
+        return NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
 
-
-// EVENT
-
-SDK::GameObject* FindJackInTheBoxes()
-{
-    const char* names[] = {
-        "Jack in the boxes",
-        "Jack in the Boxes",
-        "jack in the boxes",
-        "JackInTheBoxes",
-        "jackInTheBoxes"
-    };
-    for (const char* name : names)
-    {
-        SDK::GameObject* obj = Utils::FindObjectByName(name);
-        if (obj)
-            return obj;
-    }
-    return nullptr;
-}
-
-void Teleport::ActivateAllWinterBoxes()
-{
-    auto* objMain = FindJackInTheBoxes();
-    if (!objMain)
-    {
-        LOG_INFO("Jack in the boxes object not found");
-        return;
-    }
-    LOG_INFO("Activating all winter boxes");
-    std::vector<SDK::Component*> components;
-    Utils::GetComponentsInChildren(objMain, "JackInTheBox", components, true);
-
-    for (auto* comp : components)
-    {
-        if (!comp) continue;
-        auto* gobj = SDK::Component_Get_GameObject(comp, nullptr);
-        if (!gobj) continue;
-
-        auto photonViewType = SDK::System_Type_GetType(Utils::SysStrToUnityStr("Photon.Pun.PhotonView"), nullptr);
-        auto* photonView = reinterpret_cast<SDK::PhotonView*>(SDK::GameObject_GetComponent(gobj, photonViewType, nullptr));
-        if (photonView)
-            SDK::PhotonView_RequestOwnership(photonView, nullptr);
-
-        SDK::GameObject_SetActive(gobj, true, nullptr);
-    }
-}
-
-void Teleport::TeleportWinterBoxes()
-{
-    auto* objMain = FindJackInTheBoxes();
-    if (!objMain)
-    {
-        LOG_INFO("Jack in the boxes object not found");
-        return;
-    }
-    auto* localPlayer = Utils::GetLocalPlayer();
-    if (!localPlayer)
-    {
-        LOG_INFO("Local player not found");
-        return;
-    }
-    LOG_INFO("Teleporting all winter boxes to player");
-    std::vector<SDK::Component*> components;
-    Utils::GetComponentsInChildren(objMain, "JackInTheBox", components, true);
-
-    SDK::Vector3 lpvec3 = Utils::GetPosVec3(localPlayer);
-
-    for (auto* comp : components)
-    {
-        if (!comp) continue;
-        auto* gobj = SDK::Component_Get_GameObject(comp, nullptr);
-        if (!gobj) continue;
-
-        auto photonViewType = SDK::System_Type_GetType(Utils::SysStrToUnityStr("Photon.Pun.PhotonView"), nullptr);
-        auto* photonView = reinterpret_cast<SDK::PhotonView*>(SDK::GameObject_GetComponent(gobj, photonViewType, nullptr));
-        if (photonView)
-            SDK::PhotonView_RequestOwnership(photonView, nullptr);
-
-        SDK::Transform_Set_Position(SDK::GameObject_get_transform(gobj, nullptr), { lpvec3.X, lpvec3.Y + 1.f, lpvec3.Z }, nullptr);
-    }
-}
-
-void Teleport::UseAllWinterBoxes()
-{
-    auto* objMain = FindJackInTheBoxes();
-    if (!objMain)
-    {
-        LOG_INFO("Jack in the boxes object not found");
-        return;
-    }
-    LOG_INFO("Using all winter boxes");
-    std::vector<SDK::Component*> components;
-    Utils::GetComponentsInChildren(objMain, "JackInTheBox", components, true);
-
-    for (auto* comp : components)
-    {
-        if (!comp) continue;
-        SDK::JackInTheBox_UseNetworked((SDK::JackInTheBox*)(comp), nullptr);
-    }
+    Utils::TpPlayerToVec3(localPlayer,
+        Utils::GetPosVec3(InGame::ghostAI));
+    NOTIFY_INFO_QUICK(LANG("TP_ToGhost"));
 }

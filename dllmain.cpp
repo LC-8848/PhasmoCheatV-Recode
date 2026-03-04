@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "memory.h"
 #include "main/config/config.h"
+#include "libs/il2cpp/il2cpp.h"
 
 using namespace PhasmoCheatV;
 
@@ -28,6 +29,7 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
     }
 
     try {
+        LanguageManager::Init();
         rendererInstance = std::make_unique<Renderer>();
         hookingInstance = std::make_unique<Hooking>();
         featureInstance = std::make_unique<FeatureHandler>();
@@ -78,12 +80,10 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
         AHKA(TarotCards_BreakItem);
         AHKA(RandomWeather_Start);
         AHKA(CursedItemsController_Awake);
-
-        auto& funcs_grabCard = const_cast<std::vector<SDK::TarotCards_GrabCard_t>&>(SDK::Get_TarotCards_GrabCard_All());
-        for (size_t i = 0; i < funcs_grabCard.size(); i++)
-        {
-            hooking->AddHook("TarotCards_GrabCard_" + std::to_string(i), reinterpret_cast<PVOID*>(&funcs_grabCard[i]), reinterpret_cast<PVOID>(&Hooks::hkTarotCards_GrabCard));
-        }
+        AHKA(LiftButton_AttemptUse);
+        AHKA(GameController_PlayerDied);
+        AHKA(Thermometer_HoldUse);
+        AHKA(PhotonView_RPC);
 
         auto& funcs_UpdateNightmareGraph = const_cast<std::vector<SDK::EMFData_UpdateNightMareGraph_t>&>(SDK::Get_EMFData_UpdateNightMareGraph_All());
         for (size_t i = 0; i < funcs_UpdateNightmareGraph.size(); i++)
@@ -93,8 +93,11 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
 
         hookingInstance->ApplyHooks();
 
-        NOTIFY_INFO_QUICK("Cheat injected successfully. The menu opens on " + Utils::getKeyName(MenuToggleKey));
+        NOTIFY_INFO_QUICK(LANG("Menu_CheatInjected") + Utils::getKeyName(MenuToggleKey));
         LOG_INFO("Cheat injected successfully. The menu opens on " + Utils::getKeyName(MenuToggleKey));
+
+        InGame::ghostAI = Utils::GetGhostAI();
+        if (!InGame::ghostAI) LOG_INFO("Ghost not found with tag!");
 
         while (CheatWork) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));

@@ -124,7 +124,7 @@ void ActivityMonitor::OnMenuRender()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8.0f, 6.0f));
 
     bool isEnabled = IsActive();
-    if (ImGui::Checkbox("Enable Activity Monitor", &isEnabled))
+    if (ImGui::Checkbox(LANG("EnableActivityMonitor"), &isEnabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, isEnabled);
         if (isEnabled) OnActivate();

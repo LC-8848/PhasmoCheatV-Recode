@@ -49,5 +49,9 @@ namespace PhasmoCheatV
 		static void hkRandomWeather_Start(SDK::RandomWeather* randomWeather, SDK::MethodInfo* methodInfo);
 		static void hkEMFData_UpdateNightMareGraph(SDK::EMFData* emfData, SDK::MethodInfo* methodInfo);
 		static void hkCursedItemsController_Awake(SDK::CursedItemsController* cursedItemsController, SDK::MethodInfo* methodInfo);
+		static void hkLiftButton_AttemptUse(SDK::LiftButton* liftButton, void* photon, SDK::MethodInfo* methodInfo);
+		static void hkGameController_PlayerDied(SDK::GameController* gameController, SDK::Player* player, SDK::MethodInfo* methodInfo);
+		static void hkThermometer_HoldUse(SDK::Thermometer* thermometer, SDK::MethodInfo* methodInfo);
+		static void hkPhotonView_RPC(SDK::PhotonView* photonView, SDK::String* methodName, SDK::RpcTarget target, void* parameters, SDK::MethodInfo* methodInfo);
 	};
 }

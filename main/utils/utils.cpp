@@ -1,4 +1,4 @@
-#include "utils.h"
+﻿#include "utils.h"
 
 using namespace PhasmoCheatV;
 
@@ -10,11 +10,49 @@ std::string Utils::GetPhasmoCheatVDirectory()
 void Utils::CreatePhasmoCheatVDirectory()
 {
 	const std::string configDirectoryPath = GetPhasmoCheatVDirectory();
-	if (std::filesystem::exists(configDirectoryPath))
-		return;
+	if (!std::filesystem::exists(configDirectoryPath))
+	{
+		LOG_INFO("PhasmoCheatV directory not found, creating one.");
+		std::filesystem::create_directory(configDirectoryPath);
+	}
 
-	LOG_INFO("PhasmoCheatV directory not found, creating one.");
-	std::filesystem::create_directory(configDirectoryPath);
+	const std::string configsPath = configDirectoryPath + "\\configs";
+	const std::string imagesPath = configDirectoryPath + "\\Images";
+
+	if (!std::filesystem::exists(configsPath))
+	{
+		LOG_INFO("Creating configs folder.");
+		std::filesystem::create_directory(configsPath);
+	}
+
+	if (!std::filesystem::exists(imagesPath))
+	{
+		LOG_INFO("Creating Images folder.");
+		std::filesystem::create_directory(imagesPath);
+	}
+}
+
+ImVec4 Utils::HSV2RGB(float h, float s, float v)
+{
+	float r, g, b;
+
+	int i = int(h * 6.0f);
+	float f = h * 6.0f - i;
+	float p = v * (1.0f - s);
+	float q = v * (1.0f - f * s);
+	float t = v * (1.0f - (1.0f - f) * s);
+
+	switch (i % 6)
+	{
+	case 0: r = v; g = t; b = p; break;
+	case 1: r = q; g = v; b = p; break;
+	case 2: r = p; g = v; b = t; break;
+	case 3: r = p; g = q; b = v; break;
+	case 4: r = t; g = p; b = v; break;
+	case 5: r = v; g = p; b = q; break;
+	}
+
+	return ImVec4(r, g, b, 1.0f);
 }
 
 SDK::Network* Utils::GetNetwork()
@@ -403,40 +441,15 @@ std::string Utils::GetPlayerName(const SDK::Player* player)
 
 bool Utils::WTS(const SDK::Vector3& worldPos, SDK::Vector3& displayPos)
 {
-	RECT gameWindowRect;
-	HWND gameWindowHandle = FindWindowA(nullptr, "Phasmophobia");
-	GetWindowRect(gameWindowHandle, &gameWindowRect);
+	SDK::Camera* playerCamera = GetLocalPlayer()->Fields.Camera; if (!playerCamera) return false;
 
-	const int windowHeight = gameWindowRect.bottom - gameWindowRect.top;
-	SDK::Camera* playerCamera = GetLocalPlayer()->Fields.Camera;
+	SDK::Vector3 projected = SDK::Camera_WorldToScreenPoint(playerCamera, worldPos, nullptr); if (projected.Z <= 0.0f) return false;
 
-	if (!playerCamera)
-		return false;
+	float screenHeight = SDK::Screen_Get_Height(nullptr);
 
-	SDK::Transform* cameraTransform = SDK::Component_Get_Transform(
-		reinterpret_cast<SDK::Component*>(playerCamera), nullptr);
-
-	const SDK::Vector3 cameraLocation = SDK::Transform_Get_Position(cameraTransform, nullptr);
-	const SDK::Vector3 cameraForwardDir = SDK::Transform_Get_Forward(cameraTransform, nullptr);
-
-	SDK::Vector3 viewRay;
-	viewRay.X = worldPos.X - cameraLocation.X;
-	viewRay.Y = worldPos.Y - cameraLocation.Y;
-	viewRay.Z = worldPos.Z - cameraLocation.Z;
-
-	const float forwardDot = viewRay.X * cameraForwardDir.X +
-		viewRay.Y * cameraForwardDir.Y +
-		viewRay.Z * cameraForwardDir.Z;
-
-	if (forwardDot <= 0.0f)
-		return false;
-
-	const SDK::Vector3 projectedCoords = SDK::Camera_WorldToScreenPoint(
-		playerCamera, worldPos, nullptr);
-
-	displayPos.X = projectedCoords.X;
-	displayPos.Y = static_cast<float>(windowHeight) - projectedCoords.Y;
-	displayPos.Z = projectedCoords.Z;
+	displayPos.X = projected.X;
+	displayPos.Y = screenHeight - projected.Y;
+	displayPos.Z = projected.Z;
 
 	return true;
 }
@@ -726,7 +739,7 @@ SDK::PhotonMessageInfo* Utils::CreatePhotonMessageInfo(SDK::PhotonView* photonVi
 	int timestamp = SDK::PhotonNetwork_Get_ServerTimestamp(nullptr);
 
 	void* ctorArgs[3] = { localPlayer, &timestamp, photonView };
-	const MethodInfo* ctor = il2cpp_class_get_method_from_name_wrap(pmiClass, ".ctor", 3);
+	const MethodInfo_I* ctor = il2cpp_class_get_method_from_name_wrap(pmiClass, ".ctor", 3);
 	if (ctor)
 		il2cpp_runtime_invoke_wrap(ctor, pmi, ctorArgs, nullptr);
 
@@ -828,4 +841,375 @@ void Utils::GetComponentsInChildren(SDK::GameObject* root, const char* component
 		};
 
 	Traverse(rootTransform);
+}
+
+// Only for fun
+void Utils::DumpAllMethodsByClass(const char* className, const char* namespaze, const char* assemblyName)
+{
+	if (!il2cpp_initialize())
+	{
+		LOG_ERROR("[IL2CPP] init failed");
+		return;
+	}
+
+	Il2CppDomain* domain = il2cpp_domain_get();
+	if (!domain)
+	{
+		LOG_ERROR("[IL2CPP] domain null");
+		return;
+	}
+
+	Il2CppAssembly* assembly = il2cpp_domain_assembly_open_wrap(domain, assemblyName);
+	if (!assembly)
+	{
+		LOG_ERROR("[IL2CPP] assembly not found: ", assemblyName);
+		return;
+	}
+
+	Il2CppImage* image = il2cpp_assembly_get_image_wrap(assembly);
+	if (!image)
+	{
+		LOG_ERROR("[IL2CPP] image null");
+		return;
+	}
+
+	Il2CppClass* klass = il2cpp_class_from_name_wrap(image, namespaze, className);
+	if (!klass)
+	{
+		LOG_ERROR("[IL2CPP] class not found: ", namespaze, className);
+		return;
+	}
+
+	LOG_INFO("[IL2CPP] \n",
+		(namespaze && namespaze[0]) ? namespaze : "<global>",
+		className,
+		assemblyName
+	);
+
+	void* iter = nullptr;
+	MethodInfo_I* method = nullptr;
+
+	while ((method = il2cpp_class_get_methods_wrap(klass, &iter)))
+	{
+		LOG_INFO("  └─ \n",
+			il2cpp_method_get_name_wrap2(method),
+			method->parameters_count
+		);
+	}
+
+	LOG_INFO("[IL2CPP] dump end\n\n");
+}
+
+SDK::HandCamera* Utils::get_PlayerHandCamera(SDK::Player* player)
+{
+	//PCPlayer(Player script)
+	//	PCPlayerHead
+	//	   CameraItemSpot
+	//	      Photo Camera TIER.NUMBER
+
+
+	auto* g_object_player = SDK::Component_Get_GameObject(reinterpret_cast<SDK::Component*>(player), nullptr);
+	std::string o_name_player = UnityStrToSysStr(*SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(g_object_player), nullptr));
+
+	LOG_INFO("[get_PlayerHandCamera] o_name_player = ", o_name_player);
+
+	if (o_name_player.rfind("PCPlayer", 0) != 0)
+		return nullptr;
+
+
+	auto* playerTr = SDK::GameObject_get_transform(g_object_player, nullptr);
+	if (!playerTr)
+		return nullptr;
+
+	SDK::Transform* headTr = nullptr;
+
+	int playerChildCount = SDK::Transform_get_childCount(playerTr, nullptr);
+	for (int i = 0; i < playerChildCount; ++i)
+	{
+		auto* child = SDK::Transform_GetChild(playerTr, i, nullptr);
+
+		auto* childGO = SDK::Component_Get_GameObject(
+			reinterpret_cast<SDK::Component*>(child), nullptr);
+
+		std::string name = UnityStrToSysStr(
+			*SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(childGO), nullptr));
+
+		if (name == "PCPlayerHead")
+		{
+			headTr = child;
+			break;
+		}
+	}
+
+	if (!headTr)
+		return nullptr;
+
+	SDK::Transform* cameraSpotTr = nullptr;
+
+	int headChildCount = SDK::Transform_get_childCount(headTr, nullptr);
+	for (int i = 0; i < headChildCount; ++i)
+	{
+		auto* child = SDK::Transform_GetChild(headTr, i, nullptr);
+
+		auto* childGO = SDK::Component_Get_GameObject(
+			reinterpret_cast<SDK::Component*>(child), nullptr);
+
+		std::string name = UnityStrToSysStr(
+			*SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(childGO), nullptr));
+
+		if (name == "CameraItemSpot")
+		{
+			cameraSpotTr = child;
+			break;
+		}
+	}
+
+	if (!cameraSpotTr)
+		return nullptr;
+
+	int camChildCount = SDK::Transform_get_childCount(cameraSpotTr, nullptr);
+	for (int i = 0; i < camChildCount; ++i)
+	{
+		auto* child = SDK::Transform_GetChild(cameraSpotTr, i, nullptr);
+
+		auto* childGO = SDK::Component_Get_GameObject(
+			reinterpret_cast<SDK::Component*>(child), nullptr);
+
+		std::string name = UnityStrToSysStr(*SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(childGO), nullptr));
+
+		SDK::Type* handCamera_T = SDK::System_Type_GetType(SysStrToUnityStr("HandCamera"), nullptr);
+
+		if (name.rfind("Photo Camera", 0) == 0)
+		{
+			return reinterpret_cast<SDK::HandCamera*>(SDK::GameObject_GetComponent(childGO, handCamera_T, nullptr));
+		}
+	}
+
+	return nullptr;
+}
+
+bool Utils::IsGhostVisible(SDK::GhostAI* ghostAI)
+{
+	if (!ghostAI)
+		return false;
+
+	auto* currentModel = ghostAI->Fields.currentModel;
+	if (!currentModel)
+		return false;
+
+	auto* myRends = currentModel->Fields.myRends;
+	if (!myRends)
+		return false;
+
+	for (uint32_t i = 0; i < 65535; i++)
+	{
+		SDK::Render* rend = myRends->Vector[i];
+		if (!rend) break;
+
+		if (SDK::Render_get_enabled(rend, nullptr))
+			return true;
+	}
+
+	return false;
+}
+
+
+bool Utils::IsPlayerVisibleGhost(SDK::Camera* camera, SDK::Transform* ghostTransform)
+{
+	if (!camera || !ghostTransform)
+	{
+		return false;
+	}
+
+	SDK::Transform* camTr = SDK::Component_Get_Transform((SDK::Component*)camera, nullptr);
+	SDK::Vector3 camPos = SDK::Transform_Get_Position(camTr, nullptr);
+	SDK::Vector3 ghostPos = SDK::Transform_Get_Position(ghostTransform, nullptr);
+
+	SDK::Vector3 dir = ghostPos - camPos;
+	float dist = SDK::Vector3_get_magnitude(&dir, nullptr);
+
+	if (dist < 0.05f)
+	{
+		return true;
+	}
+
+	dir = SDK::Vector3_get_normalized(&dir, nullptr);
+
+	SDK::PhysicsScene scene = SDK::Physics_get_defaultPhysicsScene(nullptr);
+	SDK::Vector3 currentOrigin = camPos + dir * 0.02f;
+	float traveled = 0.f;
+	int maxHits = 32;
+
+	const int blockingLayers[] = { 12, 13, 14, 21, 26, 28, 30 };
+
+	for (int i = 0; i < maxHits && traveled < dist; i++)
+	{
+		SDK::RaycastHit hit{};
+		bool hasHit = SDK::PhysicsScene_Raycast(
+			&scene,
+			currentOrigin,
+			dir,
+			&hit,
+			dist - traveled,
+			-1,
+			SDK::QueryTriggerInteraction::Ignore,
+			nullptr
+		);
+
+		if (!hasHit)
+		{
+			break;
+		}
+
+		int32_t colID = hit.Collider;
+		if (!colID)
+		{
+			break;
+		}
+
+		SDK::Collider* col = reinterpret_cast<SDK::Collider*>(SDK::Object_FindObjectFromInstanceID(colID, nullptr));
+		SDK::GameObject* go = col ? SDK::Component_Get_GameObject((SDK::Component*)col, nullptr) : nullptr;
+		int hitLayer = go ? SDK::GameObject_Get_Layer(go, nullptr) : -1;
+
+		for (int layer : blockingLayers)
+		{
+			if (hitLayer == layer)
+			{
+				return false;
+			}
+		}
+
+		traveled += hit.Distance + 0.01f;
+		currentOrigin = currentOrigin + dir * (hit.Distance + 0.01f);
+	}
+
+	SDK::Vector3 vp = SDK::Camera_WorldToViewportPoint(camera, ghostPos, nullptr);
+
+	if (vp.Z <= 0.f)
+	{
+		return false;
+	}
+
+	if (vp.X < 0.f || vp.X > 1.f || vp.Y < 0.f || vp.Y > 1.f)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void Utils::DumpAllLayers()
+{
+	for (int i = 0; i < 32; i++)
+	{
+		SDK::String* name = SDK::LayerMask_LayerToName(i, nullptr);
+		if (name)
+		{
+			std::string cstr = UnityStrToSysStr(*name);
+			LOG_INFO("Layer ", i, cstr);
+		}
+		else
+		{
+			LOG_INFO("Empty layer ", i);
+		}
+	}
+}
+
+SDK::GameObject* Utils::GetPlayerCrosshairObj(SDK::Player* player)
+{
+	if (!player)
+		return nullptr;
+
+	auto* playerGO = SDK::Component_Get_GameObject(
+		reinterpret_cast<SDK::Component*>(player), nullptr);
+
+	if (!playerGO)
+		return nullptr;
+
+	std::string playerName = UnityStrToSysStr(
+		*SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(playerGO), nullptr));
+
+	// LOG_INFO("[GetPlayerCrosshairObj] playerName = ", playerName);
+
+	if (playerName.rfind("PCPlayer", 0) != 0)
+		return nullptr;
+
+	auto* playerTr = SDK::GameObject_get_transform(playerGO, nullptr);
+	if (!playerTr)
+		return nullptr;
+
+	SDK::Transform* canvasTr = nullptr;
+
+	int childCount = SDK::Transform_get_childCount(playerTr, nullptr);
+	for (int i = 0; i < childCount; ++i)
+	{
+		auto* childTr = SDK::Transform_GetChild(playerTr, i, nullptr);
+		if (!childTr)
+			continue;
+
+		auto* childGO = SDK::Component_Get_GameObject(
+			reinterpret_cast<SDK::Component*>(childTr), nullptr);
+
+		if (!childGO)
+			continue;
+
+		std::string name = UnityStrToSysStr(
+			*SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(childGO), nullptr));
+
+		if (name == "Canvas")
+		{
+			canvasTr = childTr;
+			break;
+		}
+	}
+
+	if (!canvasTr)
+		return nullptr;
+
+	int canvasChildCount = SDK::Transform_get_childCount(canvasTr, nullptr);
+	for (int i = 0; i < canvasChildCount; ++i)
+	{
+		auto* childTr = SDK::Transform_GetChild(canvasTr, i, nullptr);
+		if (!childTr)
+			continue;
+
+		auto* childGO = SDK::Component_Get_GameObject(
+			reinterpret_cast<SDK::Component*>(childTr), nullptr);
+
+		if (!childGO)
+			continue;
+
+		std::string name = UnityStrToSysStr(
+			*SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(childGO), nullptr));
+
+		if (name.rfind("CrosshairImage", 0) == 0)
+		{
+			// LOG_INFO("[GetPlayerCrosshairObj] Found CrosshairImage: ", name); 
+			return childGO;
+		}
+	}
+
+	return nullptr;
+}
+
+SDK::GhostAI* Utils::GetGhostAI()
+{
+	auto* ghostAIArray = SDK::GameObject_FindGameObjectsWithTag(SysStrToUnityStr("Ghost"), nullptr);
+	if (!ghostAIArray) return nullptr;
+
+	for (uint32_t i = 0; i < 65535; i++)
+	{
+		SDK::GameObject* obj = ghostAIArray->Vector[i];
+		if (!obj) break;
+		return reinterpret_cast<SDK::GhostAI*>(SDK::GameObject_GetComponent(obj, SDK::System_Type_GetType(SysStrToUnityStr("GhostAI"), nullptr), nullptr));
+	}
+	return nullptr;
+}
+
+SDK::Transform* Utils::GetPotatoe()
+{
+	auto* Potatoe_Obj = SDK::GameObject_Find(SysStrToUnityStr("Potatoe"), nullptr); if (!Potatoe_Obj) return nullptr;
+	auto* Potatoe_Trans = SDK::GameObject_get_transform(Potatoe_Obj, nullptr); if (!Potatoe_Trans) return nullptr;
+
+	return Potatoe_Trans;
 }

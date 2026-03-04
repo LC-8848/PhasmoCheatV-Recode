@@ -19,22 +19,31 @@ void GhostDesigner::OnMenuRender()
 {
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
+    auto MakeLabel = [](const char* code, const char* id) -> std::string
+        {
+            return std::string(LANG(code)) + "##" + id;
+        };
+
     bool enabled = IsActive();
-    if (ImGui::Checkbox("Enable Ghost Designer", &enabled))
+    if (ImGui::Checkbox(LANG("EnableGhostDesigner"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
-        if (enabled) OnActivate();
-        else OnDeactivate();
+        enabled ? OnActivate() : OnDeactivate();
     }
 
-    if (!enabled) {
+    if (!enabled)
+    {
         ImGui::PopStyleVar();
         return;
     }
 
     int ghostAge = CONFIG_INT(GetConfigManager(), "GhostAge");
-    if (ImGui::SliderInt("Ghost Age##ghostDesigner", &ghostAge, -1000, 1000))
+    if (ImGui::SliderInt(
+        MakeLabel("GhostAge", "age").c_str(),
+        &ghostAge, -1000, 1000))
+    {
         SET_CONFIG_VALUE(GetConfigManager(), "GhostAge", int, ghostAge);
+    }
 
     const char* ghostTypes[] = {
         "Spirit","Wraith","Phantom","Poltergeist","Banshee",
@@ -46,39 +55,80 @@ void GhostDesigner::OnMenuRender()
     };
 
     int ghostType = CONFIG_INT(GetConfigManager(), "GhostType");
-    if (ImGui::Combo("Ghost Type##ghostDesigner", &ghostType, ghostTypes, IM_ARRAYSIZE(ghostTypes)))
+    if (ImGui::Combo(
+        MakeLabel("GhostType", "type").c_str(),
+        &ghostType,
+        ghostTypes,
+        IM_ARRAYSIZE(ghostTypes)))
+    {
         SET_CONFIG_VALUE(GetConfigManager(), "GhostType", int, ghostType);
+    }
 
     bool isShy = CONFIG_BOOL(GetConfigManager(), "IsShy");
-    if (ImGui::Checkbox("Is Shy##ghostDesigner", &isShy))
+    if (ImGui::Checkbox(
+        MakeLabel("IsShy", "shy").c_str(),
+        &isShy))
+    {
         SET_CONFIG_VALUE(GetConfigManager(), "IsShy", bool, isShy);
+    }
 
     ImGui::Separator();
-    ImGui::Text("Evidence Settings");
+    ImGui::TextUnformatted(LANG("EvidenceSettings"));
 
-    const char* evidenceModes[] = { "Random", "Selected" };
+    const char* evidenceModes[] = {
+        LANG("EvidenceModeRandom"),
+        LANG("EvidenceModeSelected")
+    };
+
     int evidenceMode = CONFIG_INT(GetConfigManager(), "EvidenceMode");
-    if (ImGui::Combo("Mode##EvidenceMode", &evidenceMode, evidenceModes, IM_ARRAYSIZE(evidenceModes)))
+    if (ImGui::Combo(
+        MakeLabel("EvidenceMode", "mode").c_str(),
+        &evidenceMode,
+        evidenceModes,
+        IM_ARRAYSIZE(evidenceModes)))
+    {
         SET_CONFIG_VALUE(GetConfigManager(), "EvidenceMode", int, evidenceMode);
+    }
 
     int evidenceCount = CONFIG_INT(GetConfigManager(), "EvidenceCount");
-    if (ImGui::SliderInt("Evidence Count##EvidenceCount", &evidenceCount, 0, 7))
+    if (ImGui::SliderInt(
+        MakeLabel("EvidenceCount", "count").c_str(),
+        &evidenceCount, 0, 7))
+    {
         SET_CONFIG_VALUE(GetConfigManager(), "EvidenceCount", int, evidenceCount);
+    }
 
     if (evidenceMode == 1)
     {
         const char* evidenceNames[] = {
-            "None", "EMF Level 5", "Spirit Box", "Fingerprints",
-            "Ghost Orb", "Ghost Writing", "Freezing Temps", "D.O.T.S"
+            "None",
+            "EMF Level 5",
+            "Spirit Box",
+            "Fingerprints",
+            "Ghost Orb",
+            "Ghost Writing",
+            "Freezing Temps",
+            "D.O.T.S"
         };
 
-        for (int i = 0; i < evidenceCount; i++) {
+        for (int i = 0; i < evidenceCount; i++)
+        {
             std::string configKey = "Evidence" + std::to_string(i);
             int evidenceValue = CONFIG_INT(GetConfigManager(), configKey);
 
-            std::string label = "Evidence " + std::to_string(i + 1) + "##select";
-            if (ImGui::Combo(label.c_str(), &evidenceValue, evidenceNames, IM_ARRAYSIZE(evidenceNames)))
+            std::string label =
+                std::string(LANG("Evidence")) + " " +
+                std::to_string(i + 1) + "##evidence_" +
+                std::to_string(i);
+
+            if (ImGui::Combo(
+                label.c_str(),
+                &evidenceValue,
+                evidenceNames,
+                IM_ARRAYSIZE(evidenceNames)))
+            {
                 SET_CONFIG_VALUE(GetConfigManager(), configKey, int, evidenceValue);
+            }
         }
     }
 

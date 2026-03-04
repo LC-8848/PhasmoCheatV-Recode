@@ -11,9 +11,9 @@ namespace PhasmoCheatV::Features::Visuals
 
 		void OnActivate() override {}
 		void OnDeactivate() override {}
-
 		void OnRender() override;
 		void OnMenuRender() override;
+		void DrawHiddenValue(float width = 120.0f, float height = 18.0f);
 
 	private:
 		static std::string GetGhostEvidenceString();

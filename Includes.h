@@ -34,5 +34,6 @@
 #include "main/features/settings.h"
 #include "main/features/feature.h"
 #include "nlohmann/json.hpp"
+#include "main/config/LanguageManager.h"
 #include "main/config/config.h"
 #include "main/utils/notification.h"

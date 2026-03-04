@@ -20,7 +20,7 @@ void Pickup::OnMenuRender()
 
 	bool enabled = IsActive();
 
-	if (ImGui::Checkbox("Enable Pickup", &enabled))
+	if (BCheckBox(LANG("EnablePickup"), &enabled))
 	{
 		SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
 		if (enabled) OnActivate();
@@ -36,18 +36,22 @@ void Pickup::OnMenuRender()
 		bool PocketEverything = CONFIG_BOOL(GetConfigManager(), "PocketEverything");
 		bool PickupEverything = CONFIG_BOOL(GetConfigManager(), "PickupEverything");
 
-		if (ImGui::Checkbox("Custom throw", &ThrowMultiplier))
+		if (ImGui::Checkbox(LANG("CustomThrow"), &ThrowMultiplier))
 			SET_CONFIG_VALUE(GetConfigManager(), "ThrowMultiplier", bool, ThrowMultiplier);
-		if (ImGui::SliderFloat("Throw multiplier", &CustomThrow, 1.f, 100.0f, "%.1fx"))
+
+		if (ImGui::SliderFloat(LANG("ThrowMultiplier"), &CustomThrow, 1.f, 100.0f, "%.1fx"))
 			SET_CONFIG_VALUE(GetConfigManager(), "CustomThrow", float, CustomThrow);
 
-		if (ImGui::Checkbox("Custom grab distance", &GrabDistanceMultiplier));
+		if (ImGui::Checkbox(LANG("CustomGrabDistance"), &GrabDistanceMultiplier))
 			SET_CONFIG_VALUE(GetConfigManager(), "GrabDistanceMultiplier", bool, GrabDistanceMultiplier);
-		if (ImGui::SliderFloat("Grab distance", &CustomGrabDistance, 1.f, 50.0f, "%.1f units"))
+
+		if (ImGui::SliderFloat(LANG("GrabDistance"), &CustomGrabDistance, 1.f, 50.0f, "%.1f "))
 			SET_CONFIG_VALUE(GetConfigManager(), "CustomGrabDistance", float, CustomGrabDistance);
-		if (ImGui::Checkbox("Pickup Everything", &PickupEverything))
+
+		if (ImGui::Checkbox(LANG("PickupEverything"), &PickupEverything))
 			SET_CONFIG_VALUE(GetConfigManager(), "PickupEverything", bool, PickupEverything);
-		if (ImGui::Checkbox("Pocket Everything", &PocketEverything)) // DashaAngelBars offered this feature.
+
+		if (ImGui::Checkbox(LANG("PocketEverything"), &PocketEverything))
 		{
 			SET_CONFIG_VALUE(GetConfigManager(), "PocketEverything", bool, PocketEverything);
 			PocketEverything ? SDK::Call_ForceDrop_off() : SDK::Call_ForceDrop_on();

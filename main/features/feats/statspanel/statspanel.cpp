@@ -68,7 +68,7 @@ void StatsPanel::OnMenuRender()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
     bool enabled = IsActive();
-    if (ImGui::Checkbox("Enable Level Stats Panel", &enabled))
+    if (ImGui::Checkbox(LANG("EnableLevelStatsPanel"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -83,22 +83,22 @@ void StatsPanel::StatsPanelCollectBone()
     collectBone = false;
     if (!InGame::evidenceController)
     {
-        NOTIFY_ERROR_QUICK("You need to be in the game.");
+        NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
         return;
     }
 
     if (!SDK::PhotonNetwork_Get_IsMasterClient)
     {
-        NOTIFY_ERROR_QUICK("You must be host to use this feature.");
+        NOTIFY_ERROR_QUICK(LANG("NeedMustBeHost"));
         return;
     }
 
     if (!InGame::evidenceController->Fields.bone)
     {
-        NOTIFY_ERROR_QUICK("Bone not found.");
+        NOTIFY_ERROR_QUICK(LANG("BoneNotFound"));
         return;
 	}
 
     SDK::DNAEvidence_GrabbedNetworked(InGame::evidenceController->Fields.bone, nullptr);
-    NOTIFY_SUCCESS_QUICK("Bone collected.");
+    NOTIFY_SUCCESS_QUICK(LANG("BoneCollected"));
 }

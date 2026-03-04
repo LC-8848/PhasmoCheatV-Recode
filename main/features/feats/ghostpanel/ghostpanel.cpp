@@ -5,6 +5,31 @@ using namespace PhasmoCheatV::Features::Visuals;
 GhostPanel::GhostPanel() : FeatureCore("Ghost Panel", TYPE_VISUALS)
 {
     DECLARE_CONFIG(GetConfigManager(), "BansheeTargetSetting", bool, false);
+    DECLARE_CONFIG(GetConfigManager(), "IsHideSettings", bool, false);
+    DECLARE_CONFIG(GetConfigManager(), "HideName", bool, false);
+    DECLARE_CONFIG(GetConfigManager(), "HideType", bool, false);
+    DECLARE_CONFIG(GetConfigManager(), "HideAge", bool, false);
+    DECLARE_CONFIG(GetConfigManager(), "HideState", bool, false);
+    DECLARE_CONFIG(GetConfigManager(), "HideEvidence", bool, false);
+    DECLARE_CONFIG(GetConfigManager(), "HideRoom", bool, false);
+    DECLARE_CONFIG(GetConfigManager(), "HideLocation", bool, false);
+    DECLARE_CONFIG(GetConfigManager(), "HideMimicType", bool, false);
+    DECLARE_CONFIG(GetConfigManager(), "HideBansheeTarget", bool, false);
+}
+
+void GhostPanel::DrawHiddenValue(float width, float height)
+{
+    ImVec2 pos = ImGui::GetCursorScreenPos();
+    ImDrawList* draw = ImGui::GetWindowDrawList();
+
+    draw->AddRectFilled(
+        pos,
+        ImVec2(pos.x + width, pos.y + height),
+        IM_COL32(0, 0, 0, 255),
+        4.0f
+    );
+
+    ImGui::Dummy(ImVec2(width, height));
 }
 
 void GhostPanel::OnRender()
@@ -44,44 +69,50 @@ void GhostPanel::OnRender()
         ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120);
         ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
-        auto DrawRow = [&](const char* label, const char* value) {
+        auto DrawRow = [&](const char* label, const char* value, bool hidden) {
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
             ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.9f, 1.0f), "%s", label);
             ImGui::TableSetColumnIndex(1);
-            ImGui::TextWrapped("%s", value);
+
+            if (hidden)
+                DrawHiddenValue();
+            else
+                ImGui::TextWrapped("%s", value);
             };
 
-        DrawRow("Name", Utils::UnityStrToSysStr(*ghostTraits.Name).c_str());
-        DrawRow("Type", Utils::GhostEnumToStr(ghostTraits.GhostType_).c_str());
-        DrawRow("Age", std::to_string(ghostTraits.GhostAge).c_str());
-        DrawRow("State", Utils::GhostEnumToStr(InGame::ghostAI->Fields.currentState).c_str());
-        DrawRow("Responds to all", (!ghostTraits.IsShy ? "Yes" : "No"));
+        DrawRow("Name", Utils::UnityStrToSysStr(*ghostTraits.Name).c_str(), CONFIG_BOOL(GetConfigManager(), "HideName"));
+
+        DrawRow("Type", Utils::GhostEnumToStr(ghostTraits.GhostType_).c_str(), CONFIG_BOOL(GetConfigManager(), "HideType"));
+
+        DrawRow("Age", std::to_string(ghostTraits.GhostAge).c_str(), CONFIG_BOOL(GetConfigManager(), "HideAge"));
+
+        DrawRow("State", Utils::GhostEnumToStr(InGame::ghostAI->Fields.currentState).c_str(), CONFIG_BOOL(GetConfigManager(), "HideState"));
 
         if (ghostTraits.GhostType_ == SDK::GhostType::Mimic)
-            DrawRow("Mimic Type", Utils::GhostEnumToStr(ghostTraits.MimicType).c_str());
+            DrawRow("Mimic Type", Utils::GhostEnumToStr(ghostTraits.MimicType).c_str(), CONFIG_BOOL(GetConfigManager(), "HideMimicType"));
 
         if (CONFIG_BOOL(GetConfigManager(), "BansheeTargetSetting") &&
             ghostTraits.GhostType_ == SDK::GhostType::Banshee)
         {
             if (const auto& bansheeTarget = InGame::ghostAI->Fields.BansheeTarget)
-                DrawRow("Target", Utils::GetPlayerName(bansheeTarget).c_str());
+                DrawRow("Target", Utils::GetPlayerName(bansheeTarget).c_str(), CONFIG_BOOL(GetConfigManager(), "HideBansheeTarget"));
         }
 
         if (const auto& evidence = GetGhostEvidenceString(); !evidence.empty())
-            DrawRow("Evidence", evidence.c_str());
+            DrawRow("Evidence", evidence.c_str(), CONFIG_BOOL(GetConfigManager(), "HideEvidence"));
 
         if (const auto& levelRoom = ghostInfo->Fields.favouriteRoom;
             levelRoom && levelRoom->Fields.RoomName)
         {
-            DrawRow("Favorite Room", Utils::UnityStrToSysStr(*levelRoom->Fields.RoomName).c_str());
+            DrawRow("Favorite Room", Utils::UnityStrToSysStr(*levelRoom->Fields.RoomName).c_str(), CONFIG_BOOL(GetConfigManager(), "HideRoom"));
         }
 
         if (InGame::levelController && InGame::levelController->Fields.currentGhostRoom)
         {
             const auto ghostRoom = InGame::levelController->Fields.currentGhostRoom;
             if (ghostRoom->Fields.RoomName)
-                DrawRow("Location", Utils::UnityStrToSysStr(*ghostRoom->Fields.RoomName).c_str());
+                DrawRow("Location", Utils::UnityStrToSysStr(*ghostRoom->Fields.RoomName).c_str(), CONFIG_BOOL(GetConfigManager(), "HideLocation"));
         }
 
         ImGui::TableNextRow();
@@ -106,7 +137,7 @@ void GhostPanel::OnMenuRender()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
     bool enabled = IsActive();
-    if (ImGui::Checkbox("Enable Ghost Panel", &enabled))
+    if (ImGui::Checkbox(LANG("EnableGhostPanel"), &enabled))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -114,11 +145,53 @@ void GhostPanel::OnMenuRender()
     }
 
     if (enabled) {
-        bool ghostProfile = CONFIG_BOOL(GetConfigManager(), "Enabled");
         bool bansheeTarget = CONFIG_BOOL(GetConfigManager(), "BansheeTargetSetting");
 
-        if (ImGui::Checkbox("Show Banshee target (CRASH RISK)", &bansheeTarget))
+        if (ImGui::Checkbox((std::string(LANG("ShowBansheeTarget")) + "##ghostPanel_banshee").c_str(), &bansheeTarget))
             SET_CONFIG_VALUE(GetConfigManager(), "BansheeTargetSetting", bool, bansheeTarget);
+
+        bool IsHideSettings = CONFIG_BOOL(GetConfigManager(), "IsHideSettings");
+        if (ImGui::Checkbox(LANG("IsHideSettingsTr"), &IsHideSettings))
+            SET_CONFIG_VALUE(GetConfigManager(), "IsHideSettings", bool, IsHideSettings);
+
+        if (IsHideSettings)
+        {
+            bool hideName = CONFIG_BOOL(GetConfigManager(), "HideName");
+            if (ImGui::Checkbox(LANG("HideName"), &hideName))
+                SET_CONFIG_VALUE(GetConfigManager(), "HideName", bool, hideName);
+
+            bool hideType = CONFIG_BOOL(GetConfigManager(), "HideType");
+            if (ImGui::Checkbox(LANG("HideType"), &hideType))
+                SET_CONFIG_VALUE(GetConfigManager(), "HideType", bool, hideType);
+
+            bool hideAge = CONFIG_BOOL(GetConfigManager(), "HideAge");
+            if (ImGui::Checkbox(LANG("HideAge"), &hideAge))
+                SET_CONFIG_VALUE(GetConfigManager(), "HideAge", bool, hideAge);
+
+            bool hideState = CONFIG_BOOL(GetConfigManager(), "HideState");
+            if (ImGui::Checkbox(LANG("HideState"), &hideState))
+                SET_CONFIG_VALUE(GetConfigManager(), "HideState", bool, hideState);
+
+            bool hideEvidence = CONFIG_BOOL(GetConfigManager(), "HideEvidence");
+            if (ImGui::Checkbox(LANG("HideEvidence"), &hideEvidence))
+                SET_CONFIG_VALUE(GetConfigManager(), "HideEvidence", bool, hideEvidence);
+
+            bool hideRoom = CONFIG_BOOL(GetConfigManager(), "HideRoom");
+            if (ImGui::Checkbox(LANG("HideRoom"), &hideRoom))
+                SET_CONFIG_VALUE(GetConfigManager(), "HideRoom", bool, hideRoom);
+
+            bool hideLocation = CONFIG_BOOL(GetConfigManager(), "HideLocation");
+            if (ImGui::Checkbox(LANG("HideLocation"), &hideLocation))
+                SET_CONFIG_VALUE(GetConfigManager(), "HideLocation", bool, hideLocation);
+
+            bool hideMimic = CONFIG_BOOL(GetConfigManager(), "HideMimicType");
+            if (ImGui::Checkbox(LANG("HideMimicType"), &hideMimic))
+                SET_CONFIG_VALUE(GetConfigManager(), "HideMimicType", bool, hideMimic);
+
+            bool hideTarget = CONFIG_BOOL(GetConfigManager(), "HideBansheeTarget");
+            if (ImGui::Checkbox(LANG("HideBansheeTarget"), &hideTarget))
+                SET_CONFIG_VALUE(GetConfigManager(), "HideBansheeTarget", bool, hideTarget);
+        }
     }
 
     ImGui::PopStyleVar();

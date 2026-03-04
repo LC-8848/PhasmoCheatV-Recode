@@ -31,9 +31,5 @@ namespace PhasmoCheatV::Features::Movement
 		void TeleportBone();
 		void TeleportToTruck();
 		void TeleportToGhost();
-
-		void ActivateAllWinterBoxes();
-		void TeleportWinterBoxes();
-		void UseAllWinterBoxes();
 	};
 }
