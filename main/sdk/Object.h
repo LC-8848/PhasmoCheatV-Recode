@@ -15,8 +15,8 @@ namespace SDK
         void* Clazz;
         void* Monitor;
         void* Bounds;
-        void* MaxLength;
-        Object* Vector[65535];
+        uint32_t MaxLength;
+        Object* Vector[0];
     };
 
     struct __declspec(align(8)) ListObjectFields

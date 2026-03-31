@@ -17,16 +17,10 @@ namespace PhasmoCheatV::Features::Visuals
         static void SetD3D11Device(ID3D11Device* device);
     private:
         void Draw2DBox(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
-        void Draw3DBox(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
         void DrawCornerBox(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
-        void DrawCircle(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
+        void DrawName(const SDK::GhostAI* ghostAI, const ImColor& color);
         void DrawFilledBox(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
-        void DrawCross(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
-        void DrawDiamond(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
-        void DrawTriangle(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
-        void DrawArrow(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
         void DrawSkeleton(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
-        void DrawNone(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness);
 
         void LoadAvailablePhotos();
         bool LoadTexture(const std::string& filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height);

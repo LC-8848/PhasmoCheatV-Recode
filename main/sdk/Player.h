@@ -29,10 +29,10 @@ namespace SDK
         void* PhotonObjectInteract2;
         void* GameObjectArray;
         void* Field14;
-        int32_t LayerMask;
+        void* LayerMask;
         void* HeadMountedSocket;
         void* PlayerLOSTargetArray;
-        Transform* Field18;
+        Transform* aiTargetPoint;
         GameObject* GameObject2;
         void* DeadPlayer;
         PlayerSanity* PlayerSanity;

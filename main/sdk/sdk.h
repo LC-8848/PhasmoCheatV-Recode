@@ -20,6 +20,7 @@ inline void NAME##_wr(TYPE val) { Memory::Write<TYPE>(NAME##_ptr, val); }
 #define DECLARE_PATTERN_POINTER(NAME, TYPE, MODULE, SECTION, PATTERN) \
 using NAME##_t = TYPE; \
 inline NAME##_t NAME##_ptr = nullptr; \
+inline NAME##_t NAME##_original = nullptr; \
 inline bool NAME##_initialized = false; \
 inline void Init_##NAME() { \
     if (NAME##_initialized) return; \
@@ -31,6 +32,10 @@ inline void Init_##NAME() { \
 inline NAME##_t Get_##NAME() { \
     if (!NAME##_initialized) Init_##NAME(); \
     return NAME##_ptr; \
+} \
+inline NAME##_t& GetOriginal_##NAME() { \
+    if (!NAME##_original) NAME##_original = Get_##NAME(); \
+    return NAME##_original; \
 } \
 inline auto& NAME = *reinterpret_cast<NAME##_t*>(&Get_##NAME);
 
@@ -61,35 +66,79 @@ inline const std::vector<NAME##_t>& Get_##NAME##_All() {                        
 }
 
 // By ViniLog
-#define DECLARE_PATTERN_INSTR(NAME, MODULE, SECTION, PATTERN)                    \
-inline uintptr_t NAME##_addr = 0;                                                 \
-inline bool NAME##_initialized = false;                                           \
-inline uint8_t NAME##_originalBytes[5] = {0};                                     \
-inline void Init_##NAME() {                                                       \
-    if (NAME##_initialized) return;                                               \
-    NAME##_initialized = true;                                                    \
-    const auto hMod = GetModuleHandleW(MODULE);                                   \
-    if (!hMod) return;                                                            \
-    NAME##_addr = Memory::FindPatternInSection(hMod, SECTION, PATTERN);           \
-    if (NAME##_addr) {                                                            \
-        memcpy(NAME##_originalBytes, (void*)NAME##_addr, 5);                      \
-    }                                                                             \
-}                                                                                \
-inline void NAME##_off() {                                                        \
-    if (!NAME##_initialized) Init_##NAME();                                       \
-    if (!NAME##_addr) return;                                                     \
-    DWORD old;                                                                    \
-    VirtualProtect((LPVOID)NAME##_addr, 5, PAGE_EXECUTE_READWRITE, &old);         \
-    memset((void*)NAME##_addr, 0x90, 5);                                          \
-    VirtualProtect((LPVOID)NAME##_addr, 5, old, &old);                            \
-}                                                                                \
-inline void NAME##_on() {                                                         \
-    if (!NAME##_initialized) Init_##NAME();                                       \
-    if (!NAME##_addr) return;                                                     \
-    DWORD old;                                                                    \
-    VirtualProtect((LPVOID)NAME##_addr, 5, PAGE_EXECUTE_READWRITE, &old);         \
-    memcpy((void*)NAME##_addr, NAME##_originalBytes, 5);                          \
-    VirtualProtect((LPVOID)NAME##_addr, 5, old, &old);                            \
+#define DEC_PATTERN_INSTR(NAME, MODULE, SECTION, PATTERN)                    \
+inline uintptr_t NAME##_addr = 0;                                             \
+inline bool NAME##_initialized = false;                                       \
+inline bool NAME##_is_replaced = false;                                       \
+inline uint8_t NAME##_originalBytes[32] = {0};                                \
+inline size_t NAME##_savedSize = 0;                                           \
+                                                                              \
+inline void Init_##NAME() {                                                   \
+    if (NAME##_initialized) return;                                           \
+    NAME##_initialized = true;                                                \
+    const auto hMod = GetModuleHandleW(MODULE);                               \
+    if (!hMod) return;                                                        \
+    NAME##_addr = Memory::FindPatternInSection(hMod, SECTION, PATTERN);       \
+}                                                                             \
+                                                                              \
+inline void NAME##_save(size_t size) {                                        \
+    if (!NAME##_initialized) Init_##NAME();                                   \
+    if (!NAME##_addr) return;                                                 \
+                                                                              \
+    if (NAME##_savedSize == 0) {                                              \
+        memcpy(NAME##_originalBytes, (void*)NAME##_addr, size);               \
+        NAME##_savedSize = size;                                              \
+    }                                                                         \
+}                                                                             \
+                                                                              \
+inline void NAME##_nop(size_t count) {                                        \
+    if (!NAME##_initialized) Init_##NAME();                                   \
+    if (!NAME##_addr) return;                                                 \
+                                                                              \
+    NAME##_save(count);                                                       \
+                                                                              \
+    DWORD old;                                                                \
+    VirtualProtect((LPVOID)NAME##_addr, count, PAGE_EXECUTE_READWRITE, &old); \
+                                                                              \
+    memset((void*)NAME##_addr, 0x90, count);                                  \
+                                                                              \
+    VirtualProtect((LPVOID)NAME##_addr, count, old, &old);                    \
+                                                                              \
+    NAME##_is_replaced = true;                                                \
+}                                                                             \
+                                                                              \
+inline void NAME##_edit(std::initializer_list<uint8_t> bytes, size_t start = 0) { \
+    if (!NAME##_initialized) Init_##NAME();                                   \
+    if (!NAME##_addr) return;                                                 \
+                                                                              \
+    size_t size = bytes.size();                                               \
+    NAME##_save(start + size);                                                \
+                                                                              \
+    DWORD old;                                                                \
+    VirtualProtect((LPVOID)(NAME##_addr + start), size, PAGE_EXECUTE_READWRITE, &old); \
+                                                                              \
+    size_t i = 0;                                                             \
+    for (auto b : bytes)                                                      \
+        *((uint8_t*)(NAME##_addr + start + i++)) = b;                         \
+                                                                              \
+    VirtualProtect((LPVOID)(NAME##_addr + start), size, old, &old);           \
+                                                                              \
+    NAME##_is_replaced = true;                                                \
+}                                                                             \
+                                                                              \
+inline void NAME##_restore() {                                                \
+    if (!NAME##_initialized) Init_##NAME();                                   \
+    if (!NAME##_addr || NAME##_savedSize == 0) return;                        \
+                                                                              \
+    DWORD old;                                                                \
+    VirtualProtect((LPVOID)NAME##_addr, NAME##_savedSize, PAGE_EXECUTE_READWRITE, &old); \
+                                                                              \
+    memcpy((void*)NAME##_addr, NAME##_originalBytes, NAME##_savedSize);       \
+                                                                              \
+    VirtualProtect((LPVOID)NAME##_addr, NAME##_savedSize, old, &old);         \
+                                                                              \
+    NAME##_savedSize = 0;                                                     \
+    NAME##_is_replaced = false;                                               \
 }
 
 namespace SDK
@@ -112,6 +161,7 @@ namespace SDK
 #include "RaycastHit.h"
 #include "Camera.h"
 #include "System.h"
+#include "Collider.h"
 #include "PhotonMessageInfo.h"
 #include "TextMeshProUGUI.h"
 #include "Transform.h"
@@ -188,3 +238,14 @@ namespace SDK
 #include "Graphic.h"
 #include "RectTransform.h"
 #include "Screen.h"
+#include "Torch.h"
+#include "Texture.h"
+#include "Equipment.h"
+#include "Font.h"
+#include "ThreeStateButton.h"
+#include "GhostButton.h"
+#include "Physics.h"
+#include "Candle.h"
+#include "SummoningCircle.h"
+#include "VoodooDollPin.h"
+#include "Jackalope.h"

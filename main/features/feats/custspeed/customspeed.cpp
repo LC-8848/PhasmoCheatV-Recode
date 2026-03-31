@@ -11,7 +11,7 @@ void CustomSpeed::OnMenuRender()
 {
 	bool enabled = IsActive();
 	float custSpeed = CONFIG_FLOAT(GetConfigManager(), "Speed");
-	if (BCheckBox(LANG("CustomSpeedEnabled"), &enabled))
+	if (BCheckBox(LANG("CustomSpeedEnabled"), &enabled, "b_CustomSpeedEnabled"))
 	{
 		SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
 		if (enabled) OnActivate();

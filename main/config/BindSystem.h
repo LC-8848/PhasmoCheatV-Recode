@@ -3,7 +3,6 @@
 #include <string>
 #include <optional>
 #include <Windows.h>
-#include <algorithm> // для std::max
 #include "../libs/imgui/imgui.h"
 #include "../features/feature.h"
 
@@ -33,7 +32,8 @@ namespace BindSystem
     inline std::string ExtractFeatureName(const std::string& fullName)
     {
         size_t pos = fullName.rfind("::");
-        if (pos == std::string::npos) {
+        if (pos == std::string::npos)
+        {
             size_t spacePos = fullName.find_last_of(' ');
             return (spacePos == std::string::npos) ? fullName : fullName.substr(spacePos + 1);
         }
@@ -47,7 +47,6 @@ namespace BindSystem
             for (int i = 1; i < 256; ++i)
             {
                 if (i == VK_LBUTTON || i == VK_RBUTTON || i == VK_MBUTTON) continue;
-
                 if (GetAsyncKeyState(i) & 0x8000)
                 {
                     Binds[WaitingBind.value()].Key = i;
@@ -55,7 +54,9 @@ namespace BindSystem
                     break;
                 }
             }
-            if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) WaitingBind.reset();
+            if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
+                WaitingBind.reset();
+
             return;
         }
 
@@ -66,7 +67,6 @@ namespace BindSystem
             if (GetAsyncKeyState(bind.Key) & 1)
             {
                 std::string featureName = uniqueKey.substr(0, uniqueKey.find("##"));
-
                 auto* cfg = PhasmoCheatV::GetConfigManagerByName(featureName);
                 if (!cfg) continue;
 
@@ -92,12 +92,12 @@ namespace BindSystem
         bool isWaiting = (WaitingBind.has_value() && WaitingBind.value() == uniqueKey);
 
         float regionWidth = ImGui::GetContentRegionAvail().x;
-        ImGui::SameLine(ImGui::GetCursorPosX() + regionWidth - 85);
+        ImGui::SameLine(ImGui::GetCursorPosX() + regionWidth - 85.0f);
 
         std::string buttonText = isWaiting ? "..." : KeyToString(bind.Key);
 
         char buttonId[128];
-        snprintf(buttonId, sizeof(buttonId), "%s##bind_%p", buttonText.c_str(), &bind);
+        snprintf(buttonId, sizeof(buttonId), "%s##bind_%s", buttonText.c_str(), uniqueKey.c_str());
 
         if (isWaiting)
         {
@@ -113,7 +113,8 @@ namespace BindSystem
                 WaitingBind.reset();
         }
 
-        if (isWaiting) ImGui::PopStyleColor(2);
+        if (isWaiting)
+            ImGui::PopStyleColor(2);
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
         {
@@ -122,24 +123,23 @@ namespace BindSystem
         }
     }
 
-    inline bool BCheckBoxImpl(const char* label, bool* v, const char* featureClassName)
+    inline bool BCheckBoxImpl(const char* label, bool* v, const char* featureClassName, const char* bindId)
     {
-        if (!featureClassName || !label || !v) return false;
+        if (!featureClassName || !label || !v || !bindId)
+            return false;
 
         std::string featureName = ExtractFeatureName(featureClassName);
+        std::string uniqueKey = featureName + "##" + bindId;
 
-        std::string uniqueKey = featureName + "##" + label;
-
-        if (!Binds.contains(uniqueKey))
+        if (Binds.find(uniqueKey) == Binds.end())
             Binds[uniqueKey] = KeyBind{ 0 };
 
         bool changed = ImGui::Checkbox(label, v);
-
         DrawBindForCheckbox(uniqueKey);
 
         return changed;
     }
 }
 
-#define BCheckBox(label, v) \
-    BindSystem::BCheckBoxImpl(label, v, typeid(*this).name())
+#define BCheckBox(label, v, bindId) \
+    BindSystem::BCheckBoxImpl(label, v, typeid(*this).name(), bindId)

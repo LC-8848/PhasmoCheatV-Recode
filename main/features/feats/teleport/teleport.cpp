@@ -29,13 +29,10 @@ void Teleport::OnMenuRender()
     if (ImGui::Button(LANG("Teleport_ToCoords")))
         TeleportToCoordinates(customX, customY, customZ);
 
-    ImGui::Separator();
     ImGui::Text(LANG("Teleport_Items"));
 
     if (InGame::mapController)
         TeleportItems();
-
-    ImGui::Separator();
 
     if (ImGui::Button(LANG("Teleport_Bone")))
         TeleportBone();
@@ -47,6 +44,33 @@ void Teleport::OnMenuRender()
 
     if (ImGui::Button(LANG("Teleport_Ghost")))
         TeleportToGhost();
+
+    ImGui::SameLine();
+
+    const char* basementButtonText = LANG("Teleport_Basement");
+
+    auto currentMap = Utils::GetMap();
+    if (currentMap)
+    {
+        std::string mapName = Utils::UnityStrToSysStr(*currentMap->Fields.mapName);
+
+        if (mapName == "Prison") basementButtonText = LANG("Teleport_LobbyArea");
+        else if (mapName == "Maple Lodge Campsite") basementButtonText = LANG("Teleport_CabinKitchen");
+        else if (mapName == "Grafton Farmhouse") basementButtonText = LANG("Teleport_Storage");
+        else if (mapName == "Brownstone High School") basementButtonText = LANG("Teleport_MainCorridor");
+        else if (mapName == "Bleasdale Farmhouse") basementButtonText = LANG("Teleport_Attic");
+        else if (mapName == "Point Hope") basementButtonText = LANG("Teleport_Bathroom");
+        else if (mapName == "Camp Woodwind") basementButtonText = LANG("Teleport_FoodTent");
+        else if (mapName == "Sunny Meadows" || mapName == "Sunny Meadows Restricted") basementButtonText = LANG("Teleport_Chapel");
+    }
+
+    if (ImGui::Button(basementButtonText))
+        TeleportToBasement();
+
+    ImGui::SameLine();
+
+    if (ImGui::Button(LANG("Teleport_Entrance")))
+        TeleportToEntrance();
 }
 
 void Teleport::TeleportItems()
@@ -349,4 +373,75 @@ void Teleport::TeleportToGhost()
     Utils::TpPlayerToVec3(localPlayer,
         Utils::GetPosVec3(InGame::ghostAI));
     NOTIFY_INFO_QUICK(LANG("TP_ToGhost"));
+}
+
+void Teleport::TeleportToBasement()
+{
+    const auto localPlayer = Utils::GetLocalPlayer();
+    if (!localPlayer)
+        return NOTIFY_ERROR_QUICK(LANG("TP_LocalPlayerMissing"));
+
+    if (!InGame::mapController)
+        return NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
+
+    SDK::GameObject* circleObj = SDK::GameObject_Find(
+        Utils::SysStrToUnityStr("Summoning Circle Spawn"), nullptr);
+
+    if (!circleObj)
+        return NOTIFY_ERROR_QUICK("Summoning Circle Spawn not found!");
+
+    auto transform = SDK::GameObject_get_transform(circleObj, nullptr);
+    if (!transform)
+        return NOTIFY_ERROR_QUICK("Transform not found!");
+
+    SDK::Vector3 pos = SDK::Transform_Get_Position(transform, nullptr);
+    pos.Y += 1.0f;
+
+    Utils::TpPlayerToVec3(localPlayer, pos);
+    NOTIFY_INFO_QUICK("Teleported to Basement!");
+}
+
+void Teleport::TeleportToEntrance()
+{
+    const auto localPlayer = Utils::GetLocalPlayer();
+    if (!localPlayer)
+        return NOTIFY_ERROR_QUICK(LANG("TP_LocalPlayerMissing"));
+
+    if (!InGame::levelController)
+        return NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
+
+    auto exitDoorArray = InGame::levelController->Fields.exitDoors;
+    if (!exitDoorArray || !exitDoorArray->Vector)
+        return NOTIFY_ERROR_QUICK("Exit door not found!");
+
+    SDK::Door* exitDoor = exitDoorArray->Vector[0];
+    if (!exitDoor)
+        return NOTIFY_ERROR_QUICK("Exit door is null!");
+
+    auto transform = SDK::Component_Get_Transform(reinterpret_cast<SDK::Component*>(exitDoor), nullptr);
+    if (!transform)
+        return NOTIFY_ERROR_QUICK("Exit door transform not found!");
+
+    SDK::Vector3 doorPos = SDK::Transform_Get_Position(transform, nullptr);
+    float checkRadius = 0.1f;
+    SDK::Vector3 safePos = doorPos;
+
+    auto IsBlocked = [&](SDK::Vector3 pos) -> bool
+        {
+            SDK::ColliderArray* colliders = SDK::Physics_OverlapSphere(pos, checkRadius, 0);
+            bool blocked = colliders && colliders->MaxLength > 0;
+            return blocked;
+        };
+
+    int attempts = 10;
+
+    while (IsBlocked(safePos) && attempts > 0)
+    {
+        safePos.X += ((rand() % 3) - 1) * 0.3f;
+        safePos.Z += ((rand() % 3) - 1) * 0.3f;
+        attempts--;
+    }
+
+    Utils::TpPlayerToVec3(localPlayer, safePos);
+    NOTIFY_INFO_QUICK(LANG("TP_ToEntrance"));
 }

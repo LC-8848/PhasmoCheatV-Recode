@@ -4,8 +4,33 @@
 #include "memory.h"
 #include "main/config/config.h"
 #include "libs/il2cpp/il2cpp.h"
+#include "loader/entry.h"
+#include "loader/proxy.h"
 
 using namespace PhasmoCheatV;
+
+HWND WaitForGameWindow()
+{
+    HWND hwnd = nullptr;
+
+    while (!hwnd)
+    {
+        hwnd = FindWindowA(nullptr, "Phasmophobia");
+        Sleep(200);
+    }
+
+    return hwnd;
+}
+
+void WaitForGameReady()
+{
+    while (!GetModuleHandleA("GameAssembly.dll"))
+        Sleep(200);
+
+    HWND hwnd = WaitForGameWindow();
+
+    Sleep(2000);
+}
 
 // Global module handle
 static std::unique_ptr<Logger> loggerInstance;
@@ -16,6 +41,8 @@ static std::unique_ptr<FeatureHandler> featureInstance;
 // Main cheat thread
 extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
 {
+    WaitForGameReady();
+
     try {
         loggerInstance = std::make_unique<Logger>(Logger::Level::Call);
     }
@@ -41,6 +68,21 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
         if (IsDebugging)
             LOG_WARN("The build is built with the IsDebugging flag in the true state, followed by the appearance of the console, as well as the execution of Test functions!");
 
+        if (SDK::Application_get_version)
+            LOG_INFO("Game version: ", Utils::GetGameVersion());
+        else
+            LOG_ERROR("Game version not founded!");
+
+		/* 2.6 Diagnostics is currently disabled due to some issues, but it will be back in the future updates.
+        if (Diagnostics::Init())
+        {
+            Diagnostics::Send("GameVersion", Utils::GetGameVersion());
+            Diagnostics::Send("UnityVersion", Utils::GetUnityVersion());
+        }
+        else
+			LOG_ERROR("VT_Diagnostics initialization failed.");
+        */
+
         // Set up hooks
         AHK(hookingInstance->OriginalPresent, Hooks::HkPresent); // using ADD_HOOK
         AHKA(LevelController_Start); // using ADD_HOOK_AUTO
@@ -55,6 +97,7 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
         AHKA(EMFData_Start);
         AHKA(Player_StartKillingPlayer);
         AHKA(Player_StartKillingPlayerNetworked);
+        AHKA(Player_Start);
         AHKA(GhostInfo_SyncValuesNetworked);
         AHKA(GhostInfo_SyncEvidence);
         AHKA(PhotonObjectInteract_Start);
@@ -83,7 +126,14 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
         AHKA(LiftButton_AttemptUse);
         AHKA(GameController_PlayerDied);
         AHKA(Thermometer_HoldUse);
-        AHKA(PhotonView_RPC);
+        AHKA(PhotonView_RPC); 
+        AHKA(ServerManager_LoadScene);
+        AHKA(LiftButton_Update);
+        AHKA(DNAEvidence_Start);
+        AHKA(VoodooDollPin_Use);
+        AHKA(Jackalope_Awake);
+
+        PHK(HandCamera_MoveNext, Hooks::hkHandCamera_MoveNext); // Use PATTERN_HOOK
 
         auto& funcs_UpdateNightmareGraph = const_cast<std::vector<SDK::EMFData_UpdateNightMareGraph_t>&>(SDK::Get_EMFData_UpdateNightMareGraph_All());
         for (size_t i = 0; i < funcs_UpdateNightmareGraph.size(); i++)
@@ -131,30 +181,36 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
 }
 
 // DLL entry point
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID)
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID)
 {
-    switch (ul_reason_for_call)
+    switch (reason)
     {
     case DLL_PROCESS_ATTACH:
     {
-        CheatWork = true;
         DisableThreadLibraryCalls(hModule);
-        globalModule = hModule;
 
-        HANDLE hThread = CreateThread(nullptr, 0,
-            reinterpret_cast<LPTHREAD_START_ROUTINE>(PhasmoCheatVThread),
-            nullptr, 0, nullptr);
+        Proxy::Initialize(hModule);
 
-        if (hThread)
-            CloseHandle(hThread);
+        if (!IsProxyMode(hModule))
+        {
+            StartCheat(hModule);
+        }
+        else
+        {
+            StartCheat(hModule);
+        }
 
         break;
     }
 
     case DLL_PROCESS_DETACH:
+    {
         CheatWork = false;
         Sleep(100);
+
+        Proxy::Shutdown();
         break;
+    }
     }
 
     return TRUE;

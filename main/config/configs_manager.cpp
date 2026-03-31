@@ -154,8 +154,20 @@ void ConfigsManager::OnMenuRender()
 
     if (ImGui::BeginPopupModal("Import Config", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        ImGui::Text("Paste Base64 data:");
+        ImGui::Text("Paste data:");
         ImGui::InputTextMultiline("##Import", importData, sizeof(importData), ImVec2(300, 100));
+
+        if (ImGui::Button("Paste"))
+        {
+            const char* clipboard = ImGui::GetClipboardText();
+            if (clipboard && strlen(clipboard) > 0)
+            {
+                strncpy(importData, clipboard, sizeof(importData) - 1);
+                importData[sizeof(importData) - 1] = '\0';
+            }
+        }
+
+		ImGui::SameLine();
 
         if (ImGui::Button("Import"))
         {

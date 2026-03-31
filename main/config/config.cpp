@@ -13,6 +13,51 @@ namespace PhasmoCheatV::Config
             {"toggle_key", Globals::MenuToggleKey}
         };
 
+        defaultConfig["globals_colors"] = {
+            {"accentPurple", {
+                {"r", Globals::accentPurple.x},
+                {"g", Globals::accentPurple.y},
+                {"b", Globals::accentPurple.z},
+                {"a", Globals::accentPurple.w}
+            }},
+            {"darkerBg", {
+                {"r", Globals::darkerBg.x},
+                {"g", Globals::darkerBg.y},
+                {"b", Globals::darkerBg.z},
+                {"a", Globals::darkerBg.w}
+            }},
+            {"accentPurpleDark", {
+                {"r", Globals::accentPurpleDark.x},
+                {"g", Globals::accentPurpleDark.y},
+                {"b", Globals::accentPurpleDark.z},
+                {"a", Globals::accentPurpleDark.w}
+            }},
+            {"accentPurpleLight", {
+                {"r", Globals::accentPurpleLight.x},
+                {"g", Globals::accentPurpleLight.y},
+                {"b", Globals::accentPurpleLight.z},
+                {"a", Globals::accentPurpleLight.w}
+            }},
+            {"darkBg", {
+                {"r", Globals::darkBg.x},
+                {"g", Globals::darkBg.y},
+                {"b", Globals::darkBg.z},
+                {"a", Globals::darkBg.w}
+            }},
+            {"cardBg", {
+                {"r", Globals::cardBg.x},
+                {"g", Globals::cardBg.y},
+                {"b", Globals::cardBg.z},
+                {"a", Globals::cardBg.w}
+            }},
+            {"headerBg", {
+                {"r", Globals::headerBg.x},
+                {"g", Globals::headerBg.y},
+                {"b", Globals::headerBg.z},
+                {"a", Globals::headerBg.w}
+            }}
+        };
+
         nlohmann::json bindsJson;
         for (const auto& [featureName, bind] : BindSystem::Binds)
         {
@@ -138,6 +183,32 @@ namespace PhasmoCheatV::Config
                 Globals::MenuToggleKey = data["menu_settings"]["toggle_key"].get<int>();
             }
 
+            if (data.contains("globals_colors"))
+            {
+                auto& g = data["globals_colors"];
+
+                auto loadColor = [](const nlohmann::json& j, ImVec4& color)
+                    {
+                        if (j.contains("r") && j.contains("g") && j.contains("b") && j.contains("a"))
+                        {
+                            color = ImVec4(
+                                j["r"].get<float>(),
+                                j["g"].get<float>(),
+                                j["b"].get<float>(),
+                                j["a"].get<float>()
+                            );
+                        }
+                    };
+
+                if (g.contains("accentPurple")) loadColor(g["accentPurple"], Globals::accentPurple);
+                if (g.contains("darkerBg")) loadColor(g["darkerBg"], Globals::darkerBg);
+                if (g.contains("accentPurpleDark")) loadColor(g["accentPurpleDark"], Globals::accentPurpleDark);
+                if (g.contains("accentPurpleLight")) loadColor(g["accentPurpleLight"], Globals::accentPurpleLight);
+                if (g.contains("darkBg")) loadColor(g["darkBg"], Globals::darkBg);
+                if (g.contains("cardBg")) loadColor(g["cardBg"], Globals::cardBg);
+                if (g.contains("headerBg")) loadColor(g["headerBg"], Globals::headerBg);
+            }
+
             if (data.contains("binds"))
             {
                 for (auto& [featureName, key] : data["binds"].items())
@@ -221,6 +292,25 @@ namespace PhasmoCheatV::Config
         menuSettings["toggle_key"] = Globals::MenuToggleKey;
         data["menu_settings"] = menuSettings;
 
+        Json globalsColors;
+        auto saveColor = [](const ImVec4& c)
+            {
+                return Json{
+                    {"r", c.x},
+                    {"g", c.y},
+                    {"b", c.z},
+                    {"a", c.w}
+                };
+            }; 
+        globalsColors["accentPurple"] = saveColor(Globals::accentPurple);
+        globalsColors["darkerBg"] = saveColor(Globals::darkerBg);
+        globalsColors["accentPurpleDark"] = saveColor(Globals::accentPurpleDark);
+        globalsColors["accentPurpleLight"] = saveColor(Globals::accentPurpleLight);
+        globalsColors["darkBg"] = saveColor(Globals::darkBg);
+        globalsColors["cardBg"] = saveColor(Globals::cardBg);
+        globalsColors["headerBg"] = saveColor(Globals::headerBg);
+        data["globals_colors"] = globalsColors;
+
         Json bindsJson;
         for (const auto& [featureName, bind] : BindSystem::Binds)
         {
@@ -298,62 +388,77 @@ namespace PhasmoCheatV::ConfigsM
     static std::vector<ConfigInfo> g_Configs;
     static std::string g_ConfigsDir;
 
-    std::string base64_encode(const std::string& input)
+    static std::string miniz_compress(const std::string& input)
     {
-        static const char* chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        std::string output;
-        output.reserve(((input.size() + 2) / 3) * 4);
+        if (input.empty()) return "";
 
-        for (size_t i = 0; i < input.size(); i += 3)
-        {
-            uint32_t triple = (static_cast<uint32_t>(input[i]) << 16);
-            if (i + 1 < input.size()) triple |= (static_cast<uint32_t>(input[i + 1]) << 8);
-            if (i + 2 < input.size()) triple |= static_cast<uint32_t>(input[i + 2]);
+        mz_ulong destLen = mz_compressBound(static_cast<mz_ulong>(input.size()));
+        std::vector<unsigned char> compressed(destLen);
 
-            output += chars[(triple >> 18) & 0x3F];
-            output += chars[(triple >> 12) & 0x3F];
-            output += (i + 1 < input.size()) ? chars[(triple >> 6) & 0x3F] : '=';
-            output += (i + 2 < input.size()) ? chars[triple & 0x3F] : '=';
-        }
+        int ret = mz_compress(compressed.data(), &destLen,
+            reinterpret_cast<const unsigned char*>(input.data()),
+            static_cast<mz_ulong>(input.size()));
 
-        return output;
+        if (ret != MZ_OK) return "";
+        compressed.resize(destLen);
+        return std::string(reinterpret_cast<char*>(compressed.data()), destLen);
     }
 
-    std::string base64_decode(const std::string& input)
+    static std::string miniz_decompress(const std::string& compressed)
     {
-        static std::vector<int> table(256, -1);
-        static bool initialized = false;
+        if (compressed.empty()) return "";
 
-        if (!initialized)
+        mz_ulong destLen = compressed.size() * 4;
+        std::vector<unsigned char> decompressed;
+
+        int ret;
+        do
         {
-            const char* chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-            for (int i = 0; i < 64; i++)
-                table[chars[i]] = i;
-            initialized = true;
-        }
+            decompressed.resize(destLen);
+            mz_ulong actualLen = destLen;
 
-        std::string output;
-        output.reserve((input.size() * 3) / 4);
+            ret = mz_uncompress(decompressed.data(), &actualLen,
+                reinterpret_cast<const unsigned char*>(compressed.data()),
+                static_cast<mz_ulong>(compressed.size()));
 
-        uint32_t triple = 0;
-        int bits = 0;
-
-        for (char c : input)
-        {
-            if (c == '=') break;
-            if (table[c] == -1) continue;
-
-            triple = (triple << 6) | table[c];
-            bits += 6;
-
-            if (bits >= 8)
+            if (ret == MZ_OK)
             {
-                bits -= 8;
-                output += static_cast<char>((triple >> bits) & 0xFF);
+                decompressed.resize(actualLen);
+                return std::string(reinterpret_cast<char*>(decompressed.data()), actualLen);
             }
-        }
 
-        return output;
+            if (ret != MZ_BUF_ERROR) return "";
+            destLen *= 2;
+        } while (destLen < 10 * 1024 * 1024);
+
+        return "";
+    }
+
+    static std::string compress_and_z85(const std::string& original)
+    {
+        if (original.empty()) return "";
+        std::string compressed = miniz_compress(original);
+        if (compressed.empty()) return "";
+
+        size_t bound = Z85_encode_with_padding_bound(compressed.size());
+        std::vector<char> encoded(bound + 1, '\0');
+
+        size_t encoded_len = Z85_encode_with_padding(compressed.data(), encoded.data(), compressed.size());
+        return encoded_len ? std::string(encoded.data(), encoded_len) : "";
+    }
+
+    static std::string z85_decode_and_decompress(const std::string& encoded)
+    {
+        if (encoded.empty()) return "";
+
+        size_t max_decoded = (encoded.size() * 4 / 5) + 8;
+        std::vector<char> bin(max_decoded);
+
+        size_t bin_len = Z85_decode_with_padding(encoded.data(), bin.data(), encoded.size());
+        if (bin_len == 0) return "";
+
+        std::string compressed_bin(bin.data(), bin_len);
+        return miniz_decompress(compressed_bin);
     }
 
     void InitializeConfigs()
@@ -483,7 +588,7 @@ namespace PhasmoCheatV::ConfigsM
             file.close();
 
             std::string data = "PHASMOCHEATV:" + name + ":" + content;
-            return base64_encode(data);
+            return compress_and_z85(data);
         }
         catch (const std::exception& e)
         {
@@ -495,8 +600,7 @@ namespace PhasmoCheatV::ConfigsM
     {
         try
         {
-            std::string decoded = base64_decode(data);
-
+            std::string decoded = z85_decode_and_decompress(data);
             if (decoded.find("PHASMOCHEATV:") != 0)
                 return false;
 
@@ -519,7 +623,6 @@ namespace PhasmoCheatV::ConfigsM
             }
 
             std::string configPath = g_ConfigsDir + "\\" + name + ".json";
-
             Config::MergeConfigWithDefaults(testJson);
 
             std::ofstream file(configPath, std::ios::binary);

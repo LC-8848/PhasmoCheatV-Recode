@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -142,12 +142,14 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DisableSpecificWarnings>4200;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>$(ProjectDir)libs\detours\lib\syelog.lib;$(ProjectDir)libs\detours\lib\detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)libs\detours\lib\syelog.lib;$(ProjectDir)libs\detours\lib\detours.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -160,12 +162,19 @@
     <ClCompile Include="libs\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="libs\imgui\imgui_tables.cpp" />
     <ClCompile Include="libs\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="libs\miniz\miniz.c" />
+    <ClCompile Include="libs\z85\z85.c" />
+    <ClCompile Include="libs\z85\z85_impl.cpp" />
+    <ClCompile Include="loader\entry.cpp" />
+    <ClCompile Include="loader\proxy.cpp" />
     <ClCompile Include="main\config\config.cpp" />
     <ClCompile Include="main\config\configs_manager.cpp" />
     <ClCompile Include="main\config\LanguageManager.cpp" />
+    <ClCompile Include="main\diagnostics\diagnostics.cpp" />
     <ClCompile Include="main\features\feats\actmonik\actmonik.cpp" />
+    <ClCompile Include="main\features\feats\alwaysbloodmoon\alwaysbloodmoon.cpp" />
     <ClCompile Include="main\features\feats\antikick\antikick.cpp" />
-    <ClCompile Include="main\features\feats\autophoto\autophoto.cpp" />
+    <ClCompile Include="main\features\feats\autopickupbone\autopickupbone.cpp" />
     <ClCompile Include="main\features\feats\crosshairmod\crosshairmod.cpp" />
     <ClCompile Include="main\features\feats\customlooklimits\customlooklimits.cpp" />
     <ClCompile Include="main\features\feats\CursedItemsControll\curseditemscontroll.cpp" />
@@ -176,6 +185,8 @@
     <ClCompile Include="main\features\feats\edvesp\edvesp.cpp" />
     <ClCompile Include="main\features\feats\exitvanone\exitvanone.cpp" />
     <ClCompile Include="main\features\feats\fastthermometer\fastthermometer.cpp" />
+    <ClCompile Include="main\features\feats\flashlightmod\flashlightmod.cpp" />
+    <ClCompile Include="main\features\feats\fontchanger\fontchanger.cpp" />
     <ClCompile Include="main\features\feats\forcestart\forcestart.cpp" />
     <ClCompile Include="main\features\feats\foveditor\foveditor.cpp" />
     <ClCompile Include="main\features\feats\fullbright\fullbright.cpp" />
@@ -188,7 +199,10 @@
     <ClCompile Include="main\features\feats\godmode\godmode.cpp" />
     <ClCompile Include="main\features\feats\grabkey\grabkey.cpp" />
     <ClCompile Include="main\features\feats\infstamina\infinitystamina.cpp" />
-    <ClCompile Include="main\features\feats\liftbuttonskipanim\liftbuttonskipanim.cpp" />
+    <ClCompile Include="main\features\feats\jackalopeesp\jackalopeesp.cpp" />
+    <ClCompile Include="main\features\feats\journalmod\journalmod.cpp" />
+    <ClCompile Include="main\features\feats\photomod\photomod.cpp" />
+    <ClCompile Include="main\features\feats\vanbuttonmod\vanbuttonmod.cpp" />
     <ClCompile Include="main\features\feats\mapmod\mapmodifier.cpp" />
     <ClCompile Include="main\features\feats\noclip\noclip.cpp" />
     <ClCompile Include="main\features\feats\noendgame\noendgame.cpp" />
@@ -210,6 +224,7 @@
     <ClCompile Include="main\hooks\Application_CallLogCallback.cpp" />
     <ClCompile Include="main\hooks\CursedItemsController_Awake.cpp" />
     <ClCompile Include="main\hooks\DNAEvidence_GrabbedNetworked.cpp" />
+    <ClCompile Include="main\hooks\DNAEvidence_Start.cpp" />
     <ClCompile Include="main\hooks\EMFData_Start.cpp" />
     <ClCompile Include="main\hooks\EMFData_UpdateNightMareGraph.cpp" />
     <ClCompile Include="main\hooks\EvidenceController_Start.cpp" />
@@ -224,16 +239,21 @@
     <ClCompile Include="main\hooks\GhostAI_Update.cpp" />
     <ClCompile Include="main\hooks\GhostInfo_SyncEvidence.cpp" />
     <ClCompile Include="main\hooks\GhostInfo_SyncValuesNetworked.cpp" />
+    <ClCompile Include="main\hooks\HandCamera_MoveNext.cpp" />
+    <ClCompile Include="main\hooks\Jackalope_Awake.cpp" />
     <ClCompile Include="main\hooks\Key_Start.cpp" />
     <ClCompile Include="main\hooks\LevelController_Start.cpp" />
     <ClCompile Include="main\hooks\LevelSelectionManager_Start.cpp" />
     <ClCompile Include="main\hooks\LevelValues_GetInvestigationBonusReward.cpp" />
     <ClCompile Include="main\hooks\LevelValues_IsPerfectGame.cpp" />
     <ClCompile Include="main\hooks\LiftButton_AttemptUse.cpp" />
+    <ClCompile Include="main\hooks\LiftButton_Update.cpp" />
     <ClCompile Include="main\hooks\LightningController_Start.cpp" />
     <ClCompile Include="main\hooks\LightSwitch_Start.cpp" />
     <ClCompile Include="main\hooks\PhotonView_RPC.cpp" />
+    <ClCompile Include="main\hooks\Player_Start.cpp" />
     <ClCompile Include="main\hooks\RandomWeather_Start.cpp" />
+    <ClCompile Include="main\hooks\ServerManager_LoadScene.cpp" />
     <ClCompile Include="main\hooks\TarotCards_BreakItem.cpp" />
     <ClCompile Include="main\hooks\TarotCards_GrabCard.cpp" />
     <ClCompile Include="main\hooks\MediaValues_GetRewardAmount.cpp" />
@@ -250,6 +270,7 @@
     <ClCompile Include="main\hooks\ServerManager_Ready.cpp" />
     <ClCompile Include="main\hooks\TarotCard_SetCard.cpp" />
     <ClCompile Include="main\hooks\Thermometer_HoldUse.cpp" />
+    <ClCompile Include="main\hooks\VoodooDollPin_Use.cpp" />
     <ClCompile Include="main\hooks\WndProc.cpp" />
     <ClCompile Include="main\hooks\hooking.cpp" />
     <ClCompile Include="main\hooks\MapController_Start.cpp" />
@@ -275,15 +296,22 @@
     <ClInclude Include="libs\imgui\imstb_rectpack.h" />
     <ClInclude Include="libs\imgui\imstb_textedit.h" />
     <ClInclude Include="libs\imgui\imstb_truetype.h" />
+    <ClInclude Include="libs\miniz\miniz.h" />
+    <ClInclude Include="libs\z85\z85.h" />
+    <ClInclude Include="libs\z85\z85.hpp" />
+    <ClInclude Include="loader\entry.h" />
+    <ClInclude Include="loader\proxy.h" />
     <ClInclude Include="main\config\BindSystem.h" />
     <ClInclude Include="main\config\config.h" />
     <ClInclude Include="main\config\configs_manager.h" />
     <ClInclude Include="main\config\LanguageManager.h" />
     <ClInclude Include="main\config\Translations.h" />
+    <ClInclude Include="main\diagnostics\diagnostics.h" />
     <ClInclude Include="main\features\feats\actmonik\actmonik.h" />
     <ClInclude Include="main\features\feats\360camera\camera360.h" />
+    <ClInclude Include="main\features\feats\alwaysbloodmoon\alwaysbloodmoon.h" />
     <ClInclude Include="main\features\feats\antikick\antikick.h" />
-    <ClInclude Include="main\features\feats\autophoto\autophoto.h" />
+    <ClInclude Include="main\features\feats\autopickupbone\autopickupbone.h" />
     <ClInclude Include="main\features\feats\crosshairmod\crosshairmod.h" />
     <ClInclude Include="main\features\feats\customlooklimits\customlooklimits.h" />
     <ClInclude Include="main\features\feats\CursedItemsControll\curseditemscontroll.h" />
@@ -294,6 +322,8 @@
     <ClInclude Include="main\features\feats\edvesp\edvesp.h" />
     <ClInclude Include="main\features\feats\exitvanone\exitvanone.h" />
     <ClInclude Include="main\features\feats\fastthermometer\fastthermometer.h" />
+    <ClInclude Include="main\features\feats\flashlightmod\flashlightmod.h" />
+    <ClInclude Include="main\features\feats\fontchanger\fontchanger.h" />
     <ClInclude Include="main\features\feats\forcestart\forcestart.h" />
     <ClInclude Include="main\features\feats\foveditor\foveditor.h" />
     <ClInclude Include="main\features\feats\fullbright\fullbright.h" />
@@ -306,7 +336,10 @@
     <ClInclude Include="main\features\feats\godmode\godmode.h" />
     <ClInclude Include="main\features\feats\grabkey\grabkey.h" />
     <ClInclude Include="main\features\feats\infstamina\infinitystamina.h" />
-    <ClInclude Include="main\features\feats\liftbuttonskipanim\liftbuttonskipanim.h" />
+    <ClInclude Include="main\features\feats\jackalopeesp\jackalopeesp.h" />
+    <ClInclude Include="main\features\feats\journalmod\journalmod.h" />
+    <ClInclude Include="main\features\feats\photomod\photomod.h" />
+    <ClInclude Include="main\features\feats\vanbuttonmod\vanbuttonmod.h" />
     <ClInclude Include="main\features\feats\mapmod\mapmodifier.h" />
     <ClInclude Include="main\features\feats\noclip\noclip.h" />
     <ClInclude Include="main\features\feats\noendgame\noendgame.h" />
@@ -337,6 +370,8 @@
     <ClInclude Include="main\sdk\Animator.h" />
     <ClInclude Include="main\sdk\Application.h" />
     <ClInclude Include="main\sdk\Camera.h" />
+    <ClInclude Include="main\sdk\Candle.h" />
+    <ClInclude Include="main\sdk\Collider.h" />
     <ClInclude Include="main\sdk\Color.h" />
     <ClInclude Include="main\sdk\Component.h" />
     <ClInclude Include="main\sdk\Contract.h" />
@@ -347,16 +382,19 @@
     <ClInclude Include="main\sdk\DNAEvidence.h" />
     <ClInclude Include="main\sdk\Door.h" />
     <ClInclude Include="main\sdk\EMFData.h" />
+    <ClInclude Include="main\sdk\Equipment.h" />
     <ClInclude Include="main\sdk\Evidence.h" />
     <ClInclude Include="main\sdk\EvidenceController.h" />
     <ClInclude Include="main\sdk\ExitLevel.h" />
     <ClInclude Include="main\sdk\FallTeleportBox.h" />
     <ClInclude Include="main\sdk\FirstPersonController.h" />
+    <ClInclude Include="main\sdk\Font.h" />
     <ClInclude Include="main\sdk\FuseBox.h" />
     <ClInclude Include="main\sdk\GameController.h" />
     <ClInclude Include="main\sdk\GameObject.h" />
     <ClInclude Include="main\sdk\GhostActivity.h" />
     <ClInclude Include="main\sdk\GhostAI.h" />
+    <ClInclude Include="main\sdk\GhostButton.h" />
     <ClInclude Include="main\sdk\GhostEvidence.h" />
     <ClInclude Include="main\sdk\GhostInfo.h" />
     <ClInclude Include="main\sdk\GhostModel.h" />
@@ -364,6 +402,7 @@
     <ClInclude Include="main\sdk\Graphic.h" />
     <ClInclude Include="main\sdk\HandCamera.h" />
     <ClInclude Include="main\sdk\ItemInfo.h" />
+    <ClInclude Include="main\sdk\Jackalope.h" />
     <ClInclude Include="main\sdk\JournalController.h" />
     <ClInclude Include="main\sdk\Key.h" />
     <ClInclude Include="main\sdk\LayerMask.h" />
@@ -391,6 +430,7 @@
     <ClInclude Include="main\sdk\MediaValues.h" />
     <ClInclude Include="main\sdk\PhotonObjectInteract.h" />
     <ClInclude Include="main\sdk\PhotonView.h" />
+    <ClInclude Include="main\sdk\Physics.h" />
     <ClInclude Include="main\sdk\PhysicsCharacterController.h" />
     <ClInclude Include="main\sdk\Player.h" />
     <ClInclude Include="main\sdk\PlayerSanity.h" />
@@ -411,15 +451,20 @@
     <ClInclude Include="main\sdk\StoreItem.h" />
     <ClInclude Include="main\sdk\StoreItemInfo.h" />
     <ClInclude Include="main\sdk\String.h" />
+    <ClInclude Include="main\sdk\SummoningCircle.h" />
     <ClInclude Include="main\sdk\System.h" />
     <ClInclude Include="main\sdk\TarotCard.h" />
     <ClInclude Include="main\sdk\TarotCards.h" />
     <ClInclude Include="main\sdk\TextMeshProUGUI.h" />
+    <ClInclude Include="main\sdk\Texture.h" />
     <ClInclude Include="main\sdk\Thermometer.h" />
+    <ClInclude Include="main\sdk\ThreeStateButton.h" />
     <ClInclude Include="main\sdk\Time.h" />
+    <ClInclude Include="main\sdk\Torch.h" />
     <ClInclude Include="main\sdk\Transform.h" />
     <ClInclude Include="main\sdk\Vector2.h" />
     <ClInclude Include="main\sdk\Vector3.h" />
+    <ClInclude Include="main\sdk\VoodooDollPin.h" />
     <ClInclude Include="main\sdk\WeatherProfile.h" />
     <ClInclude Include="main\utils\notification.h" />
     <ClInclude Include="main\utils\utils.h" />

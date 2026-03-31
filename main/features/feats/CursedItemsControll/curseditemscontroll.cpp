@@ -7,67 +7,82 @@ CursedItemsControll::CursedItemsControll() : FeatureCore("CursedItems Controll",
     DECLARE_CONFIG(GetConfigManager(), "CardTypeForced", int, static_cast<int>(SDK::TarotCardType::Fool));
     DECLARE_CONFIG(GetConfigManager(), "CardForce", bool, false);
     DECLARE_CONFIG(GetConfigManager(), "InfCards", bool, false);
+    DECLARE_CONFIG(GetConfigManager(), "HeartPinDisable", bool, false);
 }
 
 void CursedItemsControll::OnMenuRender()
 {
-    if (ImGui::Button(LANG("BreakCursed")))
+    bool musicBoxExists = InGame::cursedItemsController && InGame::cursedItemsController->Fields.MusicBox;
+
+    if (musicBoxExists)
     {
-        if (InGame::cursedItemsController == nullptr)
-            return NOTIFY_ERROR_QUICK(LANG("NeedToBeInGame"));
+        auto* go_mb = SDK::Component_Get_GameObject(reinterpret_cast<SDK::Component*>(InGame::cursedItemsController->Fields.MusicBox), 0);
+        SDK::PhotonView* pv_mb = nullptr;
 
-        if (!Utils::IsLocalMasterClient())
-            return NOTIFY_ERROR_QUICK(LANG("NeedMustBeHost"));
+        if (go_mb)
+        {
+            auto pv_type = SDK::System_Type_GetType(Utils::SysStrToUnityStr("Photon.Pun.PhotonView"), 0);
+            pv_mb = reinterpret_cast<SDK::PhotonView*>(SDK::GameObject_GetComponent(go_mb, pv_type, 0));
+        }
 
-        if (InGame::cursedItemsController->Fields.OuijaBoard)
-            SDK::CursedItem_BreakItem(reinterpret_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.OuijaBoard), nullptr);
+        if (ImGui::Button(LANG("UseMusicBox")))
+        {
+            if (pv_mb)
+                SDK::PhotonView_RequestOwnership(pv_mb, 0);
 
-        if (InGame::cursedItemsController->Fields.MusicBox)
-            SDK::CursedItem_BreakItem(static_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.MusicBox), nullptr);
+            if (Utils::Checks_IsRealSender(SDK::PhotonNetwork_Get_LocalPlayer(0), pv_mb))
+            {
+                bool isOn = true;
 
-        if (InGame::cursedItemsController->Fields.TarotCards)
-            SDK::CursedItem_BreakItem(static_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.TarotCards), nullptr);
+                auto boolClass = il2cpp_get_class("mscorlib", "System", "Boolean");
+                if (!boolClass) return;
 
-        if (InGame::cursedItemsController->Fields.SummoningCircle)
-            SDK::CursedItem_BreakItem(static_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.SummoningCircle), nullptr);
+                void* boxedBool = il2cpp_value_box(boolClass, &isOn);
+                if (!boxedBool) return;
 
-        if (InGame::cursedItemsController->Fields.HauntedMirror)
-            SDK::CursedItem_BreakItem(static_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.HauntedMirror), nullptr);
+                std::vector<void*> params;
+                params.push_back(boxedBool);
 
-        if (InGame::cursedItemsController->Fields.VoodooDoll)
-            SDK::CursedItem_BreakItem(static_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.VoodooDoll), nullptr);
+                auto parameters = Utils::VectorToIl2CppArray<void*>(params, "mscorlib", "System", "Object");
+                if (!parameters) return;
 
-        if (InGame::cursedItemsController->Fields.MonkeyPaw)
-            SDK::CursedItem_BreakItem(static_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.MonkeyPaw), nullptr);
+                SDK::PhotonView_RPC(pv_mb, Utils::SysStrToUnityStr("UseNetworked"), SDK::RpcTarget::All, parameters, 0);
+            }
+        }
+
+        ImGui::SameLine();
+
+        bool offlineMode = SDK::PhotonNetwork_Get_OfflineMode(0);
+        ImGui::BeginDisabled(!offlineMode);
+        if (ImGui::Button(LANG("FixMusicBox"))) // Thanks Evelien
+        {
+            SDK::CursedItem* ci_mb = (SDK::CursedItem*)InGame::cursedItemsController->Fields.MusicBox;
+            ci_mb->Fields.HasBreak = false;
+            ci_mb->Fields.InUse = false;
+        }
+        ImGui::EndDisabled();
     }
 
-    if (ImGui::Button(LANG("UseCursed")))
-    {
-        if (InGame::cursedItemsController == nullptr)
-            return NOTIFY_ERROR_QUICK("You need to be in the game.");
+	bool isSummoningCircleActive = Utils::IsLocalMasterClient() && InGame::cursedItemsController && InGame::cursedItemsController->Fields.SummoningCircle;
 
-        if (InGame::cursedItemsController->Fields.OuijaBoard)
-            SDK::CursedItem_Use(reinterpret_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.OuijaBoard), nullptr);
+	ImGui::BeginDisabled(!isSummoningCircleActive);
 
-        if (InGame::cursedItemsController->Fields.MusicBox)
-            SDK::CursedItem_Use(static_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.MusicBox), nullptr);
+    if (ImGui::Button(LANG("StartRitual")))
+		needRitualStart = true;
 
-        if (InGame::cursedItemsController->Fields.TarotCards)
-            SDK::CursedItem_Use(static_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.TarotCards), nullptr);
+    ImGui::EndDisabled();
 
-        if (InGame::cursedItemsController->Fields.HauntedMirror)
-            SDK::CursedItem_Use(static_cast<SDK::CursedItem*>(InGame::cursedItemsController->Fields.HauntedMirror), nullptr);
-    }
+	bool heartPinDisabled = CONFIG_BOOL(GetConfigManager(), "HeartPinDisable");
+    if (ImGui::Checkbox(LANG("DisableHeartPin"), &heartPinDisabled))
+		SET_CONFIG_VALUE(GetConfigManager(), "HeartPinDisable", bool, heartPinDisabled);
 
     bool enabled = IsActive();
-
-    if (BCheckBox(LANG("TarotCardsModEnable"), &enabled))
+    if (BCheckBox(LANG("TarotCardsModEnable"), &enabled, "b_TarotCardsModEnable"))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
         else OnDeactivate();
     }
-
 
     if (enabled)
     {
@@ -117,4 +132,33 @@ void CursedItemsControll::TarotCardInfCards(SDK::TarotCards* tarotCards, SDK::Me
             }
 
         }).detach();
+}
+
+void CursedItemsControll::CursedItemsControllMain()
+{
+    if (!needRitualStart || !InGame::cursedItemsController)
+        return;
+
+    needRitualStart = false;
+
+    auto* sc = InGame::cursedItemsController->Fields.SummoningCircle;
+    if (!sc)
+    {
+        NOTIFY_ERROR_QUICK(LANG("SummoningCircleNotFound"));
+        return;
+    }
+
+    auto* localPlayer = Utils::GetLocalPlayer();
+    if (!localPlayer)
+    {
+        NOTIFY_ERROR_QUICK(LANG("LocalPlayerNotFound"));
+        return;
+    }
+
+    auto* func_beginRitual = SDK::Get_SummoningCircle_BeginRitual();
+    if (func_beginRitual)
+    {
+        func_beginRitual(sc, 0);
+        NOTIFY_SUCCESS_QUICK(LANG("RitualStarted"));
+    }
 }

@@ -15,6 +15,7 @@
 #include <Psapi.h>
 #include <array>
 #include <random>
+#include <urlmon.h>
 
 #include "Globals.h"
 #include "InGame.h"
@@ -25,9 +26,12 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
+#include "imgui/imgui_internal.h"
 #include "main/menu/renderer.h"
 
 #include "detours/include/detours.h"
+#include "z85/z85.h"
+#include "miniz/miniz.h"
 #include "main/hooks/Hooks.h"
 #include "main/hooks/hooking.h"
 #include "main/menu/menu.h"
@@ -37,3 +41,4 @@
 #include "main/config/LanguageManager.h"
 #include "main/config/config.h"
 #include "main/utils/notification.h"
+#include "main/diagnostics/diagnostics.h"

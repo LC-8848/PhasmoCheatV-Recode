@@ -1,6 +1,7 @@
 #pragma once
 #include "../Includes.h"
 #include "../sdk/sdk.h"
+#include "../../libs/il2cpp/il2cpp.h"
 
 using namespace PhasmoCheatV;
 
@@ -56,4 +57,32 @@ namespace Utils {
 	SDK::GameObject* GetPlayerCrosshairObj(SDK::Player* player);
 	SDK::GhostAI* GetGhostAI();
 	SDK::Transform* GetPotatoe();
+	SDK::Type* GetType(std::string string);
+	std::vector<std::tuple<std::string, SDK::GhostButton*, SDK::GameObject*>> get_AllGhostButtonsWithGO();
+	bool DownloadFile(const std::string& url, const std::string& path);
+	bool ExtractZip(const std::string& zipPath, const std::string& extractPath);
+	bool InstallChineseFont();
+	std::string GetGameVersion();
+	std::string GetUnityVersion();
+	bool Checks_IsRealSender(SDK::Player* pn_sender, SDK::PhotonView* view); // Method was lightweight
+	float Distance(const SDK::Vector3& a, const SDK::Vector3& b);
+
+	template<typename T>
+	void* VectorToIl2CppArray(const std::vector<T>& vec, const char* assembly, const char* namespaze, const char* clazzName)
+	{
+		auto klass = il2cpp_get_class(assembly, namespaze, clazzName);
+		if (!klass)
+			return nullptr;
+
+		auto arr = il2cpp_array_new_wrap(klass, vec.size());
+		if (!arr)
+			return nullptr;
+
+		auto arrT = (Il2CppArrayT<void*>*)arr;
+
+		for (size_t i = 0; i < vec.size(); i++)
+			il2cpp_array_set(arrT, i, (void*)vec[i]);
+
+		return arr;
+	}
 }

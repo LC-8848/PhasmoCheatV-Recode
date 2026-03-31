@@ -7,5 +7,5 @@ void Hooks::hkLiftButton_AttemptUse(SDK::LiftButton* liftButton, void* photon, S
 {
 	LOG_CALL("Called LiftButton_AttemptUse");
 
-	CALL_METHOD_ARGS(Misc, LiftButtonSkipAnim, LiftButtonSkipAnimMain, liftButton, photon, methodInfo);
+	CALL_METHOD_ARGS(Map, VanButtonModifier, VanButtonModifierMain, liftButton, photon, methodInfo);
 }

@@ -26,6 +26,7 @@ const char* PhasmoCheatV::GetFeatureTypeName(const FeatureType type)
     case TYPE_CONFIGS: return "K";
     case TYPE_DIFFICULTY: return "D";
     case TYPE_MAP: return "m";
+	case TYPE_AUTO: return "A";
     default: return "U";
     }
 }
@@ -44,6 +45,7 @@ const char* PhasmoCheatV::GetFeatureTypeFullName(const FeatureType type)
     case TYPE_CONFIGS: return "Configs";
     case TYPE_DIFFICULTY: return "Difficulty";
     case TYPE_MAP: return "Map";
+    case TYPE_AUTO: return "Automatic";
     default: return "Unkown";
     }
 }
@@ -63,9 +65,11 @@ FeatureHandler::FeatureHandler() : CurrentType(TYPE_NONE)
     ADD_FEATURE(this, NotifyInfo);
     ADD_FEATURE(this, PotatoeEsp);
     ADD_FEATURE(this, PlayersPanel);
+    ADD_FEATURE(this, FontChanger);
     ADD_FEATURE(this, StatsPanel);
     ADD_FEATURE(this, PlayerESP);
     ADD_FEATURE(this, ActivityMonitor);
+    ADD_FEATURE(this, JackalopeESP);
 
     // Players
     ADD_FEATURE(this, GodMode);
@@ -93,22 +97,26 @@ FeatureHandler::FeatureHandler() : CurrentType(TYPE_NONE)
     // Misc
     ADD_FEATURE(this, AntiKick);
     ADD_FEATURE(this, ExitVanOne);
-    ADD_FEATURE(this, LiftButtonSkipAnim);
-    ADD_FEATURE(this, AutoPhoto);
+    ADD_FEATURE(this, VanButtonModifier);
+    ADD_FEATURE(this, FlashLightModifier);
     ADD_FEATURE(this, FastThermometer);
     ADD_FEATURE(this, NoEndGame);
+    ADD_FEATURE(this, PhotoModifier);
     ADD_FEATURE(this, RewardModifier);
+    ADD_FEATURE(this, JournalModifier);
     ADD_FEATURE(this, ForceStart);
     ADD_FEATURE(this, ShopModifier);
 
     // Difficulty
-    // ADD_FEATURE(this, DifficultyModifier); // Temporarily disabled
+    ADD_FEATURE(this, DifficultyModifier);
 
     // Map
     ADD_FEATURE(this, MapModifier);
 	ADD_FEATURE(this, DoorModifier);
     ADD_FEATURE(this, GrabKeys);
     ADD_FEATURE(this, SaltModifier);
+	ADD_FEATURE(this, AlwaysBloodMoon);
+    ADD_FEATURE(this, AutoPickupBone);
 
     // Configs
     ADD_FEATURE(this, ConfigsManager);
@@ -118,6 +126,14 @@ FeatureHandler::FeatureHandler() : CurrentType(TYPE_NONE)
 
 FeatureHandler::~FeatureHandler()
 {
+    for (auto& [name, feature] : FeatureRegistry)
+    {
+        if (feature && feature->IsActive())
+        {
+            feature->OnDeactivate();
+        }
+    }
+
     MainFeatureHandler = nullptr;
 }
 
@@ -310,6 +326,15 @@ void FeatureHandler::ShowFeaturesByType()
         }
     }
     ImGui::EndChild();
+}
+
+void FeatureHandler::ApplyConfigStates()
+{
+    for (auto& [name, feature] : FeatureRegistry)
+    {
+        if (feature->IsActive())
+            feature->OnActivate();
+    }
 }
 
 void FeatureHandler::RenderMenu()

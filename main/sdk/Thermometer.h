@@ -5,7 +5,7 @@ namespace SDK
 {
 	struct ThermometerFields
 	{
-		char pad_000[0x1F8];
+		char pad_000[0x208];
 		float measureTimer;
 		void* photoEvidence;
 		float timer;

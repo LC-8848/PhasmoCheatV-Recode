@@ -15,6 +15,7 @@ namespace PhasmoCheatV
         TYPE_CONFIGS,
         TYPE_DIFFICULTY,
         TYPE_MAP,
+        TYPE_AUTO
     };
 
     const char* GetFeatureTypeName(FeatureType type);
@@ -74,6 +75,7 @@ namespace PhasmoCheatV
             return nullptr;
         }
 
+        void ApplyConfigStates();
         void RenderAll() const;
         void RenderMenu();
 
@@ -127,5 +129,8 @@ namespace PhasmoCheatV
         return nullptr;
     }
 }
+
+#define GET_FEATURE_CONFIG_VALUE(Category, FeatureName, ConfigName, Type) \
+    GET_FEATURE_HANDLER()->GetFeature<PhasmoCheatV::Features::Category::FeatureName>(#FeatureName)->GetConfigManager()->GetConfigValue<Type>(ConfigName)
 
 #include "../main/config/BindSystem.h"

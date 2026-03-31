@@ -66,8 +66,10 @@ GhostESP::GhostESP() : FeatureCore("Ghost ESP", TYPE_VISUALS)
     DECLARE_CONFIG(GetConfigManager(), "BoxThickness", float, 1.5f);
     DECLARE_CONFIG(GetConfigManager(), "ShowSkeleton", bool, true);
     DECLARE_CONFIG(GetConfigManager(), "SkeletonColor", ImColor, ImColor(255, 255, 255, 255));
+    DECLARE_CONFIG(GetConfigManager(), "NameCol", ImColor, ImColor(255, 255, 255, 255));
     DECLARE_CONFIG(GetConfigManager(), "SkeletonThickness", float, 1.0f);
     DECLARE_CONFIG(GetConfigManager(), "ShowPhotoESP", bool, false);
+    DECLARE_CONFIG(GetConfigManager(), "ShowBoxESP", bool, false);
     DECLARE_CONFIG(GetConfigManager(), "PhotoESPType", int, 0);
     DECLARE_CONFIG(GetConfigManager(), "PhotoWidth", float, 1.0f);
     DECLARE_CONFIG(GetConfigManager(), "PhotoHeight", float, 1.0f);
@@ -83,22 +85,22 @@ void GhostESP::OnRender()
     const auto ghostInfo = InGame::ghostAI->Fields.GhostInfo;
     if (!ghostInfo) return;
 
-    const ImColor color = CONFIG_COLOR(GetConfigManager(), "ESPColor");
-    const float thickness = CONFIG_FLOAT(GetConfigManager(), "BoxThickness");
-    const int boxType = CONFIG_INT(GetConfigManager(), "BoxType");
+    const ImColor nameCol = CONFIG_COLOR(GetConfigManager(), "NameCol");
 
-    switch (boxType)
+    DrawName(InGame::ghostAI, nameCol);
+
+    if (CONFIG_BOOL(GetConfigManager(), "ShowBoxESP"))
     {
-    case 0: Draw2DBox(InGame::ghostAI, color, thickness); break;
-    case 1: Draw3DBox(InGame::ghostAI, color, thickness); break;
-    case 2: DrawCornerBox(InGame::ghostAI, color, thickness); break;
-    case 3: DrawCircle(InGame::ghostAI, color, thickness); break;
-    case 4: DrawFilledBox(InGame::ghostAI, color, thickness); break;
-    case 5: DrawCross(InGame::ghostAI, color, thickness); break;
-    case 6: DrawDiamond(InGame::ghostAI, color, thickness); break;
-    case 7: DrawTriangle(InGame::ghostAI, color, thickness); break;
-    case 8: DrawArrow(InGame::ghostAI, color, thickness); break;
-    case 9: DrawNone(InGame::ghostAI, color, thickness); break;
+        const ImColor color = CONFIG_COLOR(GetConfigManager(), "ESPColor");
+        const float thickness = CONFIG_FLOAT(GetConfigManager(), "BoxThickness");
+        const int boxType = CONFIG_INT(GetConfigManager(), "BoxType");
+
+        switch (boxType)
+        {
+        case 0: Draw2DBox(InGame::ghostAI, color, thickness); break;
+        case 1: DrawCornerBox(InGame::ghostAI, color, thickness); break;
+        case 2: DrawFilledBox(InGame::ghostAI, color, thickness); break;
+        }
     }
 
     if (CONFIG_BOOL(GetConfigManager(), "ShowSkeleton"))
@@ -114,7 +116,6 @@ void GhostESP::OnRender()
     }
 }
 
-// ====================== Photo ESP Methods ======================
 void GhostESP::SetD3D11Device(ID3D11Device* device)
 {
     g_pd3dDevice = device;
@@ -311,7 +312,6 @@ void GhostESP::CleanupTextures()
     LOG_INFO("Cleaned up D3D11 textures");
 }
 
-// ====================== SKELETON ESP ======================
 void GhostESP::DrawSkeleton(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness)
 {
     if (!ghostAI)
@@ -426,7 +426,6 @@ void GhostESP::DrawSkeleton(const SDK::GhostAI* ghostAI, const ImColor& color, f
     }
 }
 
-// ====================== 2D BOX ======================
 void GhostESP::Draw2DBox(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness)
 {
     if (!ghostAI || !ghostAI->Fields.raycastPoint || !ghostAI->Fields.feetRaycastPoint)
@@ -449,58 +448,6 @@ void GhostESP::Draw2DBox(const SDK::GhostAI* ghostAI, const ImColor& color, floa
     );
 }
 
-// ====================== 3D BOX ======================
-void GhostESP::Draw3DBox(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness)
-{
-    if (!ghostAI || !ghostAI->Fields.raycastPoint || !ghostAI->Fields.feetRaycastPoint)
-        return;
-
-    SDK::Vector3 top = Utils::GetPosVec3(ghostAI->Fields.raycastPoint);
-    SDK::Vector3 bottom = Utils::GetPosVec3(ghostAI->Fields.feetRaycastPoint);
-
-    float height = top.Y - bottom.Y;
-    float width = height / 2.0f;
-    float depth = width / 2.0f;
-
-    std::vector<SDK::Vector3> points = {
-        {bottom.X - width, bottom.Y, bottom.Z - depth},
-        {bottom.X + width, bottom.Y, bottom.Z - depth},
-        {bottom.X + width, bottom.Y, bottom.Z + depth},
-        {bottom.X - width, bottom.Y, bottom.Z + depth},
-
-        {top.X - width, top.Y, top.Z - depth},
-        {top.X + width, top.Y, top.Z - depth},
-        {top.X + width, top.Y, top.Z + depth},
-        {top.X - width, top.Y, top.Z + depth},
-    };
-
-    std::vector<ImVec2> screenPoints;
-    for (auto& p : points)
-    {
-        SDK::Vector3 sp;
-        if (!Utils::WTS(p, sp)) return;
-        screenPoints.emplace_back(sp.X, sp.Y);
-    }
-
-    auto draw = ImGui::GetBackgroundDrawList();
-
-    draw->AddLine(screenPoints[0], screenPoints[1], color, thickness);
-    draw->AddLine(screenPoints[1], screenPoints[2], color, thickness);
-    draw->AddLine(screenPoints[2], screenPoints[3], color, thickness);
-    draw->AddLine(screenPoints[3], screenPoints[0], color, thickness);
-
-    draw->AddLine(screenPoints[4], screenPoints[5], color, thickness);
-    draw->AddLine(screenPoints[5], screenPoints[6], color, thickness);
-    draw->AddLine(screenPoints[6], screenPoints[7], color, thickness);
-    draw->AddLine(screenPoints[7], screenPoints[4], color, thickness);
-
-    draw->AddLine(screenPoints[0], screenPoints[4], color, thickness);
-    draw->AddLine(screenPoints[1], screenPoints[5], color, thickness);
-    draw->AddLine(screenPoints[2], screenPoints[6], color, thickness);
-    draw->AddLine(screenPoints[3], screenPoints[7], color, thickness);
-}
-
-// ====================== CORNER BOX ======================
 void GhostESP::DrawCornerBox(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness)
 {
     if (!ghostAI || !ghostAI->Fields.raycastPoint || !ghostAI->Fields.feetRaycastPoint)
@@ -539,27 +486,6 @@ void GhostESP::DrawCornerBox(const SDK::GhostAI* ghostAI, const ImColor& color, 
     draw->AddLine(ImVec2(right, bottomY), ImVec2(right, bottomY - lineH), color, thickness);
 }
 
-// ====================== CIRCLE ======================
-void GhostESP::DrawCircle(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness)
-{
-    if (!ghostAI || !ghostAI->Fields.huntingRaycastPoint)
-        return;
-
-    SDK::Vector3 center = Utils::GetPosVec3(ghostAI->Fields.huntingRaycastPoint);
-    SDK::Vector3 screenPos;
-    if (!Utils::WTS(center, screenPos))
-        return;
-
-    ImGui::GetBackgroundDrawList()->AddCircle(
-        ImVec2(screenPos.X, screenPos.Y),
-        40.0f,
-        color,
-        40,
-        thickness
-    );
-}
-
-// ====================== FILLED BOX ======================
 void GhostESP::DrawFilledBox(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness)
 {
     if (!ghostAI || !ghostAI->Fields.raycastPoint || !ghostAI->Fields.feetRaycastPoint)
@@ -588,76 +514,10 @@ void GhostESP::DrawFilledBox(const SDK::GhostAI* ghostAI, const ImColor& color, 
     );
 }
 
-// ====================== CROSS ======================
-void GhostESP::DrawCross(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness)
+void GhostESP::DrawName(const SDK::GhostAI* ghostAI, const ImColor& color)
 {
-    if (!ghostAI || !ghostAI->Fields.huntingRaycastPoint)
-        return;
-
-    SDK::Vector3 center = Utils::GetPosVec3(ghostAI->Fields.huntingRaycastPoint);
-    SDK::Vector3 screenPos;
-    if (!Utils::WTS(center, screenPos))
-        return;
-
-    float size = 20.0f;
-    auto draw = ImGui::GetBackgroundDrawList();
-
-    draw->AddLine(
-        ImVec2(screenPos.X - size, screenPos.Y),
-        ImVec2(screenPos.X + size, screenPos.Y),
-        color, thickness
-    );
-
-    draw->AddLine(
-        ImVec2(screenPos.X, screenPos.Y - size),
-        ImVec2(screenPos.X, screenPos.Y + size),
-        color, thickness
-    );
-}
-
-// ====================== DIAMOND ======================
-void GhostESP::DrawDiamond(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness)
-{
-    if (!ghostAI || !ghostAI->Fields.huntingRaycastPoint)
-        return;
-
-    SDK::Vector3 center = Utils::GetPosVec3(ghostAI->Fields.huntingRaycastPoint);
-    SDK::Vector3 screenPos;
-    if (!Utils::WTS(center, screenPos))
-        return;
-
-    float size = 25.0f;
-    auto draw = ImGui::GetBackgroundDrawList();
-
-    draw->AddLine(
-        ImVec2(screenPos.X, screenPos.Y - size),
-        ImVec2(screenPos.X + size, screenPos.Y),
-        color, thickness
-    );
-
-    draw->AddLine(
-        ImVec2(screenPos.X + size, screenPos.Y),
-        ImVec2(screenPos.X, screenPos.Y + size),
-        color, thickness
-    );
-
-    draw->AddLine(
-        ImVec2(screenPos.X, screenPos.Y + size),
-        ImVec2(screenPos.X - size, screenPos.Y),
-        color, thickness
-    );
-
-    draw->AddLine(
-        ImVec2(screenPos.X - size, screenPos.Y),
-        ImVec2(screenPos.X, screenPos.Y - size),
-        color, thickness
-    );
-}
-
-// ====================== TRIANGLE ======================
-void GhostESP::DrawTriangle(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness)
-{
-    if (!ghostAI || !ghostAI->Fields.raycastPoint || !ghostAI->Fields.feetRaycastPoint)
+    if (!ghostAI || !ghostAI->Fields.raycastPoint || !ghostAI->Fields.feetRaycastPoint ||
+        !ghostAI->Fields.GhostInfo || !ghostAI->Fields.GhostInfo->Fields.GhostTraits.Name)
         return;
 
     SDK::Vector3 top = Utils::GetPosVec3(ghostAI->Fields.raycastPoint);
@@ -667,73 +527,30 @@ void GhostESP::DrawTriangle(const SDK::GhostAI* ghostAI, const ImColor& color, f
     if (!Utils::WTS(top, topScreen) || !Utils::WTS(bottom, bottomScreen))
         return;
 
-    float width = fabsf(topScreen.Y - bottomScreen.Y) / 2.0f;
-    auto draw = ImGui::GetBackgroundDrawList();
+    float centerX = bottomScreen.X;
 
-    draw->AddLine(
-        ImVec2(bottomScreen.X, topScreen.Y),
-        ImVec2(bottomScreen.X + width, bottomScreen.Y),
-        color, thickness
-    );
+    std::string nameStr =
+        Utils::UnityStrToSysStr(*ghostAI->Fields.GhostInfo->Fields.GhostTraits.Name);
 
-    draw->AddLine(
-        ImVec2(bottomScreen.X + width, bottomScreen.Y),
-        ImVec2(bottomScreen.X - width, bottomScreen.Y),
-        color, thickness
-    );
+    const char* name = nameStr.c_str();
 
-    draw->AddLine(
-        ImVec2(bottomScreen.X - width, bottomScreen.Y),
-        ImVec2(bottomScreen.X, topScreen.Y),
-        color, thickness
+    ImVec2 textSize = ImGui::CalcTextSize(name);
+
+    float textX = centerX - textSize.x * 0.5f;
+    float textY = topScreen.Y - textSize.y - 2.0f;
+
+    ImGui::GetBackgroundDrawList()->AddText(
+        ImVec2(textX, textY),
+        color,
+        name
     );
 }
 
-// ====================== ARROW ======================
-void GhostESP::DrawArrow(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness)
-{
-    if (!ghostAI || !ghostAI->Fields.huntingRaycastPoint)
-        return;
-
-    SDK::Vector3 center = Utils::GetPosVec3(ghostAI->Fields.huntingRaycastPoint);
-    SDK::Vector3 screenPos;
-    if (!Utils::WTS(center, screenPos))
-        return;
-
-    float size = 30.0f;
-    auto draw = ImGui::GetBackgroundDrawList();
-
-    draw->AddLine(
-        ImVec2(screenPos.X, screenPos.Y - size),
-        ImVec2(screenPos.X, screenPos.Y + size),
-        color, thickness
-    );
-
-    draw->AddLine(
-        ImVec2(screenPos.X, screenPos.Y - size),
-        ImVec2(screenPos.X - size / 2, screenPos.Y - size / 2),
-        color, thickness
-    );
-
-    draw->AddLine(
-        ImVec2(screenPos.X, screenPos.Y - size),
-        ImVec2(screenPos.X + size / 2, screenPos.Y - size / 2),
-        color, thickness
-    );
-}
-
-void GhostESP::DrawNone(const SDK::GhostAI* ghostAI, const ImColor& color, float thickness)
-{
-    if (!ghostAI || !ghostAI->Fields.huntingRaycastPoint)
-        return;
-}
-
-// ====================== MENU ======================
 void GhostESP::OnMenuRender()
 {
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6, 5));
 
-    auto MakeLabel = [](const char* code, const char* id) -> std::string
+    auto MakeLabel = [](const char* code, const char* id)
         {
             return std::string(LANG(code)) + "##" + id;
         };
@@ -753,40 +570,47 @@ void GhostESP::OnMenuRender()
 
     constexpr auto colorEditFlags = ImGuiColorEditFlags_NoInputs;
 
-    // ESP Color
-    ImColor espColor = CONFIG_COLOR(GetConfigManager(), "ESPColor");
-    if (ImGui::ColorEdit4(MakeLabel("Color", "ghostESP").c_str(),
-        reinterpret_cast<float*>(&espColor.Value),
-        colorEditFlags))
+    ImColor nameColor = CONFIG_COLOR(GetConfigManager(), "NameCol");
+    if (ImGui::ColorEdit4(MakeLabel("NameColor", "ghostESP").c_str(),
+        reinterpret_cast<float*>(&nameColor.Value), colorEditFlags))
     {
-        SET_CONFIG_VALUE(GetConfigManager(), "ESPColor", ImColor, espColor);
-    }
-
-    // Box Type
-    const char* boxTypes[] = {
-        "2D Box", "3D Box", "Corner Box", "Circle",
-        "Filled Box", "Cross", "Diamond", "Triangle", "Arrow", "None"
-    };
-    int boxType = CONFIG_INT(GetConfigManager(), "BoxType");
-    if (ImGui::Combo(MakeLabel("BoxType", "ghostESP").c_str(),
-        &boxType,
-        boxTypes,
-        IM_ARRAYSIZE(boxTypes)))
-    {
-        SET_CONFIG_VALUE(GetConfigManager(), "BoxType", int, boxType);
-    }
-
-    // Box Thickness
-    float boxThickness = CONFIG_FLOAT(GetConfigManager(), "BoxThickness");
-    if (ImGui::SliderFloat(MakeLabel("BoxThickness", "ghostESP").c_str(),
-        &boxThickness, 0.5f, 5.0f))
-    {
-        SET_CONFIG_VALUE(GetConfigManager(), "BoxThickness", float, boxThickness);
+        SET_CONFIG_VALUE(GetConfigManager(), "NameCol", ImColor, nameColor);
     }
 
     ImGui::Separator();
 
-    // Skeleton
+    bool showBoxESP = CONFIG_BOOL(GetConfigManager(), "ShowBoxESP");
+    if (ImGui::Checkbox(MakeLabel("ShowBoxESP", "ghostESP").c_str(), &showBoxESP))
+        SET_CONFIG_VALUE(GetConfigManager(), "ShowBoxESP", bool, showBoxESP);
+
+    if (showBoxESP)
+    {
+        const char* boxTypes[] = { "2D Box", "Corner Box", "Filled Box" };
+        int boxType = CONFIG_INT(GetConfigManager(), "BoxType");
+
+        if (ImGui::Combo(MakeLabel("BoxType", "ghostESP").c_str(),
+            &boxType, boxTypes, IM_ARRAYSIZE(boxTypes)))
+        {
+            SET_CONFIG_VALUE(GetConfigManager(), "BoxType", int, boxType);
+        }
+
+        ImColor espColor = CONFIG_COLOR(GetConfigManager(), "ESPColor");
+        if (ImGui::ColorEdit4(MakeLabel("Color", "ghostESP").c_str(),
+            reinterpret_cast<float*>(&espColor.Value), colorEditFlags))
+        {
+            SET_CONFIG_VALUE(GetConfigManager(), "ESPColor", ImColor, espColor);
+        }
+
+        float boxThickness = CONFIG_FLOAT(GetConfigManager(), "BoxThickness");
+        if (ImGui::SliderFloat(MakeLabel("BoxThickness", "ghostESP").c_str(),
+            &boxThickness, 0.5f, 5.0f))
+        {
+            SET_CONFIG_VALUE(GetConfigManager(), "BoxThickness", float, boxThickness);
+        }
+    }
+
+    ImGui::Separator();
+
     bool showSkeleton = CONFIG_BOOL(GetConfigManager(), "ShowSkeleton");
     if (ImGui::Checkbox(MakeLabel("ShowSkeleton", "ghostESP").c_str(), &showSkeleton))
         SET_CONFIG_VALUE(GetConfigManager(), "ShowSkeleton", bool, showSkeleton);
@@ -795,8 +619,7 @@ void GhostESP::OnMenuRender()
     {
         ImColor skeletonColor = CONFIG_COLOR(GetConfigManager(), "SkeletonColor");
         if (ImGui::ColorEdit4(MakeLabel("SkeletonColor", "ghostESP").c_str(),
-            reinterpret_cast<float*>(&skeletonColor.Value),
-            colorEditFlags))
+            reinterpret_cast<float*>(&skeletonColor.Value), colorEditFlags))
         {
             SET_CONFIG_VALUE(GetConfigManager(), "SkeletonColor", ImColor, skeletonColor);
         }
@@ -811,7 +634,6 @@ void GhostESP::OnMenuRender()
 
     ImGui::Separator();
 
-    // Photo ESP
     bool showPhotoESP = CONFIG_BOOL(GetConfigManager(), "ShowPhotoESP");
     if (ImGui::Checkbox(MakeLabel("ShowPhotoESP", "ghostESP").c_str(), &showPhotoESP))
         SET_CONFIG_VALUE(GetConfigManager(), "ShowPhotoESP", bool, showPhotoESP);
@@ -832,73 +654,27 @@ void GhostESP::OnMenuRender()
             SET_CONFIG_VALUE(GetConfigManager(), "PhotoHeight", float, photoHeight);
         }
 
-        if (ImGui::Button(MakeLabel("ResetPhotoSize", "ghostESP").c_str(), ImVec2(120, 25)))
-        {
-            SET_CONFIG_VALUE(GetConfigManager(), "PhotoWidth", float, 1.0f);
-            SET_CONFIG_VALUE(GetConfigManager(), "PhotoHeight", float, 1.0f);
-        }
-        ImGui::SameLine();
-        ImGui::Text("%s", LANG("DefaultPhotoSize"));
-
-        ImGui::Separator();
-
         if (!availablePhotos.empty())
         {
             std::vector<const char*> photoNames;
             photoNames.reserve(availablePhotos.size());
 
-            for (const auto& photo : availablePhotos)
-                photoNames.push_back(photo.c_str());
+            for (auto& p : availablePhotos)
+                photoNames.push_back(p.c_str());
 
             int photoType = CONFIG_INT(GetConfigManager(), "PhotoESPType");
-            if (ImGui::Combo(
-                MakeLabel("PhotoType", "ghostESP").c_str(),
-                &photoType,
-                photoNames.data(),
-                static_cast<int>(photoNames.size())))
+            if (ImGui::Combo(MakeLabel("PhotoType", "ghostESP").c_str(),
+                &photoType, photoNames.data(), (int)photoNames.size()))
             {
                 SET_CONFIG_VALUE(GetConfigManager(), "PhotoESPType", int, photoType);
             }
-
-            if (ImGui::Button(MakeLabel("RefreshImages", "ghostESP").c_str(), ImVec2(160, 25)))
-            {
-                LoadAvailablePhotos();
-            }
         }
-        else
-        {
-            ImGui::TextColored(ImVec4(1.f, 0.4f, 0.4f, 1.f), "%s", LANG("NoImagesFound"));
-            ImGui::TextDisabled("%s", LANG("ImagesFolderHint"));
 
-            if (ImGui::Button(MakeLabel("RefreshImages", "ghostESP").c_str(), ImVec2(160, 25)))
-            {
-                LoadAvailablePhotos();
-            }
+        if (ImGui::Button(MakeLabel("RefreshImages", "ghostESP").c_str(), ImVec2(140, 24)))
+        {
+            LoadAvailablePhotos();
         }
     }
 
     ImGui::PopStyleVar();
 }
-
-/*
-if (!availablePhotos.empty()) {
-    std::vector<const char*> photoNames;
-    for (const auto& photo : availablePhotos) {
-        photoNames.push_back(photo.c_str());
-    }
-
-    int photoType = CONFIG_INT(GetConfigManager(), "PhotoESPType");
-    if (ImGui::Combo("Photo Type##ghostESP", &photoType, photoNames.data(), photoNames.size()))
-        SET_CONFIG_VALUE(GetConfigManager(), "PhotoESPType", int, photoType);
-
-    if (ImGui::Button("Refresh Images##ghostESP")) {
-        LoadAvailablePhotos();
-    }
-}
-else {
-    ImGui::Text("No images found in Images folder");
-    if (ImGui::Button("Refresh Images##ghostESP")) {
-        LoadAvailablePhotos();
-    }
-}
-*/

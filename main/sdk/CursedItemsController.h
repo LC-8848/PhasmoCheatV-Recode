@@ -3,6 +3,8 @@
 
 namespace SDK
 {
+	struct SummoningCircle;
+
 	enum class CursedItemType : int32_t
 	{
 		None,
@@ -45,7 +47,7 @@ namespace SDK
 		void* OuijaBoard;
 		void* MusicBox;
 		void* TarotCards;
-		void* SummoningCircle;
+		SummoningCircle* SummoningCircle;
 		void* HauntedMirror;
 		void* VoodooDoll;
 		void* MonkeyPaw;

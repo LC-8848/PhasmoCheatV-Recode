@@ -10,8 +10,6 @@ Pickup::Pickup() : FeatureCore("Pickup", TYPE_PLAYERS)
 	DECLARE_CONFIG(GetConfigManager(), "CustomGrabDistance", float, 3.f);
 	DECLARE_CONFIG(GetConfigManager(), "GrabDistanceMultiplier", bool, false);
 	DECLARE_CONFIG(GetConfigManager(), "PocketEverything", bool, false);
-
-	SDK::Init_Call_ForceDrop();
 }
 
 void Pickup::OnMenuRender()
@@ -20,7 +18,7 @@ void Pickup::OnMenuRender()
 
 	bool enabled = IsActive();
 
-	if (BCheckBox(LANG("EnablePickup"), &enabled))
+	if (BCheckBox(LANG("EnablePickup"), &enabled, "b_EnablePickup"))
 	{
 		SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
 		if (enabled) OnActivate();
@@ -54,7 +52,7 @@ void Pickup::OnMenuRender()
 		if (ImGui::Checkbox(LANG("PocketEverything"), &PocketEverything))
 		{
 			SET_CONFIG_VALUE(GetConfigManager(), "PocketEverything", bool, PocketEverything);
-			PocketEverything ? SDK::Call_ForceDrop_off() : SDK::Call_ForceDrop_on();
+			PocketEverything ? SDK::Call_ForceDrop_nop(5) : SDK::Call_ForceDrop_restore();
 		}
 	}
 

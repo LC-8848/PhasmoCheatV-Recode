@@ -115,4 +115,9 @@ namespace SDK
         void* Monitor;
         DifficultyFields Fields;
     };
+
+    struct DifficultySettings;
+
+    DEC_MET(DifficultySettings_AddHuntDuration, void(*)(DifficultySettings* difficultySettings, float amount, MethodInfo* methodInfo), "Assembly-CSharp", "", "DifficultySettings", "AddHuntDuration", 1);
+    DEC_MET(DifficultySettings_Start, void(*)(DifficultySettings* difficultySettings, MethodInfo* methodInfo), "Assembly-CSharp", "", "DifficultySettings", "Start", 0);
 }

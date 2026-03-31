@@ -12,7 +12,7 @@ void Fullbright::OnMenuRender()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
     bool enabled = IsActive();
-    if (BCheckBox(LANG("EnableFullbright"), &enabled))
+    if (BCheckBox(LANG("EnableFullbright"), &enabled, "b_EnableFullbright"))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();

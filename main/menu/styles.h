@@ -4,13 +4,7 @@
 #include "../res/fonts/HeadFont.hpp"
 #include "../res/fonts/VCustomFont.hpp"
 
-const ImVec4 accentPurple = ImVec4(0.51f, 0.25f, 0.96f, 1.00f);
-const ImVec4 darkerBg = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
-const ImVec4 accentPurpleDark = ImVec4(0.41f, 0.15f, 0.86f, 1.00f);
-const ImVec4 accentPurpleLight = ImVec4(0.61f, 0.35f, 1.00f, 1.00f);
-const ImVec4 darkBg = ImVec4(0.08f, 0.08f, 0.08f, 0.98f);
-const ImVec4 cardBg = ImVec4(0.12f, 0.12f, 0.14f, 1.00f);
-const ImVec4 headerBg = ImVec4(0.10f, 0.10f, 0.12f, 1.00f);
+using namespace PhasmoCheatV;
 
 inline void SetMenuDefaultStyle()
 {
@@ -82,14 +76,28 @@ inline void InitFonts()
     ImGuiIO& io = ImGui::GetIO();
 
     ImFontConfig fontConfig;
+    bool isChinese = LanguageManager::GetCurrentLanguage() == Language::ZH;
+
     // 0
-    fontConfig.FontDataOwnedByAtlas = false;
-    io.FontDefault = io.Fonts->AddFontFromMemoryCompressedTTF(
-        DefFont_compressed_data,
-        DefFont_compressed_size,
-        19.f,
-        &fontConfig
-    );
+    if (isChinese)
+    {
+        io.Fonts->AddFontFromFileTTF(
+            (Utils::GetPhasmoCheatVDirectory() + "\\ChinaLang.ttf").c_str(),
+            18.f,
+            &fontConfig,
+            io.Fonts->GetGlyphRangesChineseFull()
+        );
+    }
+    else
+    {
+        io.Fonts->AddFontFromMemoryCompressedTTF(
+            DefFont_compressed_data,
+            DefFont_compressed_size,
+            19.f,
+            &fontConfig
+        );
+    }
+
     // 1
     io.Fonts->AddFontFromMemoryCompressedTTF(
         HeadFont_compressed_data,

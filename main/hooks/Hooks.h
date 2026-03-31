@@ -22,6 +22,7 @@ namespace PhasmoCheatV
 		static void hkEMFData_Start(SDK::EMFData* emfData, SDK::MethodInfo* methodInfo);
 		static void hkPlayer_StartKillingPlayer(SDK::Player* player, SDK::MethodInfo* methodInfo);
 		static std::nullptr_t hkPlayer_StartKillingPlayerNetworked(SDK::Player* player, bool b1, void* photon, SDK::MethodInfo* methodInfo);
+		static void hkPlayer_Start(SDK::Player* player, SDK::MethodInfo* methodInfo);
 		static void hkGhostInfo_SyncEvidence(SDK::GhostInfo* instance, int* evidence, void* info, SDK::MethodInfo* methodInfo);
 		static void hkGhostInfo_SyncValuesNetworked(SDK::GhostInfo* instance, int ghostType, int ghostAge, bool isMale, int ghostFirstNameID, int ghostLastNameID, bool isShy, int deathLength, int favouriteRoomID, bool isWhisper, void* photonMessageInfo, SDK::MethodInfo* methodInfo);
 		static void hkPhotonObjectInteract_Start(SDK::PhotonObjectInteract* photonObjectInteract, SDK::MethodInfo* methodInfo);
@@ -53,5 +54,11 @@ namespace PhasmoCheatV
 		static void hkGameController_PlayerDied(SDK::GameController* gameController, SDK::Player* player, SDK::MethodInfo* methodInfo);
 		static void hkThermometer_HoldUse(SDK::Thermometer* thermometer, SDK::MethodInfo* methodInfo);
 		static void hkPhotonView_RPC(SDK::PhotonView* photonView, SDK::String* methodName, SDK::RpcTarget target, void* parameters, SDK::MethodInfo* methodInfo);
+		static void hkServerManager_LoadScene(SDK::ServerManager* serverManager, int32_t mapID, int32_t smallMapIndex, int32_t weather, SDK::PhotonMessageInfo* photonMessageInfo, SDK::MethodInfo* methodInfo);
+		static void hkLiftButton_Update(SDK::LiftButton* liftButton, SDK::MethodInfo* methodInfo);
+		static void hkDNAEvidence_Start(SDK::DNAEvidence* dnaEvidence, SDK::MethodInfo* methodInfo);
+		static bool hkHandCamera_MoveNext(SDK::HandCamera* handCamera, SDK::MethodInfo* methodInfo);
+		static void hkVoodooDollPin_Use(SDK::VoodooDollPin* voodooDolPin, void* doll, SDK::Player* pn_player, bool lastPin, bool isNoSanityUse, SDK::MethodInfo* methodInfo);
+		static void hkJackalope_Awake(SDK::Jackalope* jackalope, SDK::MethodInfo* methodInfo);
 	};
 }

@@ -4,6 +4,8 @@
 
 using namespace PhasmoCheatV;
 
+static bool FirstOpenMenu = true;
+
 HRESULT __stdcall Hooks::HkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
     if (!menu.Initialized)
@@ -48,12 +50,18 @@ HRESULT __stdcall Hooks::HkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval
 
     if (menu.Open)
     {
+        if (FirstOpenMenu) // temp
+        {
+            GET_FEATURE_HANDLER()->ApplyConfigStates();
+			FirstOpenMenu = false;
+        }
+
         Menu::Render();
     }
 
     BindSystem::ProcessBinds();
 
-    if (GET_FEATURE_HANDLER())                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+    if (GET_FEATURE_HANDLER() && !FirstOpenMenu) // temp                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
     {
         GET_FEATURE_HANDLER()->RenderAll();
     }

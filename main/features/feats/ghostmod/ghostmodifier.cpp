@@ -22,7 +22,7 @@ void GhostModifier::OnMenuRender()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
     bool enabled = IsActive();
-    if (BCheckBox(LANG("EnableGhostModifier"), &enabled))
+    if (BCheckBox(LANG("EnableGhostModifier"), &enabled, "b_EnableGhostModifier"))
     {
         SET_CONFIG_VALUE(GetConfigManager(), "Enabled", bool, enabled);
         if (enabled) OnActivate();
@@ -36,7 +36,7 @@ void GhostModifier::OnMenuRender()
             SET_CONFIG_VALUE(GetConfigManager(), "CustomSpeedEnabled", bool, customSpeedEnabled);
 
         float ghostSpeed = CONFIG_FLOAT(GetConfigManager(), "GhostSpeed");
-        if (ImGui::SliderFloat((std::string(LANG("GhostSpeed")) + "##ghostModifier_speed").c_str(), &ghostSpeed, 0.0f, 15.0f, "%.1f"))
+        if (ImGui::SliderFloat((std::string(LANG("GhostSpeedMod")) + "##ghostModifier_speed").c_str(), &ghostSpeed, 0.0f, 15.0f, "%.1f"))
             SET_CONFIG_VALUE(GetConfigManager(), "GhostSpeed", float, ghostSpeed);
 
         ImGui::Separator();

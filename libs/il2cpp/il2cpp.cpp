@@ -22,6 +22,8 @@ static t_il2cpp_class_get_methods p_il2cpp_class_get_methods = nullptr;
 static t_il2cpp_method_get_name p_il2cpp_method_get_name = nullptr;
 static t_il2cpp_class_get_name p_il2cpp_class_get_name = nullptr;
 static t_il2cpp_class_get_namespace p_il2cpp_class_get_namespace = nullptr;
+static t_il2cpp_array_new p_il2cpp_array_new = nullptr;
+static t_il2cpp_value_box p_il2cpp_value_box = nullptr;
 
 static bool ResolveSymbol(const char* name, FARPROC* out)
 {
@@ -58,6 +60,8 @@ bool il2cpp_initialize()
     RESOLVE_SYMBOL("il2cpp_method_get_name", p_il2cpp_method_get_name);
     RESOLVE_SYMBOL("il2cpp_class_get_name", p_il2cpp_class_get_name);
     RESOLVE_SYMBOL("il2cpp_class_get_namespace", p_il2cpp_class_get_namespace);
+    RESOLVE_SYMBOL("il2cpp_array_new", p_il2cpp_array_new);
+    RESOLVE_SYMBOL("il2cpp_value_box", p_il2cpp_value_box);
 #undef RESOLVE_SYMBOL
 
     return true;
@@ -83,6 +87,16 @@ Il2CppMethodPointer il2cpp_get_method_pointer(const char* assemblyName, const ch
     if (!method) return nullptr;
 
     return method->methodPointer;
+}
+
+Il2CppObject* il2cpp_value_box(Il2CppClass* klass, void* data)
+{
+    return p_il2cpp_value_box ? p_il2cpp_value_box(klass, data) : nullptr;
+}
+
+Il2CppObject* il2cpp_array_new_wrap(Il2CppClass* klass, il2cpp_array_size_t length)
+{
+    return p_il2cpp_array_new ? p_il2cpp_array_new(klass, length) : nullptr;
 }
 
 Il2CppString* il2cpp_string_new_utf16_wrap(const wchar_t* str, int len)

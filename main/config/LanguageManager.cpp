@@ -2,7 +2,8 @@
 #include "../Includes.h"
 #include <fstream>
 #include <algorithm>
-#include "Translations.h" 
+#include "Translations.h"
+#include "../menu/styles.h"
 
 namespace PhasmoCheatV {
 
@@ -21,7 +22,7 @@ namespace PhasmoCheatV {
 
         LoadFromJSON();
 
-        auto translatePath = Utils::GetPhasmoCheatVDirectory() + "\\Translate.json";
+        auto translatePath = Utils::GetPhasmoCheatVDirectory() + "\\Translate.json"; 
         if (!std::filesystem::exists(translatePath)) {
             try {
                 nlohmann::json example;
@@ -40,14 +41,15 @@ namespace PhasmoCheatV {
         isInitialized = true;
     }
 
-    void LanguageManager::AddString(const std::string& key, const std::string& en, const char8_t* ru_utf8) {
+    void LanguageManager::AddString(const std::string& key, const std::string& en, const char8_t* ru_utf8, const char8_t* zh_utf8) {
         std::string ru(reinterpret_cast<const char*>(ru_utf8));
+        std::string zh(reinterpret_cast<const char*>(zh_utf8));
 
         if (translations.find(key) == translations.end()) {
-            translations[key] = { en, ru };
+            translations[key] = { en, ru, zh };
         }
         else {
-            translations[key] = { en, ru };
+            translations[key] = { en, ru, zh };
         }
     }
 
@@ -59,7 +61,23 @@ namespace PhasmoCheatV {
         auto it = translations.find(key);
         if (it != translations.end()) {
             const auto& entry = it->second;
-            return (currentLanguage == Language::EN ? entry.en : entry.ru).c_str();
+
+            switch (currentLanguage) {
+            case Language::EN:
+                return entry.en.c_str();
+
+            case Language::RU:
+                return entry.ru.c_str();
+
+            case Language::ZH:
+                if (!entry.zh.empty())
+                    return entry.zh.c_str();
+                else {
+                    static std::string temp;
+                    temp = "China not supported..##" + key;
+                    return temp.c_str();
+                }
+            }
         }
 
         return key.c_str();
@@ -68,17 +86,20 @@ namespace PhasmoCheatV {
     void LanguageManager::SetLanguage(Language lang) {
         currentLanguage = lang;
     }
-
+     
     void LanguageManager::SetLanguage(const std::string& langCode) {
         std::string upper = langCode;
         std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
-        currentLanguage = (upper == "RU") ? Language::RU : Language::EN;
+
+        if (upper == "RU") currentLanguage = Language::RU;
+        else if (upper == "ZH" || upper == "CN") currentLanguage = Language::ZH;
+        else currentLanguage = Language::EN;
     }
 
     void LanguageManager::SaveLanguage() {
         try {
             nlohmann::json data;
-            data["language"] = (currentLanguage == Language::RU ? "RU" : "EN");
+            data["language"] = (currentLanguage == Language::RU ? "RU" : currentLanguage == Language::ZH ? "ZH" : "EN");
 
             std::ofstream out(GetLanguagePath());
             out << data.dump(4);
@@ -119,9 +140,10 @@ namespace PhasmoCheatV {
             for (auto& [key, translationsObj] : customData.items()) {
                 std::string en = translationsObj.value("EN", "");
                 std::string ru = translationsObj.value("RU", "");
+                std::string zh = translationsObj.value("ZH", "");
 
-                if (!en.empty() || !ru.empty()) {
-                    translations[key] = { en, ru };
+                if (!en.empty() || !ru.empty() || !zh.empty()) {
+                    translations[key] = { en, ru, zh };
                 }
             }
         }

@@ -7,5 +7,5 @@ void Hooks::hkServerManager_KickPlayerNetworked(SDK::ServerManager* serverManage
 {
 	LOG_CALL("Called ServerManager_KickPlayerNetworked");
 
-	CALL_METHOD_ARGS(Misc, AntiKick, AntiKickMain, serverManager, isBanned, photon, methodInfo);
+	return CALL_METHOD_ARGS(Misc, AntiKick, AntiKickMain, serverManager, isBanned, photon, methodInfo);
 }

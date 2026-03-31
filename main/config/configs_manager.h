@@ -14,7 +14,7 @@ namespace PhasmoCheatV::Features::Configs
 
     private:
         char newConfigName[64];
-        char importData[2048];
+        char importData[65535];
         std::string selectedConfig;
         std::string configToExport;
         bool showCreate;

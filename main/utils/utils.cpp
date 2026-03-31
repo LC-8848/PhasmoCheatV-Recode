@@ -1,6 +1,7 @@
 ﻿#include "utils.h"
 
 using namespace PhasmoCheatV;
+namespace fs = std::filesystem;
 
 std::string Utils::GetPhasmoCheatVDirectory()
 {
@@ -18,6 +19,7 @@ void Utils::CreatePhasmoCheatVDirectory()
 
 	const std::string configsPath = configDirectoryPath + "\\configs";
 	const std::string imagesPath = configDirectoryPath + "\\Images";
+	const std::string fontsPath = configDirectoryPath + "\\fonts";
 
 	if (!std::filesystem::exists(configsPath))
 	{
@@ -29,6 +31,12 @@ void Utils::CreatePhasmoCheatVDirectory()
 	{
 		LOG_INFO("Creating Images folder.");
 		std::filesystem::create_directory(imagesPath);
+	}
+
+	if (!std::filesystem::exists(fontsPath))
+	{
+		LOG_INFO("Creating fonts folder.");
+		std::filesystem::create_directory(fontsPath);
 	}
 }
 
@@ -292,7 +300,7 @@ std::string Utils::GhostEnumToStr(SDK::GhostType ghostType)
 		ghostTypeString = "Obake";
 		break;
 	case SDK::GhostType::Mimic:
-		ghostTypeString = "Mimic";
+		ghostTypeString = "The Mimic";
 		break;
 	case SDK::GhostType::Moroi:
 		ghostTypeString = "Moroi";
@@ -642,8 +650,7 @@ std::string Utils::GetActiveSceneName()
 
 SDK::GameObject* Utils::FindObjectByName(std::string name)
 {
-	auto unityStrName = SysStrToUnityStr(name);
-	return SDK::GameObject_Find(unityStrName, nullptr);
+	return SDK::GameObject_Find(SysStrToUnityStr(name), nullptr);
 }
 
 SDK::ObjectArray* Utils::FindObjectsOfType(std::string type)
@@ -1212,4 +1219,211 @@ SDK::Transform* Utils::GetPotatoe()
 	auto* Potatoe_Trans = SDK::GameObject_get_transform(Potatoe_Obj, nullptr); if (!Potatoe_Trans) return nullptr;
 
 	return Potatoe_Trans;
+}
+
+SDK::Type* Utils::GetType(std::string string)
+{
+	if (string.empty())
+		return nullptr;
+
+	return SDK::System_Type_GetType(SysStrToUnityStr(string), nullptr);
+}
+
+std::vector<std::tuple<std::string, SDK::GhostButton*, SDK::GameObject*>> Utils::get_AllGhostButtonsWithGO()
+{
+	// Journal2.0Canvas > Content > GhostHuntingBookContent > Evidence.2 > All Ghosts > GHOST NAME
+
+	std::vector<std::tuple<std::string, SDK::GhostButton*, SDK::GameObject*>> result;
+
+	auto* canvasGO = SDK::GameObject_Find(SysStrToUnityStr("Journal2.0Canvas"), nullptr);
+	if (!canvasGO)
+		return result;
+
+	auto* canvasTr = SDK::GameObject_get_transform(canvasGO, nullptr);
+	if (!canvasTr)
+		return result;
+
+	SDK::Transform* contentTr = nullptr;
+	int canvasChildCount = SDK::Transform_get_childCount(canvasTr, nullptr);
+	for (int i = 0; i < canvasChildCount; ++i)
+	{
+		auto* child = SDK::Transform_GetChild(canvasTr, i, nullptr);
+		auto* childGO = SDK::Component_Get_GameObject(reinterpret_cast<SDK::Component*>(child), nullptr);
+		std::string name = UnityStrToSysStr(*SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(childGO), nullptr));
+
+		if (name == "Content")
+		{
+			contentTr = child;
+			break;
+		}
+	}
+	if (!contentTr) return result;
+
+	SDK::Transform* bookContentTr = nullptr;
+	int contentChildCount = SDK::Transform_get_childCount(contentTr, nullptr);
+	for (int i = 0; i < contentChildCount; ++i)
+	{
+		auto* child = SDK::Transform_GetChild(contentTr, i, nullptr);
+		auto* childGO = SDK::Component_Get_GameObject(reinterpret_cast<SDK::Component*>(child), nullptr);
+		std::string name = UnityStrToSysStr(*SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(childGO), nullptr));
+
+		if (name == "GhostHuntingBookContent")
+		{
+			bookContentTr = child;
+			break;
+		}
+	}
+	if (!bookContentTr) return result;
+
+	SDK::Transform* evidenceTr = nullptr;
+	int bookChildCount = SDK::Transform_get_childCount(bookContentTr, nullptr);
+	for (int i = 0; i < bookChildCount; ++i)
+	{
+		auto* child = SDK::Transform_GetChild(bookContentTr, i, nullptr);
+		auto* childGO = SDK::Component_Get_GameObject(reinterpret_cast<SDK::Component*>(child), nullptr);
+		std::string name = UnityStrToSysStr(*SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(childGO), nullptr));
+
+		if (name == "Evidence.2")
+		{
+			evidenceTr = child;
+			break;
+		}
+	}
+	if (!evidenceTr) return result;
+
+	SDK::Transform* allGhostsTr = nullptr;
+	int evidenceChildCount = SDK::Transform_get_childCount(evidenceTr, nullptr);
+	for (int i = 0; i < evidenceChildCount; ++i)
+	{
+		auto* child = SDK::Transform_GetChild(evidenceTr, i, nullptr);
+		auto* childGO = SDK::Component_Get_GameObject(reinterpret_cast<SDK::Component*>(child), nullptr);
+		std::string name = UnityStrToSysStr(*SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(childGO), nullptr));
+
+		if (name == "All Ghosts")
+		{
+			allGhostsTr = child;
+			break;
+		}
+	}
+	if (!allGhostsTr) return result;
+
+	int ghostCount = SDK::Transform_get_childCount(allGhostsTr, nullptr);
+	for (int i = 0; i < ghostCount; ++i)
+	{
+		auto* ghostTr = SDK::Transform_GetChild(allGhostsTr, i, nullptr);
+		auto* ghostGO = SDK::Component_Get_GameObject(reinterpret_cast<SDK::Component*>(ghostTr), nullptr);
+		std::string ghostName = UnityStrToSysStr(*SDK::Object_Get_Name(reinterpret_cast<SDK::Object*>(ghostGO), nullptr));
+
+		if (ghostName.find("New Ghost") != std::string::npos)
+			continue;
+
+		SDK::Type* ghostButtonType = SDK::System_Type_GetType(SysStrToUnityStr("GhostButton"), nullptr);
+		auto* ghostButton = reinterpret_cast<SDK::GhostButton*>(SDK::GameObject_GetComponent(ghostGO, ghostButtonType, nullptr));
+
+		if (ghostButton)
+			result.emplace_back(ghostName, ghostButton, ghostGO);
+	}
+
+	return result;
+}
+
+bool Utils::DownloadFile(const std::string& url, const std::string& path)
+{
+	HRESULT hr = URLDownloadToFileA(nullptr, url.c_str(), path.c_str(), 0, nullptr);
+	return SUCCEEDED(hr);
+}
+
+bool Utils::ExtractZip(const std::string& zipPath, const std::string& extractPath)
+{
+	std::string command = "powershell -Command \"Expand-Archive -Path '"
+		+ zipPath + "' -DestinationPath '" + extractPath + "' -Force\"";
+
+	return system(command.c_str()) == 0;
+}
+
+bool Utils::InstallChineseFont()
+{
+	std::string baseDir = GetPhasmoCheatVDirectory();
+	std::string tempDir = baseDir + "\\ph_temp_font";
+	std::string zipPath = tempDir + "\\ph_font.zip";
+	std::string finalFont = baseDir + "\\ChinaLang.ttf";
+
+	try
+	{
+		if (fs::exists(finalFont))
+		{
+			LOG_INFO("Chinese font already exists, skipping installation.");
+			return true;
+		}
+
+		fs::create_directories(tempDir);
+		if (!DownloadFile("https://github.com/MonadABXY/mona-font/releases/download/2026.03.27/MonaS_20260327_0901.zip", zipPath))
+		{
+			LOG_ERROR("Download file was failed!");
+			return false;
+		}
+
+		if (!ExtractZip(zipPath, tempDir))
+		{
+			LOG_ERROR("Extract zip was failed!");
+			fs::remove_all(tempDir);
+			return false; 
+		}
+
+		std::string fontPath = tempDir + "\\ttf\\01_Main\\MonaS12.ttf";
+		if (!fs::exists(fontPath))
+		{
+			LOG_ERROR("Font %s not found!", fontPath);
+			fs::remove_all(tempDir);
+			return false;
+		}
+
+		fs::copy_file(fontPath, finalFont, fs::copy_options::overwrite_existing);
+
+		fs::remove_all(tempDir);
+
+		return true;
+	}
+	catch (...)
+	{
+		return false;
+	}
+}
+
+std::string Utils::GetGameVersion()
+{
+	auto* u_string = SDK::Application_get_version(0);
+	auto version = UnityStrToSysStr(*u_string);
+	return version;
+}
+
+std::string Utils::GetUnityVersion()
+{
+	auto* u_string = SDK::Application_get_unityVersion(0);
+	auto version = UnityStrToSysStr(*u_string);
+	return version;
+}
+
+bool Utils::Checks_IsRealSender(SDK::Player* pn_sender, SDK::PhotonView* view)
+{
+	if (pn_sender == nullptr || view == nullptr)
+		return 0; // In game code return true
+
+	if (pn_sender != SDK::PhotonView_get_Owner(view, 0))
+		return 0;
+
+	if (!SDK::PhotonNetwork_Get_InRoom(0))
+		return 1;
+
+	if (SDK::PhotonNetwork_Get_OfflineMode(0))
+		return 1;
+}
+
+float Utils::Distance(const SDK::Vector3& a, const SDK::Vector3& b)
+{
+	float dx = a.X - b.X;
+	float dy = a.Y - b.Y;
+	float dz = a.Z - b.Z;
+
+	return std::sqrt(dx * dx + dy * dy + dz * dz);
 }

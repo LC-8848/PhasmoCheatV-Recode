@@ -84,7 +84,6 @@ void DifficultyModifier::OnMenuRender()
 
     if (!m_selectedSettings.empty())
     {
-        ImGui::Separator();
         if (ImGui::Button(LANG("ApplyChanges")))
         {
             DifficultyModifierApply();
@@ -131,7 +130,7 @@ void DifficultyModifier::RenderSettingEditor(int index)
     ImGui::PushID(index);
 
     ImGui::BeginGroup();
-    ImGui::Text("%s", settingName.c_str());
+    ImGui::Text("%s", LANG(settingName.c_str()));
     ImGui::SameLine();
     if (ImGui::Button("X"))
     {
@@ -262,12 +261,12 @@ void DifficultyModifier::RenderSettingEditor(int index)
 const char* DifficultyModifier::GetConfigKey(int settingIndex) const
 {
     static const std::vector<const char*> configKeys = {
-        LANG("RequiredLevel"), LANG("SanityPillRestoration"), LANG("StartingSanity"), LANG("SanityDrain"), LANG("Sprinting"),
-        LANG("Flashlights"), LANG("LoseItemsOnDeath"), LANG("PlayerSpeed"), LANG("EvidenceGiven"), LANG("ChangingFavouriteRoom"),
-        LANG("InteractionAmount"), LANG("EventFrequency"), LANG("HuntDuration"), LANG("GracePeriod"), LANG("FingerprintChance"),
-        LANG("FingerprintDuration"), LANG("FriendlyGhost"), LANG("KillsExtendHunt"), LANG("RoamingFrequency"), LANG("GhostSpeed"),
-        LANG("SetupTime"), LANG("SelectedWeather"), LANG("DoorsOpen"), LANG("HidingPlaces"), LANG("SanityMonitor"),
-        LANG("ActivityMonitor"), LANG("FuseBoxVisible"), LANG("FuseBoxStartPower")
+        "RequiredLevel", "SanityPillRestoration", "StartingSanity", "SanityDrain", "Sprinting",
+        "Flashlights", "LoseItemsOnDeath", "PlayerSpeed", "EvidenceGiven", "ChangingFavouriteRoom",
+        "InteractionAmount", "EventFrequency", "HuntDuration", "GracePeriod", "FingerprintChance",
+        "FingerprintDuration", "FriendlyGhost", "KillsExtendHunt", "RoamingFrequency", "GhostSpeed",
+        "SetupTime", "SelectedWeather", "DoorsOpen", "HidingPlaces", "SanityMonitor",
+        "ActivityMonitor", "FuseBoxVisible", "FuseBoxStartPower"
     };
 
     return configKeys[settingIndex];
