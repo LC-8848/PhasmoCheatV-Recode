@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Visuals;
 
-JackalopeESP::JackalopeESP() : FeatureCore("Jackalope ESP", TYPE_VISUALS) {}
+JackalopeESP::JackalopeESP() : FeatureCore(LANG("JackalopeESP"), TYPE_VISUALS) {}
 
 void JackalopeESP::OnRender()
 {

@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Map;
 
-AlwaysBloodMoon::AlwaysBloodMoon() : FeatureCore("Always BloodMoon", TYPE_MISC) {}
+AlwaysBloodMoon::AlwaysBloodMoon() : FeatureCore(LANG("AlwaysBloodmoon"), TYPE_MISC) {}
 
 void AlwaysBloodMoon::OnMenuRender()
 {

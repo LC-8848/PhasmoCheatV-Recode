@@ -59,7 +59,7 @@ std::vector<SDK::HumanBodyBones> mainBones = {
     SDK::HumanBodyBones::RightToes
 };
 
-GhostESP::GhostESP() : FeatureCore("Ghost ESP", TYPE_VISUALS)
+GhostESP::GhostESP() : FeatureCore(LANG("GhostESP"), TYPE_VISUALS)
 {
     DECLARE_CONFIG(GetConfigManager(), "ESPColor", ImColor, ImColor(255, 0, 0, 255));
     DECLARE_CONFIG(GetConfigManager(), "BoxType", int, 0);
@@ -585,7 +585,7 @@ void GhostESP::OnMenuRender()
 
     if (showBoxESP)
     {
-        const char* boxTypes[] = { "2D Box", "Corner Box", "Filled Box" };
+        const char* boxTypes[] = { LANG("ShowBoxESP_Type_2DBOX"), LANG("ShowBoxESP_Type_CornerBox"), LANG("ShowBoxESP_Type_FilledBox") };
         int boxType = CONFIG_INT(GetConfigManager(), "BoxType");
 
         if (ImGui::Combo(MakeLabel("BoxType", "ghostESP").c_str(),

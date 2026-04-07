@@ -32,7 +32,7 @@ static std::unordered_map<std::string, int> ghostOrder = {
     {"Obambo", 26}
 };
 
-JournalModifier::JournalModifier() : FeatureCore("Journal Modifier", TYPE_MISC)
+JournalModifier::JournalModifier() : FeatureCore(LANG("JournalModifier"), TYPE_MISC)
 {
     DECLARE_CONFIG(GetConfigManager(), "OldGhostButtonPosition", bool, false);
     DECLARE_CONFIG(GetConfigManager(), "AutoSelectGhost", bool, false);

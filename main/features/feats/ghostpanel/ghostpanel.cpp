@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Visuals;
 
-GhostPanel::GhostPanel() : FeatureCore("Ghost Panel", TYPE_VISUALS)
+GhostPanel::GhostPanel() : FeatureCore(LANG("GhostPanel"), TYPE_VISUALS)
 {
     DECLARE_CONFIG(GetConfigManager(), "BansheeTargetSetting", bool, false);
     DECLARE_CONFIG(GetConfigManager(), "IsHideSettings", bool, false);
@@ -81,49 +81,49 @@ void GhostPanel::OnRender()
                 ImGui::TextWrapped("%s", value);
             };
 
-        DrawRow("Name", Utils::UnityStrToSysStr(*ghostTraits.Name).c_str(), CONFIG_BOOL(GetConfigManager(), "HideName"));
+        DrawRow(LANG("GhostPanel_Name"), Utils::UnityStrToSysStr(*ghostTraits.Name).c_str(), CONFIG_BOOL(GetConfigManager(), "HideName"));
 
-        DrawRow("Type", Utils::GhostEnumToStr(ghostTraits.GhostType_).c_str(), CONFIG_BOOL(GetConfigManager(), "HideType"));
+        DrawRow(LANG("GhostPanel_Type"), Utils::GhostEnumToStr(ghostTraits.GhostType_).c_str(), CONFIG_BOOL(GetConfigManager(), "HideType"));
 
-        DrawRow("Age", std::to_string(ghostTraits.GhostAge).c_str(), CONFIG_BOOL(GetConfigManager(), "HideAge"));
+        DrawRow(LANG("GhostPanel_Age"), std::to_string(ghostTraits.GhostAge).c_str(), CONFIG_BOOL(GetConfigManager(), "HideAge"));
 
-        DrawRow("State", Utils::GhostEnumToStr(InGame::ghostAI->Fields.currentState).c_str(), CONFIG_BOOL(GetConfigManager(), "HideState"));
+        DrawRow(LANG("GhostPanel_State"), Utils::GhostEnumToStr(InGame::ghostAI->Fields.currentState).c_str(), CONFIG_BOOL(GetConfigManager(), "HideState"));
 
         if (ghostTraits.GhostType_ == SDK::GhostType::Mimic)
-            DrawRow("Mimic Type", Utils::GhostEnumToStr(ghostTraits.MimicType).c_str(), CONFIG_BOOL(GetConfigManager(), "HideMimicType"));
+            DrawRow(LANG("GhostPanel_MimicType"), Utils::GhostEnumToStr(ghostTraits.MimicType).c_str(), CONFIG_BOOL(GetConfigManager(), "HideMimicType"));
 
         if (CONFIG_BOOL(GetConfigManager(), "BansheeTargetSetting") &&
             ghostTraits.GhostType_ == SDK::GhostType::Banshee)
         {
             if (const auto& bansheeTarget = InGame::ghostAI->Fields.BansheeTarget)
-                DrawRow("Target", Utils::GetPlayerName(bansheeTarget).c_str(), CONFIG_BOOL(GetConfigManager(), "HideBansheeTarget"));
+                DrawRow(LANG("GhostPanel_Target"), Utils::GetPlayerName(bansheeTarget).c_str(), CONFIG_BOOL(GetConfigManager(), "HideBansheeTarget"));
         }
 
         if (const auto& evidence = GetGhostEvidenceString(); !evidence.empty())
-            DrawRow("Evidence", evidence.c_str(), CONFIG_BOOL(GetConfigManager(), "HideEvidence"));
+            DrawRow(LANG("GhostPanel_Evidence"), evidence.c_str(), CONFIG_BOOL(GetConfigManager(), "HideEvidence"));
 
         if (const auto& levelRoom = ghostInfo->Fields.favouriteRoom;
             levelRoom && levelRoom->Fields.RoomName)
         {
-            DrawRow("Favorite Room", Utils::UnityStrToSysStr(*levelRoom->Fields.RoomName).c_str(), CONFIG_BOOL(GetConfigManager(), "HideRoom"));
+            DrawRow(LANG("GhostPanel_FavoriteRoom"), Utils::UnityStrToSysStr(*levelRoom->Fields.RoomName).c_str(), CONFIG_BOOL(GetConfigManager(), "HideRoom"));
         }
 
         if (InGame::levelController && InGame::levelController->Fields.currentGhostRoom)
         {
             const auto ghostRoom = InGame::levelController->Fields.currentGhostRoom;
             if (ghostRoom->Fields.RoomName)
-                DrawRow("Location", Utils::UnityStrToSysStr(*ghostRoom->Fields.RoomName).c_str(), CONFIG_BOOL(GetConfigManager(), "HideLocation"));
+                DrawRow(LANG("GhostPanel_Location"), Utils::UnityStrToSysStr(*ghostRoom->Fields.RoomName).c_str(), CONFIG_BOOL(GetConfigManager(), "HideLocation"));
         }
 
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
-        ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.9f, 1.0f), "Status");
+        ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.9f, 1.0f), LANG("GhostPanel_Status"));
         ImGui::TableSetColumnIndex(1);
 
         if (Globals::isHunting)
-            ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "HUNTING");
+            ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), LANG("GhostPanel_Status_HUNTING"));
         else
-            ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f), "PASSIVE");
+            ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f), LANG("GhostPanel_Status_PASSIVE"));
 
         ImGui::EndTable();
     }
@@ -214,10 +214,8 @@ std::string GhostPanel::GetGhostEvidenceString()
             evidence += " | ";
 
         const std::string fullName = Utils::GhostEnumToStr(items[i]);
-        if (fullName == "Ghost Writing") evidence += "Writing";
-        else if (fullName == "Fingerprints") evidence += "Prints";
-        else if (fullName == "Freezing Temperatures") evidence += "Freezing";
-        else if (fullName == "Spirit Box") evidence += "Spirit Box";
+        if (fullName == LANG("GhostEvidence_GhostWriting")) evidence += LANG("GhostPanel_Evidence_GhostWriting");
+        else if (fullName == LANG("GhostEvidence_FreezingTemperature")) evidence += LANG("GhostPanel_Evidence_FreezingTemperature");
         else evidence += fullName;
     }
 

@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Visuals;
 
-Watermark::Watermark() : FeatureCore("Watermark", TYPE_VISUALS)
+Watermark::Watermark() : FeatureCore(LANG("Watermark"), TYPE_VISUALS)
 {
     DECLARE_CONFIG(GetConfigManager(), "ShowSanity", bool, true);
     DECLARE_CONFIG(GetConfigManager(), "ShowPing", bool, true);

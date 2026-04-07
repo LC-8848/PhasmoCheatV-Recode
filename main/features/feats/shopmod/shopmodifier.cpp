@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Misc;
 
-ShopModifier::ShopModifier() : FeatureCore("Shop Modifier", TYPE_MISC)
+ShopModifier::ShopModifier() : FeatureCore(LANG("ShopModifier"), TYPE_MISC)
 {
     DECLARE_CONFIG(GetConfigManager(), "SkipShopTutorials", bool, false);
     DECLARE_CONFIG(GetConfigManager(), "CustomCost", bool, false);

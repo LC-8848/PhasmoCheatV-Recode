@@ -152,180 +152,68 @@ std::string Utils::getKeyName(int keyCode)
 
 std::string Utils::GhostEnumToStr(SDK::GhostState ghostState)
 {
-	std::string ghostStateString;
-
 	switch (ghostState)
 	{
-	case SDK::GhostState::Idle:
-		ghostStateString = "Idle";
-		break;
-	case SDK::GhostState::Wander:
-		ghostStateString = "Wander";
-		break;
-	case SDK::GhostState::Hunting:
-		ghostStateString = "Hunting";
-		break;
-	case SDK::GhostState::FavoriteRoom:
-		ghostStateString = "Favorite Room";
-		break;
-	case SDK::GhostState::Light:
-		ghostStateString = "Light";
-		break;
-	case SDK::GhostState::Door:
-		ghostStateString = "Door";
-		break;
-	case SDK::GhostState::Throwing:
-		ghostStateString = "Throwing";
-		break;
-	case SDK::GhostState::FuseBox:
-		ghostStateString = "Fuse Box";
-		break;
-	case SDK::GhostState::Appear:
-		ghostStateString = "Appear";
-		break;
-	case SDK::GhostState::DoorKnock:
-		ghostStateString = "Door Knock";
-		break;
-	case SDK::GhostState::WindowKnock:
-		ghostStateString = "Window Knock";
-		break;
-	case SDK::GhostState::CarAlarm:
-		ghostStateString = "Car Alarm";
-		break;
-	case SDK::GhostState::Flicker:
-		ghostStateString = "Flicker";
-		break;
-	case SDK::GhostState::CCTV:
-		ghostStateString = "CCTV";
-		break;
-	case SDK::GhostState::RandomEvent:
-		ghostStateString = "Random Event";
-		break;
-	case SDK::GhostState::GhostAbility:
-		ghostStateString = "Ghost Ability";
-		break;
-	case SDK::GhostState::Mannequin:
-		ghostStateString = "Mannequin";
-		break;
-	case SDK::GhostState::TeleportObject:
-		ghostStateString = "Teleport Object";
-		break;
-	case SDK::GhostState::Interact:
-		ghostStateString = "Interact";
-		break;
-	case SDK::GhostState::SummoningCircle:
-		ghostStateString = "Summoning Circle";
-		break;
-	case SDK::GhostState::MusicBox:
-		ghostStateString = "Music Box";
-		break;
-	case SDK::GhostState::Dots:
-		ghostStateString = "Dots";
-		break;
-	case SDK::GhostState::Salt:
-		ghostStateString = "Salt";
-		break;
-	default:
-		ghostStateString = "Unknown";
-		break;
+	case SDK::GhostState::Idle:							return LANG("GhostState_Idle");
+	case SDK::GhostState::Wander:					return LANG("GhostState_Wander");
+	case SDK::GhostState::Hunting:					return LANG("GhostState_Hunting");
+	case SDK::GhostState::FavoriteRoom:			return LANG("GhostState_FavoriteRoom");
+	case SDK::GhostState::Light:						return LANG("GhostState_Light");
+	case SDK::GhostState::Door:						return LANG("GhostState_Door");
+	case SDK::GhostState::Throwing:					return LANG("GhostState_Throwing");
+	case SDK::GhostState::FuseBox:					return LANG("GhostState_FuseBox");
+	case SDK::GhostState::Appear:					return LANG("GhostState_Appear");
+	case SDK::GhostState::DoorKnock:				return LANG("GhostState_DoorKnock");
+	case SDK::GhostState::WindowKnock:			return LANG("GhostState_WindowKnock");
+	case SDK::GhostState::CarAlarm:					return LANG("GhostState_CarAlarm");
+	case SDK::GhostState::Flicker:						return LANG("GhostState_Flicker");
+	case SDK::GhostState::CCTV:						return LANG("GhostState_CCTV");
+	case SDK::GhostState::RandomEvent:			return LANG("GhostState_RandomEvent");
+	case SDK::GhostState::GhostAbility:			return LANG("GhostState_GhostAbility");
+	case SDK::GhostState::Mannequin:				return LANG("GhostState_Mannequin");
+	case SDK::GhostState::TeleportObject:		return LANG("GhostState_TeleportObject");
+	case SDK::GhostState::Interact:					return LANG("GhostState_Interact");
+	case SDK::GhostState::SummoningCircle:	return LANG("GhostState_SummoningCircle");
+	case SDK::GhostState::MusicBox:					return LANG("GhostState_MusicBox");
+	case SDK::GhostState::Dots:							return LANG("GhostState_Dots");
+	case SDK::GhostState::Salt:							return LANG("GhostState_Salt");
+	default:														return LANG("Unknown");
 	}
-
-	return ghostStateString;
 }
 
 std::string Utils::GhostEnumToStr(SDK::GhostType ghostType)
 {
-	std::string ghostTypeString;
-
 	switch (ghostType)
 	{
-	case SDK::GhostType::Spirit:
-		ghostTypeString = "Spirit";
-		break;
-	case SDK::GhostType::Wraith:
-		ghostTypeString = "Wraith";
-		break;
-	case SDK::GhostType::Phantom:
-		ghostTypeString = "Phantom";
-		break;
-	case SDK::GhostType::Poltergeist:
-		ghostTypeString = "Poltergeist";
-		break;
-	case SDK::GhostType::Banshee:
-		ghostTypeString = "Banshee";
-		break;
-	case SDK::GhostType::Jinn:
-		ghostTypeString = "Jinn";
-		break;
-	case SDK::GhostType::Mare:
-		ghostTypeString = "Mare";
-		break;
-	case SDK::GhostType::Revenant:
-		ghostTypeString = "Revenant";
-		break;
-	case SDK::GhostType::Shade:
-		ghostTypeString = "Shade";
-		break;
-	case SDK::GhostType::Demon:
-		ghostTypeString = "Demon";
-		break;
-	case SDK::GhostType::Yurei:
-		ghostTypeString = "Yurei";
-		break;
-	case SDK::GhostType::Oni:
-		ghostTypeString = "Oni";
-		break;
-	case SDK::GhostType::Yokai:
-		ghostTypeString = "Yokai";
-		break;
-	case SDK::GhostType::Hantu:
-		ghostTypeString = "Hantu";
-		break;
-	case SDK::GhostType::Goryo:
-		ghostTypeString = "Goryo";
-		break;
-	case SDK::GhostType::Myling:
-		ghostTypeString = "Myling";
-		break;
-	case SDK::GhostType::Onryo:
-		ghostTypeString = "Onryo";
-		break;
-	case SDK::GhostType::TheTwins:
-		ghostTypeString = "The Twins";
-		break;
-	case SDK::GhostType::Raiju:
-		ghostTypeString = "Raiju";
-		break;
-	case SDK::GhostType::Obake:
-		ghostTypeString = "Obake";
-		break;
-	case SDK::GhostType::Mimic:
-		ghostTypeString = "The Mimic";
-		break;
-	case SDK::GhostType::Moroi:
-		ghostTypeString = "Moroi";
-		break;
-	case SDK::GhostType::Deogen:
-		ghostTypeString = "Deogen";
-		break;
-	case SDK::GhostType::Thaye:
-		ghostTypeString = "Thaye";
-		break;
-	case SDK::GhostType::Gallu:
-		ghostTypeString = "Gallu";
-		break;
-	case SDK::GhostType::Dayan:
-		ghostTypeString = "Dayan";
-		break;
-	case SDK::GhostType::Obambo:
-		ghostTypeString = "Obambo";
-		break;
-	default:
-		ghostTypeString = "Unknown";
-		break;
+	case SDK::GhostType::Spirit:			return LANG("GhostType_Spirit");
+	case SDK::GhostType::Wraith:			return LANG("GhostType_Wraith");
+	case SDK::GhostType::Phantom:		return LANG("GhostType_Phantom");
+	case SDK::GhostType::Poltergeist:	return LANG("GhostType_Poltergeist");
+	case SDK::GhostType::Banshee:		return LANG("GhostType_Banshee");
+	case SDK::GhostType::Jinn:				return LANG("GhostType_Jinn");
+	case SDK::GhostType::Mare:			return LANG("GhostType_Mare");
+	case SDK::GhostType::Revenant:		return LANG("GhostType_Revenant");
+	case SDK::GhostType::Shade:			return LANG("GhostType_Shade");
+	case SDK::GhostType::Demon:			return LANG("GhostType_Demon");
+	case SDK::GhostType::Yurei:			return LANG("GhostType_Yurei");
+	case SDK::GhostType::Oni:				return LANG("GhostType_Oni");
+	case SDK::GhostType::Yokai:			return LANG("GhostType_Yokai");
+	case SDK::GhostType::Hantu:			return LANG("GhostType_Hantu");
+	case SDK::GhostType::Goryo:			return LANG("GhostType_Goryo");
+	case SDK::GhostType::Myling:			return LANG("GhostType_Myling");
+	case SDK::GhostType::Onryo:			return LANG("GhostType_Onryo");
+	case SDK::GhostType::TheTwins:		return LANG("GhostType_TheTwins");
+	case SDK::GhostType::Raiju:				return LANG("GhostType_Raiju");
+	case SDK::GhostType::Obake:			return LANG("GhostType_Obake");
+	case SDK::GhostType::Mimic:			return LANG("GhostType_Mimic");
+	case SDK::GhostType::Moroi:			return LANG("GhostType_Moroi");
+	case SDK::GhostType::Deogen:		return LANG("GhostType_Deogen");
+	case SDK::GhostType::Thaye:			return LANG("GhostType_Thaye");
+	case SDK::GhostType::Gallu:			return LANG("GhostType_Gallu");
+	case SDK::GhostType::Dayan:			return LANG("GhostType_Dayan");
+	case SDK::GhostType::Obambo:		return LANG("GhostType_Obambo");
+	default:											return LANG("Unknown");
 	}
-
-	return ghostTypeString;
 }
 
 std::string Utils::GhostEnumToStr(const SDK::GhostEvidence ghostEvidence)
@@ -335,31 +223,31 @@ std::string Utils::GhostEnumToStr(const SDK::GhostEvidence ghostEvidence)
 	switch (ghostEvidence)
 	{
 	case SDK::GhostEvidence::None:
-		evidenceTypeString = "None";
+		evidenceTypeString = LANG("None");
 		break;
 	case SDK::GhostEvidence::EMF:
-		evidenceTypeString = "EMF Level 5";
+		evidenceTypeString = LANG("GhostEvidence_EMFLevel5");
 		break;
 	case SDK::GhostEvidence::SpiritBox:
-		evidenceTypeString = "Spirit Box";
+		evidenceTypeString = LANG("GhostEvidence_SpiritBox");
 		break;
 	case SDK::GhostEvidence::Ultraviolet:
-		evidenceTypeString = "Ultraviolet";
+		evidenceTypeString = LANG("GhostEvidence_Ultraviolet");
 		break;
 	case SDK::GhostEvidence::GhostOrb:
-		evidenceTypeString = "Ghost Orb";
+		evidenceTypeString = LANG("GhostEvidence_GhostOrb");
 		break;
 	case SDK::GhostEvidence::GhostWritingBook:
-		evidenceTypeString = "Ghost Writing";
+		evidenceTypeString = LANG("GhostEvidence_GhostWriting");
 		break;
 	case SDK::GhostEvidence::Temperature:
-		evidenceTypeString = "Freezing Temperature";
+		evidenceTypeString = LANG("GhostEvidence_FreezingTemperature");
 		break;
 	case SDK::GhostEvidence::DotsProjector:
-		evidenceTypeString = "D.O.T.S. Projector";
+		evidenceTypeString = LANG("GhostEvidence_D.O.T.S.Projector");
 		break;
 	default:
-		evidenceTypeString = "Unknown";
+		evidenceTypeString = LANG("Unknown");
 		break;
 	}
 
@@ -493,90 +381,48 @@ std::string Utils::GhostEnumToStr(SDK::EvidenceType evidenceType)
 {
 	switch (evidenceType)
 	{
-	case SDK::EvidenceType::emfSpot:
-		return "EMF Spot";
-	case SDK::EvidenceType::ouijaBoard:
-		return "Ouija Board";
-	case SDK::EvidenceType::fingerprint:
-		return "Fingerprint";
-	case SDK::EvidenceType::footstep:
-		return "Footstep";
-	case SDK::EvidenceType::DNA:
-		return "";
-	case SDK::EvidenceType::ghost:
-		return "Ghost";
-	case SDK::EvidenceType::deadBody:
-		return "Dead Body";
-	case SDK::EvidenceType::dirtyWater:
-		return "Dirty Water";
-	case SDK::EvidenceType::musicBox:
-		return "Music Box";
-	case SDK::EvidenceType::tarotCards:
-		return "Tarot Cards";
-	case SDK::EvidenceType::summoningCicle:
-		return "Summoning Cicle";
-	case SDK::EvidenceType::hauntedMirror:
-		return "Haunted Mirror";
-	case SDK::EvidenceType::voodooDoll:
-		return "Voodoo Doll";
-	case SDK::EvidenceType::ghostWriting:
-		return "Ghost Writing";
-	case SDK::EvidenceType::usedCrucifix:
-		return "Used Crucifix";
-	case SDK::EvidenceType::dotsGhost:
-		return "DOTS Ghost";
-	case SDK::EvidenceType::monkeyPaw:
-		return "Monkey Paw";
-	case SDK::EvidenceType::moonAlter:
-		return "Moon Alter";
-	case SDK::EvidenceType::ghostOrb:
-		return "Ghost Orb";
-	case SDK::EvidenceType::lightSource:
-		return "Light Source";
-	case SDK::EvidenceType::none:
-		return "None";
-	case SDK::EvidenceType::emfReader:
-		return "EMF Reader";
-	case SDK::EvidenceType::salt:
-		return "Salt";
-	case SDK::EvidenceType::freezingTemperature:
-		return "Freezing Temperature";
-	case SDK::EvidenceType::ghostSmoke:
-		return "Ghost Smoke";
-	case SDK::EvidenceType::camoGhost:
-		return "Camo Ghost";
-	case SDK::EvidenceType::paranormalSound:
-		return "Paranormal Sound";
-	case SDK::EvidenceType::spiritBox:
-		return "Spirit Box";
-	case SDK::EvidenceType::ghostHunt:
-		return "Ghost Hunt";
-	case SDK::EvidenceType::bansheeWail:
-		return "Banshee Wail";
-	case SDK::EvidenceType::teddyBear:
-		return "Teddy Bear";
-	case SDK::EvidenceType::spiritBoxBreath:
-		return "Spirit Box Breath";
-	case SDK::EvidenceType::motionSensor:
-		return "Motion Sensor";
-	case SDK::EvidenceType::shadowGhost:
-		return "Shadow Ghost";
-	case SDK::EvidenceType::ghostGroan:
-		return "Ghost Groan";
-	case SDK::EvidenceType::ghostLaugh:
-		return "Ghost Laugh";
-	case SDK::EvidenceType::ghostTalk:
-		return "Ghost Talk";
-	case SDK::EvidenceType::ghostWhisper:
-		return "Ghost Whisper";
-	case SDK::EvidenceType::obakeFingerprint:
-		return "Obake Fingerprint";
-	case SDK::EvidenceType::burningChapelCrucifix:
-		return "Burning Chapel Crucifix";
-	case SDK::EvidenceType::obakeShapeshift:
-		return "Obake Shapeshift";
-	default:
-		return "Unknown";
+	case SDK::EvidenceType::emfSpot:							return LANG("EvidenceType_EMFSpot");
+	case SDK::EvidenceType::ouijaBoard:						return LANG("EvidenceType_OuijaBoard");
+	case SDK::EvidenceType::fingerprint:						return LANG("EvidenceType_Fingerprint");
+	case SDK::EvidenceType::footstep:							return LANG("EvidenceType_Footstep");
+	case SDK::EvidenceType::DNA:								return "";
+	case SDK::EvidenceType::ghost:								return LANG("EvidenceType_Ghost");
+	case SDK::EvidenceType::deadBody:						return LANG("EvidenceType_DeadBody");
+	case SDK::EvidenceType::dirtyWater:						return LANG("EvidenceType_DirtyWater");
+	case SDK::EvidenceType::musicBox:							return LANG("EvidenceType_MusicBox");
+	case SDK::EvidenceType::tarotCards:						return LANG("EvidenceType_TarotCards");
+	case SDK::EvidenceType::summoningCicle:				return LANG("EvidenceType_SummoningCircle"); // 这里存在拼写错误
+	case SDK::EvidenceType::hauntedMirror:				return LANG("EvidenceType_HauntedMirror");
+	case SDK::EvidenceType::voodooDoll:						return LANG("EvidenceType_VoodooDoll");
+	case SDK::EvidenceType::ghostWriting:					return LANG("EvidenceType_GhostWriting");
+	case SDK::EvidenceType::usedCrucifix:					return LANG("EvidenceType_UsedCrucifix");
+	case SDK::EvidenceType::dotsGhost:						return LANG("EvidenceType_DotsGhost");
+	case SDK::EvidenceType::monkeyPaw:					return LANG("EvidenceType_MonkeyPaw");
+	case SDK::EvidenceType::moonAlter:						return LANG("EvidenceType_MoonAlter");
+	case SDK::EvidenceType::ghostOrb:							return LANG("EvidenceType_GhostOrb");
+	case SDK::EvidenceType::lightSource:						return LANG("EvidenceType_LightSource");
+	case SDK::EvidenceType::none:								return LANG("EvidenceType_None");
+	case SDK::EvidenceType::emfReader:						return LANG("EvidenceType_EmfReader");
+	case SDK::EvidenceType::salt:									return LANG("EvidenceType_Salt");
+	case SDK::EvidenceType::freezingTemperature:		return LANG("EvidenceType_FreezingTemperature");
+	case SDK::EvidenceType::ghostSmoke:					return LANG("EvidenceType_GhostSmoke");
+	case SDK::EvidenceType::camoGhost:						return LANG("EvidenceType_CamoGhost");
+	case SDK::EvidenceType::paranormalSound:			return LANG("EvidenceType_ParanormalSound");
+	case SDK::EvidenceType::spiritBox:							return LANG("EvidenceType_SpiritBox");
+	case SDK::EvidenceType::ghostHunt:						return LANG("EvidenceType_GhostHunt");
+	case SDK::EvidenceType::bansheeWail:					return LANG("EvidenceType_BansheeWail");
+	case SDK::EvidenceType::teddyBear:						return LANG("EvidenceType_TeddyBear");
+	case SDK::EvidenceType::spiritBoxBreath:				return LANG("EvidenceType_SpiritBoxBreath");
+	case SDK::EvidenceType::motionSensor:					return LANG("EvidenceType_MotionSensor");
+	case SDK::EvidenceType::shadowGhost:					return LANG("EvidenceType_ShadowGhost");
+	case SDK::EvidenceType::ghostGroan:						return LANG("EvidenceType_GhostGroan");
+	case SDK::EvidenceType::ghostLaugh:						return LANG("EvidenceType_GhostLaugh");
+	case SDK::EvidenceType::ghostTalk:						return LANG("EvidenceType_GhostTalk");
+	case SDK::EvidenceType::ghostWhisper:					return LANG("EvidenceType_GhostWhisper");
+	case SDK::EvidenceType::obakeFingerprint:			return LANG("EvidenceType_ObakeFingerprint");
+	case SDK::EvidenceType::burningChapelCrucifix:	return LANG("EvidenceType_BurningChapelCrucifix");
+	case SDK::EvidenceType::obakeShapeshift:				return LANG("EvidenceType_ObakeShapeshift");
+	default:																	return LANG("Unknown");
 	}
 }
 

@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Misc;
 
-PhotoModifier::PhotoModifier() : FeatureCore("Photo Modifier", TYPE_MISC)
+PhotoModifier::PhotoModifier() : FeatureCore(LANG("PhotoModifier"), TYPE_MISC)
 {
 	DECLARE_CONFIG(GetConfigManager(), "AutoPhoto", bool, false);
 	DECLARE_CONFIG(GetConfigManager(), "x5photo", bool, false);

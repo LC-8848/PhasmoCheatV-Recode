@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Difficulty;
 
-DifficultyModifier::DifficultyModifier() : FeatureCore("Difficulty Modifier", TYPE_DIFFICULTY)
+DifficultyModifier::DifficultyModifier() : FeatureCore(LANG("DifficultyModifier"), TYPE_DIFFICULTY)
 {
     DECLARE_CONFIG(GetConfigManager(), "RequiredLevel", int, 0);
     DECLARE_CONFIG(GetConfigManager(), "SanityPillRestoration", int, 0);

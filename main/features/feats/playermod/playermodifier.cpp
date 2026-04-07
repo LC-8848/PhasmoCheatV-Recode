@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Players;
 
-PlayerModifier::PlayerModifier() : FeatureCore("Player Modifier", TYPE_PLAYERS) {}
+PlayerModifier::PlayerModifier() : FeatureCore(LANG("PlayerModifier"), TYPE_PLAYERS) {}
 
 void PlayerModifier::OnMenuRender()
 {

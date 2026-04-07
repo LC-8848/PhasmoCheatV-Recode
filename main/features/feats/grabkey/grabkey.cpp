@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Map;
 
-GrabKeys::GrabKeys() : FeatureCore("Grab Keys", TYPE_MAP)
+GrabKeys::GrabKeys() : FeatureCore(LANG("GrabKeys"), TYPE_MAP)
 {
 	DECLARE_CONFIG(GetConfigManager(), "AutoGrabKeys", bool, false);
 }

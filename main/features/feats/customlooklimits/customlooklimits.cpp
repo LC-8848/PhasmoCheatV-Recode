@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Players;
 
-CustomLookLimits::CustomLookLimits() : FeatureCore("Custom Look Limits", TYPE_PLAYERS)
+CustomLookLimits::CustomLookLimits() : FeatureCore(LANG("LookLimits"), TYPE_PLAYERS)
 {
 	DECLARE_CONFIG(GetConfigManager(), "NoLimits", bool, false);
 	DECLARE_CONFIG(GetConfigManager(), "MinX", float, -90.f);

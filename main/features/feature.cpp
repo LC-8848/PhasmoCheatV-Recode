@@ -290,20 +290,18 @@ void FeatureHandler::ShowFeaturesByType()
     const char* categoryName = "Unknown";
     switch (CurrentType)
     {
-    case TYPE_VISUALS: categoryName = "Visuals"; break;
-    case TYPE_PLAYERS: categoryName = "Players"; break;
-    case TYPE_GHOST: categoryName = "Ghost"; break;
-    case TYPE_CURSED: categoryName = "Cursed"; break;
-    case TYPE_MOVEMENT: categoryName = "Movement"; break;
-    case TYPE_MISC: categoryName = "Misc"; break;
-    case TYPE_CONFIGS: categoryName = "Configs"; break;
-    case TYPE_DIFFICULTY: categoryName = "Difficulty"; break;
-    case TYPE_MAP: categoryName = "Map"; break;
+    case TYPE_VISUALS: categoryName = LANG("Visuals"); break;
+    case TYPE_PLAYERS: categoryName = LANG("Players"); break;
+    case TYPE_GHOST: categoryName = LANG("Ghost"); break;
+    case TYPE_CURSED: categoryName = LANG("Cursed"); break;
+    case TYPE_MOVEMENT: categoryName = LANG("Movement"); break;
+    case TYPE_MISC: categoryName = LANG("Misc"); break;
+    case TYPE_CONFIGS: categoryName = LANG("Configs"); break;
+    case TYPE_DIFFICULTY: categoryName = LANG("Difficulty"); break;
+    case TYPE_MAP: categoryName = LANG("Map"); break;
     }
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10);
-    ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[7]);
-    ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "%s Features", categoryName);
-    ImGui::PopFont();
+    ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), LANG("Feature"), categoryName);
     ImGui::Separator();
     ImGui::Spacing();
     if (ImGui::Button(LANG("BackToCategories"), ImVec2(150, 30)))

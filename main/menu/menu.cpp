@@ -227,9 +227,9 @@ void Menu::Render()
                     ImGui::TextColored(accentPurpleLight, Utils::getKeyName(MenuToggleKey).c_str());
 
                     ImGui::Spacing();
-                    ImGui::Text("Language");
+                    ImGui::Text(LANG("Menu_Language"));
 
-                    static const char* langItems[] = { "EN", "RU", "ZH" };
+                    static const char* langItems[] = { "EN", "RU", "CN" };
                     static int currentLang = (int)LanguageManager::GetCurrentLanguage();
                     static bool isInstallingFont = false;
                     static bool isRestartScheduled = false;
@@ -338,9 +338,7 @@ void Menu::Render()
 
                 ImGui::NextColumn();
                 {
-                    ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[7]);
-                    ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.f, 1.f), "Colors");
-                    ImGui::PopFont();
+                    ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.f, 1.f), LANG("Menu_Colors"));
 
                     ImGui::Spacing();
 
@@ -357,14 +355,14 @@ void Menu::Render()
 
                     ImGui::Spacing();
 
-                    if (ImGui::Button("Save Colors", ImVec2(160 * dpiScale, 30 * dpiScale)))
+                    if (ImGui::Button(LANG("Menu_SaveColors"), ImVec2(160 * dpiScale, 30 * dpiScale)))
                     {
                         PhasmoCheatV::Config::SaveConfig();
                     }
 
                     ImGui::SameLine();
 
-                    if (ImGui::Button("Reset Colors", ImVec2(140 * dpiScale, 30 * dpiScale)))
+                    if (ImGui::Button(LANG("Menu_ResetColors"), ImVec2(140 * dpiScale, 30 * dpiScale)))
                     {
                         PhasmoCheatV::Globals::ResetColors();
                         PhasmoCheatV::Config::SaveConfig();
@@ -410,17 +408,13 @@ void Menu::Render()
             ImGui::SetCursorPosX(25 * dpiScale);
             ImGui::BeginGroup();
 
-            ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
             ImGui::TextColored(accentPurple, LANG("Menu_About"));
-            ImGui::PopFont();
             ImGui::Separator();
             ImGui::Dummy(ImVec2(0, 15));
 
             ImGui::BeginChild("OpenSource", ImVec2(0, 150 * dpiScale), true);
             {
-                ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[7]);
                 ImGui::TextColored(accentPurple, LANG("Menu_OpenSource"));
-                ImGui::PopFont();
                 ImGui::Separator();
                 ImGui::Dummy(ImVec2(0, 9));
 
@@ -446,9 +440,7 @@ void Menu::Render()
 
             ImGui::BeginChild("Credits", ImVec2(0, 0), true);
             {
-                ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[7]);
                 ImGui::TextColored(accentPurple, LANG("Menu_Credits"));
-                ImGui::PopFont();
                 ImGui::Separator();
                 ImGui::Dummy(ImVec2(0, 10));
 

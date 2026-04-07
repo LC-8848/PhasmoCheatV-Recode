@@ -37,7 +37,7 @@ const char* mapItems[] = {
     "Camp Woodwind"
 };
 
-MapModifier::MapModifier() : FeatureCore("Map Modifier", TYPE_MAP)
+MapModifier::MapModifier() : FeatureCore(LANG("MapModifier"), TYPE_MAP)
 {
     DECLARE_CONFIG(GetConfigManager(), "CustomMaxLight", bool, false);
     DECLARE_CONFIG(GetConfigManager(), "MaxLight", int32_t, 10);

@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Map;
 
-DoorModifier::DoorModifier() : FeatureCore("Door Modifier", TYPE_MAP)
+DoorModifier::DoorModifier() : FeatureCore(LANG("DoorModifier"), TYPE_MAP)
 {
     DECLARE_CONFIG(GetConfigManager(), "DisableInteraction", bool, false);
     DECLARE_CONFIG(GetConfigManager(), "LockDoors", bool, false);

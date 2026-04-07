@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Movement;
 
-Teleport::Teleport() : FeatureCore("Teleport", TYPE_MOVEMENT)
+Teleport::Teleport() : FeatureCore(LANG("Teleport"), TYPE_MOVEMENT)
 {
     auto config = GetConfigManager();
     DECLARE_CONFIG(config, "SavedPointX", float, 0.0f);

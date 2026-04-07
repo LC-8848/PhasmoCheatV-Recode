@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Cursed;
 
-CursedItemsControll::CursedItemsControll() : FeatureCore("CursedItems Controll", TYPE_CURSED)
+CursedItemsControll::CursedItemsControll() : FeatureCore(LANG("CursedItemsControll"), TYPE_CURSED)
 {
     DECLARE_CONFIG(GetConfigManager(), "CardTypeForced", int, static_cast<int>(SDK::TarotCardType::Fool));
     DECLARE_CONFIG(GetConfigManager(), "CardForce", bool, false);

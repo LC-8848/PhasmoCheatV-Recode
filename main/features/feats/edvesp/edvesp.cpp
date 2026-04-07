@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Visuals;
 
-EvidenceESP::EvidenceESP() : FeatureCore("Evidence ESP", TYPE_VISUALS)
+EvidenceESP::EvidenceESP() : FeatureCore(LANG("EvidenceESP"), TYPE_VISUALS)
 {
     DECLARE_CONFIG(GetConfigManager(), "DNAEvidenceShow", bool, false);
     DECLARE_CONFIG(GetConfigManager(), "CursedItemShow", bool, false);

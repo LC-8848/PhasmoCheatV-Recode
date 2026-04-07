@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Movement; // Many thanks to Evelien for NoClip
 
-NoClip::NoClip() : FeatureCore("NoClip", TYPE_MOVEMENT)
+NoClip::NoClip() : FeatureCore(LANG("NoClip"), TYPE_MOVEMENT)
 {
 	DECLARE_CONFIG(GetConfigManager(), "NoClipSpeed", float, 1.f);
 }

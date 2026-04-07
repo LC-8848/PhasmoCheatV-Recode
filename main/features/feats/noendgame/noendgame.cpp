@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Misc;
 
-NoEndGame::NoEndGame() : FeatureCore("No End Game", TYPE_MISC) {}
+NoEndGame::NoEndGame() : FeatureCore(LANG("NoEndGame"), TYPE_MISC) {}
 
 void NoEndGame::OnMenuRender()
 {

@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Visuals;
 
-PlayersPanel::PlayersPanel() : FeatureCore("Players Panel", TYPE_VISUALS)
+PlayersPanel::PlayersPanel() : FeatureCore(LANG("PlayersPanel"), TYPE_VISUALS)
 {
     DECLARE_CONFIG(GetConfigManager(), "ShowSanity", bool, true);
     DECLARE_CONFIG(GetConfigManager(), "ShowCurrentRoom", bool, true);

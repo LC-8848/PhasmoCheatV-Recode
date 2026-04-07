@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Visuals;
 
-TemperaturePanel::TemperaturePanel() : FeatureCore("Temperature Panel", TYPE_VISUALS) {}
+TemperaturePanel::TemperaturePanel() : FeatureCore(LANG("TemperaturePanel"), TYPE_VISUALS) {}
 
 void TemperaturePanel::OnRender()
 {

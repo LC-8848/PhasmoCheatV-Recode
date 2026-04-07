@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Visuals;
 
-NotifyInfo::NotifyInfo() : FeatureCore("Notify Info", TYPE_VISUALS) 
+NotifyInfo::NotifyInfo() : FeatureCore(LANG("NotifyInfo"), TYPE_VISUALS) 
 {
 	DECLARE_CONFIG(GetConfigManager(), "HuntingNotify", bool, true);
 	DECLARE_CONFIG(GetConfigManager(), "CollectBoneNotify", bool, false);

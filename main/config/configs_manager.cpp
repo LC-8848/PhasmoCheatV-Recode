@@ -8,7 +8,7 @@ using namespace PhasmoCheatV::Features::Configs;
 #define NOTIFY_ERROR_QUICK(message) NOTIFY_ERROR(message, 6.0f)
 #define NOTIFY_SUCCESS_QUICK(message) NOTIFY_SUCCESS(message, 4.0f)
 
-ConfigsManager::ConfigsManager() : FeatureCore("ConfigsManager", TYPE_CONFIGS)
+ConfigsManager::ConfigsManager() : FeatureCore(LANG("ConfigsManager"), TYPE_CONFIGS)
 {
     std::memset(newConfigName, 0, sizeof(newConfigName));
     std::memset(importData, 0, sizeof(importData));
@@ -21,7 +21,7 @@ void ConfigsManager::OnMenuRender()
 {
     ImGui::BeginChild("ConfigsContent", ImVec2(0, 0), true);
 
-    if (ImGui::Button("Create New", ImVec2(120, 30)))
+    if (ImGui::Button(LANG("ConfigsManager_CreateNew"), ImVec2(120, 30)))
     {
         showCreate = true;
         std::memset(newConfigName, 0, sizeof(newConfigName));
@@ -29,7 +29,7 @@ void ConfigsManager::OnMenuRender()
 
     ImGui::SameLine();
 
-    if (ImGui::Button("Import", ImVec2(120, 30)))
+    if (ImGui::Button(LANG("ConfigsManager_Import"), ImVec2(120, 30)))
     {
         showImport = true;
         std::memset(importData, 0, sizeof(importData));
@@ -37,7 +37,7 @@ void ConfigsManager::OnMenuRender()
 
     ImGui::SameLine();
 
-    if (ImGui::Button("Save Current", ImVec2(120, 30)))
+    if (ImGui::Button(LANG("ConfigsManager_SaveCurrent"), ImVec2(120, 30)))
     {
         Config::SaveConfig();
         NOTIFY_SUCCESS_QUICK("Current config saved");
@@ -57,9 +57,9 @@ void ConfigsManager::OnMenuRender()
     {
         if (ImGui::BeginTable("Configs", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
         {
-            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 150);
-            ImGui::TableSetupColumn("Modified", ImGuiTableColumnFlags_WidthFixed, 120);
-            ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed, 200);
+            ImGui::TableSetupColumn(LANG("ConfigsManager_Name"), ImGuiTableColumnFlags_WidthFixed, 150);
+            ImGui::TableSetupColumn(LANG("ConfigsManager_Modified"), ImGuiTableColumnFlags_WidthFixed, 120);
+            ImGui::TableSetupColumn(LANG("ConfigsManager_Actions"), ImGuiTableColumnFlags_WidthFixed, 200);
             ImGui::TableHeadersRow();
 
             for (const auto& config : configs)
@@ -74,7 +74,7 @@ void ConfigsManager::OnMenuRender()
 
                 ImGui::TableSetColumnIndex(2);
 
-                if (ImGui::Button(("Load##" + config.name).c_str(), ImVec2(50, 0)))
+                if (ImGui::Button((LANG("ConfigsManager_Load") + config.name).c_str(), ImVec2(50, 0)))
                 {
                     if (ConfigsM::LoadConfig(config.name))
                         NOTIFY_SUCCESS_QUICK(("Loaded config: " + config.name).c_str());
@@ -84,7 +84,7 @@ void ConfigsManager::OnMenuRender()
 
                 ImGui::SameLine();
 
-                if (ImGui::Button(("Export##" + config.name).c_str(), ImVec2(50, 0)))
+                if (ImGui::Button((LANG("ConfigsManager_Export") + config.name).c_str(), ImVec2(50, 0)))
                 {
                     configToExport = config.name;
                     showExport = true;
@@ -92,7 +92,7 @@ void ConfigsManager::OnMenuRender()
 
                 ImGui::SameLine();
 
-                if (ImGui::Button(("Delete##" + config.name).c_str(), ImVec2(50, 0)))
+                if (ImGui::Button((LANG("ConfigsManager_Delete") + config.name).c_str(), ImVec2(50, 0)))
                 {
                     selectedConfig = config.name;
                     showDelete = true;

@@ -54,7 +54,7 @@ const std::vector<std::pair<SDK::HumanBodyBones, SDK::HumanBodyBones>> PlayerESP
     {SDK::HumanBodyBones::RightFoot, SDK::HumanBodyBones::RightToes}
 };
 
-PlayerESP::PlayerESP() : FeatureCore("Player ESP", TYPE_VISUALS)
+PlayerESP::PlayerESP() : FeatureCore(LANG("PlayerESP"), TYPE_VISUALS)
 {
     DECLARE_CONFIG(GetConfigManager(), "ShowPlayerSanity", bool, true);
     DECLARE_CONFIG(GetConfigManager(), "ShowDeadStatus", bool, true);

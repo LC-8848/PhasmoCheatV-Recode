@@ -2,7 +2,7 @@
 
 using namespace PhasmoCheatV::Features::Visuals;
 
-ActivityMonitor::ActivityMonitor() : FeatureCore("Activity Monitor", TYPE_VISUALS) {}
+ActivityMonitor::ActivityMonitor() : FeatureCore(LANG("ActivityMonitor"), TYPE_VISUALS) {}
 
 void ActivityMonitor::OnRender()
 {
