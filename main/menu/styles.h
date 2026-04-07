@@ -82,7 +82,7 @@ inline void InitFonts()
     if (isChinese)
     {
         io.Fonts->AddFontFromFileTTF(
-            (Utils::GetPhasmoCheatVDirectory() + "\\ChinaLang.ttf").c_str(),
+            "C:\\Windows\\Fonts\\msyh.ttc",
             18.f,
             &fontConfig,
             io.Fonts->GetGlyphRangesChineseFull()

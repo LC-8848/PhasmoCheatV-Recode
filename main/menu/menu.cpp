@@ -207,9 +207,7 @@ void Menu::Render()
             {
                 ImGui::Columns(2, nullptr, false);
                 {
-                    ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[7]);
                     ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.f, 1.f), LANG("Menu_General"));
-                    ImGui::PopFont();
 
                     ImGui::Spacing();
 
@@ -261,7 +259,7 @@ void Menu::Render()
 
                                 std::thread([]()
                                     {
-                                        if (!Utils::InstallChineseFont())
+                                        /*if (!Utils::InstallChineseFont())
                                         {
                                             LOG_ERROR("Failed to install Chinese font");
                                             isInstallingFont = false;
@@ -270,7 +268,7 @@ void Menu::Render()
                                         }
 
                                         LOG_INFO("Chinese font installed. Restarting in 5 seconds...");
-                                        isInstallingFont = false;
+                                        isInstallingFont = false;*/
 
                                         std::this_thread::sleep_for(std::chrono::seconds(5));
                                         CheatWork = false;
