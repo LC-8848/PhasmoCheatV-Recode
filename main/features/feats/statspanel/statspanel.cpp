@@ -47,15 +47,15 @@ void StatsPanel::OnRender()
             ImGui::TextWrapped("%s", value);
             };
 
-        DrawRow("Bone room", Utils::UnityStrToSysStr(*ls->Fields.boneRoom).c_str());
-        DrawRow("Bone collected", ls->Fields.collectedBone ? "Yes" : "No");
-        DrawRow("Count hunts", std::to_string(ls->Fields.ghostHunts).c_str());
-        DrawRow("Count interactions", std::to_string(ls->Fields.ghostInteractions).c_str());
-        DrawRow("Count events", std::to_string(ls->Fields.ghostEvents).c_str());
+        DrawRow(LANG("LevelStatsPanel_BoneRoom"), Utils::UnityStrToSysStr(*ls->Fields.boneRoom).c_str());
+        DrawRow(LANG("LevelStatsPanel_BoneCollected"), ls->Fields.collectedBone ? LANG("Yes") : LANG("No"));
+        DrawRow(LANG("LevelStatsPanel_CountHunts"), std::to_string(ls->Fields.ghostHunts).c_str());
+        DrawRow(LANG("LevelStatsPanel_CountInteractions"), std::to_string(ls->Fields.ghostInteractions).c_str());
+        DrawRow(LANG("LevelStatsPanel_CountEvents"), std::to_string(ls->Fields.ghostEvents).c_str());
 
         ImGui::EndTable();
 
-		if (ImGui::Button("Collect Bone"))
+        if (ImGui::Button(LANG("LevelStatsPanel_CollectBone")))
             collectBone = true;
     }
 

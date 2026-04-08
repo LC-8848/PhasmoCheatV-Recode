@@ -39,7 +39,7 @@ void JackalopeESP::OnRender()
         if (!Utils::WTS(worldPos, screenPos) || screenPos.Z <= 0)
             continue;
 
-        const char* name = "Jackalope";
+        const char* name = LANG("Jackalope_Name");
         ImVec2 textSize = ImGui::CalcTextSize(name);
 
         float x = screenPos.X - textSize.x / 2;
@@ -47,16 +47,16 @@ void JackalopeESP::OnRender()
 
         draw->AddText(ImVec2(x, y), color, name);
 
-        y += 15;
+        y += 18;
 
         float attackChance = jack->Fields.attackChance;
-        std::string attackText = "Attack Chance: " + std::to_string((int)attackChance) + "%";
+        std::string attackText = LANG("Jackalope_AttackChance") + std::to_string((int)attackChance) + "%";
         draw->AddText(ImVec2(x, y), color, attackText.c_str());
 
-        y += 15;
+        y += 18;
 
         float runChance = jack->Fields.runAwayChance;
-        std::string runText = "Run Chance: " + std::to_string((int)runChance) + "%";
+        std::string runText = LANG("Jackalope_RunChance") + std::to_string((int)runChance) + "%";
         draw->AddText(ImVec2(x, y), color, runText.c_str());
     }
 }

@@ -92,7 +92,7 @@ inline void RegisterAllTranslations()
     ADD_STR("WarnNeedReportDev", "WARNING! Please report this error to the author immediately! By providing logs", u8"ВНИМАНИЕ! Пожалуйста, немедленно сообщите об этой ошибке автору! Предоставив логи", u8"警告！请立即向作者报告此错误（附带日志）");
     ADD_STR("SummoningCircleTransformNotFound", "Summoning Circle transform not found!", u8"Transform круга призыва не найден!", u8"未找到召唤阵的Transform组件！");
     ADD_STR("TooFarFromSummoningCircle", "Too far from the summoning circle", u8"Слишком далеко от круга призыва", u8"距离召唤阵太远");
-    ADD_STR("NotEnoughSanity", "Not enough sanity", u8"Не хватает расудка", u8"理智不足");
+    ADD_STR("NotEnoughSanity", "Not enough sanity", u8"Не хватает расудка", u8"理智值不足");
     ADD_STR("LitAllCandles", "You have lit a total of: %i candles", u8"Вы зажгли всего: %i свечей", u8"已点燃蜡烛数：%i");
     ADD_STR("UseMusicBox", "Use music box", u8"Использовать музыкальную шкатулку", u8"使用八音盒");
     ADD_STR("FixMusicBox", "Fix music box (SP)", u8"Починить музкальную шкатулку (SP)", u8"修复八音盒（单机）");
@@ -119,9 +119,9 @@ inline void RegisterAllTranslations()
 
     // Difficulty 
     ADD_STR("RequiredLevel", "RequiredLevel", u8"Требуемый уровень", u8"所需等级");
-    ADD_STR("SanityPillRestoration", "SanityPillRestoration", u8"Восстановление санпайлов", u8"醒脑丸恢复理智量");
-    ADD_STR("StartingSanity", "StartingSanity", u8"Начальное рассудка", u8"初始理智");
-    ADD_STR("SanityDrain", "SanityDrain", u8"Скорость потери рассудка", u8"理智消耗速度");
+    ADD_STR("SanityPillRestoration", "SanityPillRestoration", u8"Восстановление санпайлов", u8"理智药水恢复理智值");
+    ADD_STR("StartingSanity", "StartingSanity", u8"Начальное рассудка", u8"初始理智值");
+    ADD_STR("SanityDrain", "SanityDrain", u8"Скорость потери рассудка", u8"理智值消耗速度");
     ADD_STR("Sprinting", "Sprinting", u8"Спринт", u8"奔跑");
     ADD_STR("Flashlights", "Flashlights", u8"Фонарики", u8"手电筒");
     ADD_STR("LoseItemsOnDeath", "LoseItemsOnDeath", u8"Потеря предметов при смерти", u8"死亡时丢失物品");
@@ -142,7 +142,7 @@ inline void RegisterAllTranslations()
     ADD_STR("SelectedWeather", "SelectedWeather", u8"Выбранная погода", u8"天气");
     ADD_STR("DoorsOpen", "DoorsOpen", u8"Открытые двери", u8"开门状态");
     ADD_STR("HidingPlaces", "HidingPlaces", u8"Укрытия", u8"躲藏点");
-    ADD_STR("SanityMonitor", "SanityMonitor", u8"Монитор рассудка", u8"理智显示屏");
+    ADD_STR("SanityMonitor", "SanityMonitor", u8"Монитор рассудка", u8"理智值显示屏");
     ADD_STR("ActivityMonitor", "ActivityMonitor", u8"Монитор активности", u8"活动强度显示屏");
     ADD_STR("FuseBoxVisible", "FuseBoxVisible", u8"Щиток виден", u8"显示电闸位置");
     ADD_STR("FuseBoxStartPower", "FuseBoxStartPower", u8"Начальное состояние щитка", u8"开局电闸状态");
@@ -159,6 +159,8 @@ inline void RegisterAllTranslations()
     ADD_STR("FailedApplyDifficultySettings", "Failed to apply difficulty settings", u8"Ошибка применения настроек сложности", u8"应用难度设置失败");
     ADD_STR("Off", "Off", u8"Выключено", u8"关闭");
     ADD_STR("On", "On", u8"Включено", u8"开启");
+    ADD_STR("Yes", "Yes", u8"Да", u8"是");
+    ADD_STR("No", "No", u8"Нет", u8"不是");
     ADD_STR("Infinite", "Infinite", u8"Бесконечно", u8"无限");
     ADD_STR("None", "None", u8"Нет", u8"无");
     ADD_STR("Low", "Low", u8"Низкий", u8"低");
@@ -357,7 +359,7 @@ inline void RegisterAllTranslations()
     ADD_STR("PlayerESP", "Player ESP", u8"ESP на игроков", u8"启用玩家绘制");
     ADD_STR("EnablePlayerESP", "Enable player ESP", u8"Включить ESP на игроков", u8"启用玩家绘制");
     ADD_STR("Show2DBox", "Show 2D box", u8"Показывать 2D коробку", u8"显示2D方框");
-    ADD_STR("ShowPlayerSanity", "Show player sanity", u8"Показывать рассудок", u8"显示玩家理智");
+    ADD_STR("ShowPlayerSanity", "Show player sanity", u8"Показывать рассудок", u8"显示玩家理智值");
     ADD_STR("ShowDeadStatus", "Show dead status", u8"Показывать статус смерти", u8"显示死亡状态");
     ADD_STR("ShowCurrentRoom", "Show current room", u8"Показывать текущую комнату", u8"显示当前房间");
     ADD_STR("ShowPrestige", "Show prestige", u8"Показывать престиж", u8"显示转生等级");
@@ -365,10 +367,14 @@ inline void RegisterAllTranslations()
     ADD_STR("ShowLevel", "Show level", u8"Показывать уровень", u8"显示等级");
     ADD_STR("ShowSprinting", "Show sprinting", u8"Показывать статус бега", u8"显示奔跑状态");
     ADD_STR("ErrorLoadingSettings", "Error loading PlayerESP settings", u8"Ошибка загрузки настроек PlayerESP", u8"加载玩家透视设置时出错");
+    ADD_STR("PlayerESP_Room", "Room: ", u8"", u8"所在房间：");
+    ADD_STR("PlayerESP_Prestige", "Prestige: ", u8"", u8"声望：");
+    ADD_STR("PlayerESP_Exp", "Exp: ", u8"", u8"经验：");
+    ADD_STR("PlayerESP_Level", "Level: ", u8"", u8"等级：");
 
     // PlayerMod
     ADD_STR("Player", "Player", u8"Игрок", u8"玩家");
-    ADD_STR("Sanity", "Sanity", u8"Рассудок", u8"理智");
+    ADD_STR("Sanity", "Sanity", u8"Рассудок", u8"理智值");
     ADD_STR("Dead", "DEAD", u8"МЁРТВ", u8"死亡");
     ADD_STR("CurrentRoom", "Current room", u8"Текущая комната", u8"当前房间");
     ADD_STR("TeleportTo", "Teleport to", u8"Телепорт к", u8"传送至");
@@ -385,7 +391,7 @@ inline void RegisterAllTranslations()
     // PlayerPanel
     ADD_STR("PlayersPanel", "Players Panel", u8"панель игроков", u8"玩家信息面板");
     ADD_STR("EnablePlayersPanel", "Enable Players Panel", u8"Включить панель игроков", u8"启用玩家信息面板");
-    ADD_STR("ShowSanity", "Show Sanity", u8"Показывать рассудок", u8"显示理智");
+    ADD_STR("ShowSanity", "Show Sanity", u8"Показывать рассудок", u8"显示理智值");
     ADD_STR("ShowCurrentRoom", "Show Current Room", u8"Показывать текущую комнату", u8"显示当前房间");
     ADD_STR("ShowTemperature", "Show Temperature", u8"Показывать температуру", u8"显示温度");
     ADD_STR("ShowLevel", "Show Level", u8"Показывать уровень", u8"显示等级");
@@ -393,6 +399,13 @@ inline void RegisterAllTranslations()
     ADD_STR("ShowPrestige", "Show Prestige", u8"Показывать престиж", u8"显示转生等级");
     ADD_STR("ShowHackerFlag", "Show Hacker Flag", u8"Показывать флаг читера", u8"显示作弊者标记");
     ADD_STR("ShowAverageSanity", "Show Average Sanity", u8"Показывать средний рассудок", u8"显示平均理智值");
+    ADD_STR("PlayersPanel_You", "(You)", u8"(Вы)", u8"（自己）");
+    ADD_STR("PlayersPanel_Temperature", "Temperature", u8"Температура", u8"温度值");
+    ADD_STR("PlayersPanel_Level", "Level", u8"Уровень", u8"等级");
+    ADD_STR("PlayersPanel_Experience", "Experience", u8"Опыт", u8"经验");
+    ADD_STR("PlayersPanel_Prestige", "Prestige", u8"Престиж", u8"声望");
+    ADD_STR("PlayersPanel_IsHacker", "Is Hacker", u8"Хакер", u8"是否为挂逼");
+    ADD_STR("PlayersPanel_AverageSanity", "Average Sanity", u8"Средний рассудок", u8"平均理智值");
 
     // RewardMod
     ADD_STR("RewardModifier", "Reward Modifier", u8"Модификатор наград", u8"奖励修改器");
@@ -430,6 +443,12 @@ inline void RegisterAllTranslations()
     ADD_STR("EnableLevelStatsPanel", "Enable Level Stats Panel", u8"Включить панель статистики об контракте", u8"启用等级统计面板");
     ADD_STR("BoneNotFound", "Bone not found.", u8"Кость не найдена.", u8"未找到骨头");
     ADD_STR("BoneCollected", "Bone collected.", u8"Кость была подобрана.", u8"骨头已收集");
+    ADD_STR("LevelStatsPanel_BoneRoom", "Bone Room", u8"Комната с костью", u8"骨头所在房间");
+    ADD_STR("LevelStatsPanel_BoneCollected", "Bone Collected", u8"Кость собрана", u8"骨头是否已采集");
+    ADD_STR("LevelStatsPanel_CountHunts", "Count Hunts", u8"Количество охот", u8"猎杀次数");
+    ADD_STR("LevelStatsPanel_CountInteractions", "Count Interactions", u8"Количество взаимодействий", u8"互动次数");
+    ADD_STR("LevelStatsPanel_CountEvents", "Count Events", u8"Количество событий", u8"事件次数");
+    ADD_STR("LevelStatsPanel_CollectBone", "Collect Bone", u8"Собрать кость", u8"收集骨头");
 
     // Teleport
     ADD_STR("Teleport", "Teleport", u8"Телепорт", u8"传送");
@@ -538,6 +557,9 @@ inline void RegisterAllTranslations()
     // Jackalope ESP
     ADD_STR("JackalopeESP", "Jackalope ESP", u8"ESP на шакалоп", u8"鹿角兔绘制");
     ADD_STR("EnableJackalopeESP", "Enable Jackalope ESP", u8"Включить ESP на шакалоп", u8"启用鹿角兔绘制");
+    ADD_STR("Jackalope_Name", "Jackalope", u8"Джекэлоп", u8"鹿角兔");
+    ADD_STR("Jackalope_AttackChance", "Attack Chance: ", u8"Шанс атаки: ", u8"攻击几率：");
+    ADD_STR("Jackalope_RunChance", "Run Chance: ", u8"Шанс побега: ", u8"逃跑几率：");
 
     // Player Modifier
     ADD_STR("PlayerModifier", "Player Modifier", u8"Модификатор игрока", u8"玩家修改器");
@@ -665,6 +687,36 @@ inline void RegisterAllTranslations()
     ADD_STR("EvidenceType_ObakeFingerprint", "Obake Fingerprint", u8"Отпечаток обакэ", u8"幻妖指纹");
     ADD_STR("EvidenceType_BurningChapelCrucifix", "Burning Chapel Crucifix", u8"Горящее распятие в часовне", u8"燃烧教堂十字架");
     ADD_STR("EvidenceType_ObakeShapeshift", "Obake Shapeshift", u8"Смена облика обакэ", u8"幻妖变形");
+
+    // Settings items
+    ADD_STR("RequiredLevel", "Required Level", u8"Требуемый уровень", u8"要求级别");
+    ADD_STR("SanityPillRestoration", "Sanity Pill Restoration", u8"Восстановление таблетками", u8"理智药恢复");
+    ADD_STR("StartingSanity", "Starting Sanity", u8"Начальный рассудок", u8"初始理智");
+    ADD_STR("SanityDrain", "Sanity Drain", u8"Потеря рассудка", u8"理智消耗");
+    ADD_STR("Sprinting", "Sprinting", u8"Спринт", u8"冲刺");
+    ADD_STR("Flashlights", "Flashlights", u8"Фонарики", u8"手电筒");
+    ADD_STR("LoseItemsOnDeath", "Lose Items On Death", u8"Потеря предметов при смерти", u8"死亡掉落物品");
+    ADD_STR("PlayerSpeed", "Player Speed", u8"Скорость игрока", u8"玩家速度");
+    ADD_STR("EvidenceGiven", "Evidence Given", u8"Количество улик", u8"证据数量");
+    ADD_STR("ChangingFavouriteRoom", "Changing Favourite Room", u8"Смена любимой комнаты", u8"更换鬼房");
+    ADD_STR("InteractionAmount", "Interaction Amount", u8"Количество взаимодействий", u8"互动数量");
+    ADD_STR("EventFrequency", "Event Frequency", u8"Частота событий", u8"事件频率");
+    ADD_STR("HuntDuration", "Hunt Duration", u8"Длительность охоты", u8"猎杀持续时间");
+    ADD_STR("GracePeriod", "Grace Period", u8"Льготный период", u8"宽限期");
+    ADD_STR("FingerprintChance", "Fingerprint Chance", u8"Шанс отпечатков", u8"指纹几率");
+    ADD_STR("FingerprintDuration", "Fingerprint Duration", u8"Длительность отпечатков", u8"指纹持续时间");
+    ADD_STR("FriendlyGhost", "Friendly Ghost", u8"Дружелюбный призрак", u8"友善鬼魂");
+    ADD_STR("KillsExtendHunt", "Kills Extend Hunt", u8"Убийства продлевают охоту", u8"击杀延长猎杀");
+    ADD_STR("RoamingFrequency", "Roaming Frequency", u8"Частота блуждания", u8"游荡频率");
+    ADD_STR("GhostSpeed", "Ghost Speed", u8"Скорость призрака", u8"鬼魂速度");
+    ADD_STR("SetupTime", "Setup Time", u8"Время подготовки", u8"准备时间");
+    ADD_STR("SelectedWeather", "Selected Weather", u8"Выбранная погода", u8"选定天气");
+    ADD_STR("DoorsOpen", "Doors Open", u8"Открытые двери", u8"门已开启");
+    ADD_STR("HidingPlaces", "Hiding Places", u8"Укрытия", u8"躲藏点");
+    ADD_STR("SanityMonitor", "Sanity Monitor", u8"Монитор рассудка", u8"理智监视器");
+    ADD_STR("ActivityMonitor", "Activity Monitor", u8"Монитор активности", u8"活动监视器");
+    ADD_STR("FuseBoxVisible", "Fuse Box Visible", u8"Видимый щиток", u8"电箱可见");
+    ADD_STR("FuseBoxStartPower", "Fuse Box Start Power", u8"Щиток включён в начале", u8"电箱初始供电");
 
     // Template
     ADD_STR("", "", u8"", u8"");

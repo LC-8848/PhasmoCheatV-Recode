@@ -24,7 +24,7 @@ void FuseBoxESP::OnRender()
 	const ImColor color = CONFIG_COLOR(GetConfigManager(), "Color");
 	std::string status = "";
 	if (CONFIG_BOOL(GetConfigManager(), "ShowStatus"))
-		status = InGame::fuseBox->Fields.IsOn ? "ON" : "OFF";
+		status = InGame::fuseBox->Fields.IsOn ? LANG("On") : LANG("Off");
 	float fontSize = ImGui::GetFontSize();
 	float bracketWidth = normalFont->CalcTextSizeA(fontSize, FLT_MAX, 0.0f, "[").x;
 	float iconWidth = iconFont->CalcTextSizeA(fontSize, FLT_MAX, 0.0f, "E").x;

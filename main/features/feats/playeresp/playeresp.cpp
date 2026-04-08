@@ -168,7 +168,7 @@ void PlayerESP::OnRender()
 
         if (showDeadStatus && player->Fields.IsDead)
         {
-            draw->AddText(ImVec2(infoX, currentInfoY), IM_COL32(255, 0, 0, 255), "DEAD");
+            draw->AddText(ImVec2(infoX, currentInfoY), IM_COL32(255, 0, 0, 255), LANG("Dead"));
             currentInfoY += 15;
         }
 
@@ -176,7 +176,7 @@ void PlayerESP::OnRender()
         {
             if (const auto levelRoom = player->Fields.LevelRoom; levelRoom && levelRoom->Fields.RoomName)
             {
-                std::string roomText = "Room: " + Utils::UnityStrToSysStr(*levelRoom->Fields.RoomName);
+                std::string roomText = LANG("PlayerESP_Room") + Utils::UnityStrToSysStr(*levelRoom->Fields.RoomName);
                 draw->AddText(ImVec2(infoX, currentInfoY), color, roomText.c_str());
                 currentInfoY += 15;
             }
@@ -192,7 +192,7 @@ void PlayerESP::OnRender()
                     const auto spot = spots->Fields.Items->Vector[playerIndex];
                     if (spot)
                     {
-                        std::string prestigeText = "Prestige: " + std::to_string(spot->Fields.Prestige);
+                        std::string prestigeText = LANG("PlayerESP_Prestige") + std::to_string(spot->Fields.Prestige);
                         draw->AddText(ImVec2(infoX, currentInfoY), color, prestigeText.c_str());
                         currentInfoY += 15;
                     }
@@ -210,7 +210,7 @@ void PlayerESP::OnRender()
                     const auto spot = spots->Fields.Items->Vector[playerIndex];
                     if (spot)
                     {
-                        std::string expText = "Exp: " + std::to_string(spot->Fields.Experience);
+                        std::string expText = LANG("PlayerESP_Exp") + std::to_string(spot->Fields.Experience);
                         draw->AddText(ImVec2(infoX, currentInfoY), color, expText.c_str());
                         currentInfoY += 15;
                     }
@@ -228,7 +228,7 @@ void PlayerESP::OnRender()
                     const auto spot = spots->Fields.Items->Vector[playerIndex];
                     if (spot)
                     {
-                        std::string levelText = "Level: " + std::to_string(spot->Fields.Level);
+                        std::string levelText = LANG("PlayerESP_Level") + std::to_string(spot->Fields.Level);
                         draw->AddText(ImVec2(infoX, currentInfoY), color, levelText.c_str());
                         currentInfoY += 15;
                     }
@@ -240,7 +240,7 @@ void PlayerESP::OnRender()
         {
             if (player->Fields.PlayerStamina->Fields.isSprinting)
             {
-                draw->AddText(ImVec2(infoX, currentInfoY), IM_COL32(0, 255, 0, 255), "SPRINTING");
+                draw->AddText(ImVec2(infoX, currentInfoY), IM_COL32(0, 255, 0, 255), LANG("Sprinting"));
                 currentInfoY += 15;
             }
         }
