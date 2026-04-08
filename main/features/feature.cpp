@@ -70,6 +70,7 @@ FeatureHandler::FeatureHandler() : CurrentType(TYPE_NONE)
     ADD_FEATURE(this, PlayerESP);
     ADD_FEATURE(this, ActivityMonitor);
     ADD_FEATURE(this, JackalopeESP);
+    ADD_FEATURE(this, StaminaBar);
 
     // Players
     ADD_FEATURE(this, GodMode);

@@ -229,7 +229,7 @@ void Menu::Render()
                     ImGui::Spacing();
                     ImGui::Text(LANG("Menu_Language"));
 
-                    static const char* langItems[] = { "EN", "RU", "CN" };
+                    const char* langItems[] = { LANG("Menu_Language_EN"), LANG("Menu_Language_RU"),LANG("Menu_Language_CN") };
                     static int currentLang = (int)LanguageManager::GetCurrentLanguage();
                     static bool isInstallingFont = false;
                     static bool isRestartScheduled = false;
@@ -247,7 +247,7 @@ void Menu::Render()
                         Language oldLanguage = (Language)currentLang;
                         Language newLanguage = (Language)newLang;
 
-                        if (oldLanguage != newLanguage && (newLanguage == Language::ZH || oldLanguage == Language::ZH))
+                        /*if (oldLanguage != newLanguage && (newLanguage == Language::ZH || oldLanguage == Language::ZH))
                         {
                             isRestartScheduled = true;
                             LanguageManager::SetLanguage(newLanguage);
@@ -259,7 +259,7 @@ void Menu::Render()
 
                                 std::thread([]()
                                     {
-                                        /*if (!Utils::InstallChineseFont())
+                                        if (!Utils::InstallChineseFont())
                                         {
                                             LOG_ERROR("Failed to install Chinese font");
                                             isInstallingFont = false;
@@ -268,7 +268,7 @@ void Menu::Render()
                                         }
 
                                         LOG_INFO("Chinese font installed. Restarting in 5 seconds...");
-                                        isInstallingFont = false;*/
+                                        isInstallingFont = false;
 
                                         std::this_thread::sleep_for(std::chrono::seconds(5));
                                         CheatWork = false;
@@ -287,7 +287,7 @@ void Menu::Render()
 
                             currentLang = newLang;
                         }
-                        else if (oldLanguage != newLanguage)
+                        else */if (oldLanguage != newLanguage)
                         {
                             LanguageManager::SetLanguage(newLanguage);
                             LanguageManager::SaveLanguage();
@@ -295,7 +295,7 @@ void Menu::Render()
                         }
                     }
 
-                    if (isInstallingFont || isRestartScheduled)
+                    /*if (isInstallingFont || isRestartScheduled)
                     {
                         ImGui::EndDisabled();
 
@@ -315,7 +315,7 @@ void Menu::Render()
                             ImGui::TextWrapped("The modification will restart automatically in 5 seconds.");
                             ImGui::PopStyleColor();
                         }
-                    }
+                    }*/
 
                     ImGui::Spacing();
                     if (ImGui::Button(LANG("Menu_ClearCache"), ImVec2(160 * dpiScale, 30 * dpiScale)))

@@ -9,5 +9,7 @@ void Hooks::hkPlayerStamina_Update(SDK::PlayerStamina* playerStamina, SDK::Metho
 
 	CALL_METHOD_IF_ACTIVE_ARGS(Movement, InfinityStamina, InfinityStaminaMain, playerStamina);
 
+	CALL_METHOD_IF_ACTIVE_ARGS(Visuals, StaminaBar, GetStaminaValue, playerStamina);
+
 	SDK::PlayerStamina_Update(playerStamina, methodInfo);
 }

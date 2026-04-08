@@ -23,6 +23,7 @@
 #include "feats/CursedItemsControll/curseditemscontroll.h"
 #include "feats/noclip/noclip.h"
 #include "feats/infstamina/infinitystamina.h"
+#include "feats/staminabar/staminabar.h"
 #include "feats/custspeed/customspeed.h"
 #include "feats/teleport/teleport.h"
 #include "feats/exitvanone/exitvanone.h"

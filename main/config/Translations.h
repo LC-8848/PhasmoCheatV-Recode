@@ -33,6 +33,9 @@ inline void RegisterAllTranslations()
     ADD_STR("Menu_ToggleKey", "Menu Toggle Key:", u8"Клавиша меню:", u8"菜单开关按键：");
     ADD_STR("Menu_SetKey", "Set New Key", u8"Задать клавишу", u8"设置新按键");
     ADD_STR("Menu_Language", "Language", u8"Язык", u8"选择语言");
+    ADD_STR("Menu_Language_EN", "EN", u8"Английский", u8"英文");
+    ADD_STR("Menu_Language_RU", "RU", u8"Русский", u8"俄语");
+    ADD_STR("Menu_Language_CN", "CN", u8"Китайский", u8"中文");
     ADD_STR("Menu_Colors", "Colors", u8"Цвета", u8"颜色");
     ADD_STR("Menu_SaveColors", "Save Colors", u8"Сохранить цвета", u8"保存颜色");
     ADD_STR("Menu_ResetColors", "Reset Colors", u8"Сбросить цвета", u8"重置颜色");
@@ -570,6 +573,11 @@ inline void RegisterAllTranslations()
     // Infinity Stamina
     ADD_STR("InfinityStamina", "Infinity Stamina", u8"бесконечную энергию", u8"无限体力");
 
+    // Stamina Bar
+    ADD_STR("StaminaBar", "Stamina Bar", u8"Полоса выносливости", u8"体力条");
+    ADD_STR("StaminaBarEnable", "Enable StaminaBar", u8"Включить полосу выносливости", u8"绘制体力条");
+    ADD_STR("StaminaBar_Stamina", "Stamina: ", u8"выносливости: ", u8"体力：");
+    
     // Configs Manager
     ADD_STR("ConfigsManager", "Configs Manager", u8"Менеджер конфигураций", u8"配置管理器");
     ADD_STR("ConfigsManager_CreateNew", "Create New", u8"Создать новый", u8"新建配置");
