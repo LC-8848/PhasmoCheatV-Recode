@@ -432,6 +432,9 @@
     <ClCompile Include="main\features\feats\staminabar\staminabar.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="main\hooks\ResizeBuffers.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Globals.h">

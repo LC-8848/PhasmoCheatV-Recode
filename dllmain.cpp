@@ -62,6 +62,7 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
         featureInstance = std::make_unique<FeatureHandler>();
 
         hookingInstance->OriginalPresent = rendererInstance->GetPresent();
+        hookingInstance->OriginalResizeBuffers = rendererInstance->GetResizeBuffers();
 
         Config::LoadConfig();
 
@@ -85,6 +86,7 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
 
         // Set up hooks
         AHK(hookingInstance->OriginalPresent, Hooks::HkPresent); // using ADD_HOOK
+        AHK(hookingInstance->OriginalResizeBuffers, Hooks::HkResizeBuffers); // using ADD_HOOK
         AHKA(LevelController_Start); // using ADD_HOOK_AUTO
         AHKA(ExitLevel_Exit);
         AHKA(MapController_Start);
@@ -163,6 +165,8 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
 
         hookingInstance->RemoveHooks();
         hookingInstance.reset(); 
+        if (rendererInstance)
+            Renderer::CleanupImGuiAndDX();
         rendererInstance.reset();
         featureInstance.reset();
 

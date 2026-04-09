@@ -256,6 +256,7 @@
     <ClCompile Include="main\hooks\PhotonView_RPC.cpp" />
     <ClCompile Include="main\hooks\Player_Start.cpp" />
     <ClCompile Include="main\hooks\RandomWeather_Start.cpp" />
+    <ClCompile Include="main\hooks\ResizeBuffers.cpp" />
     <ClCompile Include="main\hooks\ServerManager_LoadScene.cpp" />
     <ClCompile Include="main\hooks\TarotCards_BreakItem.cpp" />
     <ClCompile Include="main\hooks\TarotCards_GrabCard.cpp" />

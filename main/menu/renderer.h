@@ -6,6 +6,7 @@
 namespace PhasmoCheatV
 {
 	using Id3DPresent = HRESULT(__stdcall*)(IDXGISwapChain* this_, UINT sync_, UINT flags_);
+	using Id3DResizeBuffers = HRESULT(__stdcall*)(IDXGISwapChain* this_, UINT bufferCount_, UINT width_, UINT height_, DXGI_FORMAT newFormat_, UINT swapChainFlags_);
 
 	class Renderer
 	{
@@ -17,7 +18,10 @@ namespace PhasmoCheatV
 		explicit Renderer();
 		~Renderer();
 		bool GetSwapChain(IDXGISwapChain** swapChain, ID3D11Device** device) const;
+		void* GetSwapChainVTableEntry(uint32_t index) const;
 		Id3DPresent GetPresent() const;
+		Id3DResizeBuffers GetResizeBuffers() const;
+		static void CleanupImGuiAndDX();
 
 		static inline IDXGISwapChain* Swapchain;
 		static inline HWND Window;

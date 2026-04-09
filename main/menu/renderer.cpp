@@ -78,7 +78,7 @@ bool Renderer::GetSwapChain(IDXGISwapChain** swapChain, ID3D11Device** device) c
 	return success;
 }
 
-Id3DPresent Renderer::GetPresent() const
+void* Renderer::GetSwapChainVTableEntry(uint32_t index) const
 {
 	IDXGISwapChain* swapChain;
 	ID3D11Device* device;
@@ -98,8 +98,46 @@ Id3DPresent Renderer::GetPresent() const
 			device = nullptr;
 		}
 
-		return static_cast<Id3DPresent>(vmt[8]);
+		return vmt[index];
 	}
 
 	return nullptr;
+}
+
+Id3DPresent Renderer::GetPresent() const
+{
+	return static_cast<Id3DPresent>(GetSwapChainVTableEntry(8));
+}
+
+Id3DResizeBuffers Renderer::GetResizeBuffers() const
+{
+	return static_cast<Id3DResizeBuffers>(GetSwapChainVTableEntry(13));
+}
+
+void Renderer::CleanupImGuiAndDX()
+{
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+	if (TargetView)
+	{
+		TargetView->Release();
+		TargetView = nullptr;
+	}
+	if (Context)
+	{
+		Context->Release();
+		Context = nullptr;
+	}
+	if (Device)
+	{
+		Device->Release();
+		Device = nullptr;
+	}
+	Swapchain = nullptr;
+	if (hooking->OriginalWndproc)
+	{
+		SetWindowLongPtrA(Window, GWLP_WNDPROC, (LONG_PTR)hooking->OriginalWndproc);
+		hooking->OriginalWndproc = nullptr;
+	}
 }

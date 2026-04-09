@@ -2,6 +2,7 @@
 #include "../Includes.h"
 
 using Id3DPresent = HRESULT(__stdcall*)(IDXGISwapChain* this_, UINT sync_, UINT flags_);
+using Id3DResizeBuffers = HRESULT(__stdcall*)(IDXGISwapChain* this_, UINT bufferCount_, UINT width_, UINT height_, DXGI_FORMAT newFormat_, UINT swapChainFlags_);
 
 namespace PhasmoCheatV
 {
@@ -17,6 +18,7 @@ namespace PhasmoCheatV
 		void ApplyHooks() const;
 		void RemoveHooks() const;
 		Id3DPresent OriginalPresent{};
+		Id3DResizeBuffers OriginalResizeBuffers{};
 		WNDPROC OriginalWndproc{};
 
 	private:
