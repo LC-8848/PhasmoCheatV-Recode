@@ -576,7 +576,7 @@ inline void RegisterAllTranslations()
     // Stamina Bar
     ADD_STR("StaminaBar", "Stamina Bar", u8"Полоса выносливости", u8"体力条");
     ADD_STR("StaminaBarEnable", "Enable StaminaBar", u8"Включить полосу выносливости", u8"绘制体力条");
-    ADD_STR("StaminaBar_Stamina", "Stamina: ", u8"выносливости: ", u8"体力：");
+    ADD_STR("StaminaBar_Stamina", "Stamina: ", u8"выносливости: ", u8"体力: ");
     
     // Configs Manager
     ADD_STR("ConfigsManager", "Configs Manager", u8"Менеджер конфигураций", u8"配置管理器");
