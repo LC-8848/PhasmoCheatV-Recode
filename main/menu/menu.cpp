@@ -132,7 +132,7 @@ void Menu::Render()
         if (!IsProxyMode(globalModule))
         {
             if (ImGui::Button(LANG("Menu_Unload"), sz)) {
-                menu.Toggle();
+                //menu.Toggle();
                 CheatWork = false;
             }
         }
@@ -247,7 +247,7 @@ void Menu::Render()
                         Language oldLanguage = (Language)currentLang;
                         Language newLanguage = (Language)newLang;
 
-                        /*if (oldLanguage != newLanguage && (newLanguage == Language::ZH || oldLanguage == Language::ZH))
+                        if (oldLanguage != newLanguage && newLanguage == Language::ZH && oldLanguage != Language::ZH)
                         {
                             isRestartScheduled = true;
                             LanguageManager::SetLanguage(newLanguage);
@@ -255,11 +255,11 @@ void Menu::Render()
 
                             if (newLanguage == Language::ZH)
                             {
-                                isInstallingFont = true;
+                                //isInstallingFont = true;
 
                                 std::thread([]()
                                     {
-                                        if (!Utils::InstallChineseFont())
+                                        /*if (!Utils::InstallChineseFont())
                                         {
                                             LOG_ERROR("Failed to install Chinese font");
                                             isInstallingFont = false;
@@ -268,13 +268,13 @@ void Menu::Render()
                                         }
 
                                         LOG_INFO("Chinese font installed. Restarting in 5 seconds...");
-                                        isInstallingFont = false;
+                                        isInstallingFont = false;*/
 
                                         std::this_thread::sleep_for(std::chrono::seconds(5));
                                         CheatWork = false;
                                     }).detach();
                             }
-                            else
+                            /*else
                             {
                                 LOG_INFO("Language changed from ZH to %s. Restarting in 5 seconds...", langItems[newLang]);
 
@@ -283,11 +283,11 @@ void Menu::Render()
                                         std::this_thread::sleep_for(std::chrono::seconds(5));
                                         CheatWork = false;
                                     }).detach();
-                            }
+                            }*/
 
                             currentLang = newLang;
                         }
-                        else */if (oldLanguage != newLanguage)
+                        else if (oldLanguage != newLanguage)
                         {
                             LanguageManager::SetLanguage(newLanguage);
                             LanguageManager::SaveLanguage();
@@ -309,13 +309,13 @@ void Menu::Render()
                             ImGui::TextWrapped("The modification will restart automatically in 5 seconds after installation.");
                             ImGui::PopStyleColor();
                         }
-                        else if (isRestartScheduled)
+                        else */if (isRestartScheduled)
                         {
                             ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(200, 200, 200, 255));
                             ImGui::TextWrapped("The modification will restart automatically in 5 seconds.");
                             ImGui::PopStyleColor();
                         }
-                    }*/
+                    //}
 
                     ImGui::Spacing();
                     if (ImGui::Button(LANG("Menu_ClearCache"), ImVec2(160 * dpiScale, 30 * dpiScale)))

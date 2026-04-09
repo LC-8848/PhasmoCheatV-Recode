@@ -164,9 +164,9 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
         }
 
         hookingInstance->RemoveHooks();
-        hookingInstance.reset(); 
         if (rendererInstance)
             Renderer::CleanupImGuiAndDX();
+        hookingInstance.reset(); 
         rendererInstance.reset();
         featureInstance.reset();
 

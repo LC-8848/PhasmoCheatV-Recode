@@ -118,7 +118,7 @@ void Renderer::CleanupImGuiAndDX()
 {
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
+	//ImGui::DestroyContext();
 	if (TargetView)
 	{
 		TargetView->Release();
