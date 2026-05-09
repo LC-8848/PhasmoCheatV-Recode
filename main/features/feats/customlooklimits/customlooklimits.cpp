@@ -46,7 +46,7 @@ void CustomLookLimits::OnDeactivate()
 	if (!localPlayer)
 		return;
 
-	auto firstPersonController = localPlayer->Fields.FirstPersonController;
+	auto firstPersonController = InGame::firstPersonController;
 	if (!firstPersonController)
 		return;
 

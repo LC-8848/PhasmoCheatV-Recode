@@ -9,6 +9,30 @@
 
 using namespace PhasmoCheatV;
 
+PVOID g_VehHandle = nullptr;    
+
+static LONG NTAPI VehHandler(PEXCEPTION_POINTERS ex_info)
+{
+    static uintptr_t gameModule = (uintptr_t)GetModuleHandleA(nullptr);
+    static uintptr_t gameAssemblyModule = (uintptr_t)GetModuleHandleA("GameAssembly.dll");
+    static uintptr_t unityPlayerModule = (uintptr_t)GetModuleHandleA("UnityPlayer.dll");
+    static uintptr_t Module = min(gameModule, gameAssemblyModule, unityPlayerModule); // get the lowest address of the game's modules
+    PEXCEPTION_RECORD er = ex_info->ExceptionRecord;
+    if (er->ExceptionCode == EXCEPTION_ACCESS_VIOLATION)
+    {
+        void* faultAddr = (void*)er->ExceptionInformation[1];
+        if ((uintptr_t)faultAddr > Module) // check if the access violation is within the game's memory range
+            LOG_INFO("Access violation at 0x%p", faultAddr);
+        return EXCEPTION_CONTINUE_EXECUTION; // allow the game to continue running
+        /*DWORD oldProtect;
+        if (VirtualProtect(faultAddr, 1, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+            return EXCEPTION_CONTINUE_EXECUTION;
+        }*/
+    }
+
+    return EXCEPTION_CONTINUE_SEARCH; // let other handlers try to handle the exception
+}
+
 HWND WaitForGameWindow()
 {
     HWND hwnd = nullptr;
@@ -43,12 +67,20 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
 {
     WaitForGameReady();
 
+    Il2CppDomain* domain = il2cpp_domain_get();
+    if (!domain) return 0;
+
+    il2cpp_thread_attach(domain);
+
     try {
         loggerInstance = std::make_unique<Logger>(Logger::Level::Call);
     }
     catch (...) {
         return 0;
     }
+
+    g_VehHandle = AddVectoredExceptionHandler(1, VehHandler);
+
     // Initialize SDK
     if (!SDK::Initialize()) {
         LOG_ERROR("Failed to initialize SDK");
@@ -97,8 +129,8 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
         AHKA(GhostAI_Update);
         AHKA(EvidenceController_Start);
         AHKA(EMFData_Start);
-        AHKA(Player_StartKillingPlayer);
-        AHKA(Player_StartKillingPlayerNetworked);
+        //AHKA(Player_StartKillingPlayer);
+        //AHKA(Player_StartKillingPlayerNetworked);
         AHKA(Player_Start);
         AHKA(GhostInfo_SyncValuesNetworked);
         AHKA(GhostInfo_SyncEvidence);
@@ -134,6 +166,8 @@ extern "C" __declspec(dllexport) DWORD WINAPI PhasmoCheatVThread()
         AHKA(DNAEvidence_Start);
         AHKA(VoodooDollPin_Use);
         AHKA(Jackalope_Awake);
+        AHKA(ScriptableRenderContext_Submit);
+        AHKA(Player_StartDeathAnimation);
 
         PHK(HandCamera_MoveNext, Hooks::hkHandCamera_MoveNext); // Use PATTERN_HOOK
 

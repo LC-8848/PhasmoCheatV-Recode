@@ -51,3 +51,4 @@
 #include "feats/fontchanger/fontchanger.h"
 #include "feats/journalmod/journalmod.h"
 #include "feats/jackalopeesp/jackalopeesp.h"
+#include "feats/spiritboxalw/spiritboxalw.h"

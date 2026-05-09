@@ -74,7 +74,7 @@ void PhotoModifier::PhotoModifierAutoPhoto()
 	auto* PhotoCamera = Utils::get_PlayerHandCamera(localPlayer);
 	if (!PhotoCamera) return;
 
-	if (!Utils::IsPlayerVisibleGhost(localPlayer->Fields.Camera, ghostTransform))
+	if (!Utils::IsPlayerVisibleGhost(localPlayer->Fields.LocalPlayer->Fields.Camera, ghostTransform))
 		return;
 
 	if (!Utils::IsGhostVisible(ghostAI))

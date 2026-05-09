@@ -204,6 +204,7 @@
     <ClCompile Include="main\features\feats\jackalopeesp\jackalopeesp.cpp" />
     <ClCompile Include="main\features\feats\journalmod\journalmod.cpp" />
     <ClCompile Include="main\features\feats\photomod\photomod.cpp" />
+    <ClCompile Include="main\features\feats\spiritboxalw\spiritboxalw.cpp" />
     <ClCompile Include="main\features\feats\staminabar\staminabar.cpp" />
     <ClCompile Include="main\features\feats\vanbuttonmod\vanbuttonmod.cpp" />
     <ClCompile Include="main\features\feats\mapmod\mapmodifier.cpp" />
@@ -231,6 +232,7 @@
     <ClCompile Include="main\hooks\EMFData_Start.cpp" />
     <ClCompile Include="main\hooks\EMFData_UpdateNightMareGraph.cpp" />
     <ClCompile Include="main\hooks\EvidenceController_Start.cpp" />
+    <ClCompile Include="main\hooks\EVPRecorder_CanAnswer.cpp" />
     <ClCompile Include="main\hooks\ExitLevel_Exit.cpp" />
     <ClCompile Include="main\hooks\ExitLevel_ThereAreAlivePlayersOutsideTheTruck.cpp" />
     <ClCompile Include="main\hooks\FallTeleportBox_OnTriggerEnter.cpp" />
@@ -255,8 +257,10 @@
     <ClCompile Include="main\hooks\LightSwitch_Start.cpp" />
     <ClCompile Include="main\hooks\PhotonView_RPC.cpp" />
     <ClCompile Include="main\hooks\Player_Start.cpp" />
+    <ClCompile Include="main\hooks\Player_StartDeathAnimation.cpp" />
     <ClCompile Include="main\hooks\RandomWeather_Start.cpp" />
     <ClCompile Include="main\hooks\ResizeBuffers.cpp" />
+    <ClCompile Include="main\hooks\ScriptableRenderContext_Submit.cpp" />
     <ClCompile Include="main\hooks\ServerManager_LoadScene.cpp" />
     <ClCompile Include="main\hooks\TarotCards_BreakItem.cpp" />
     <ClCompile Include="main\hooks\TarotCards_GrabCard.cpp" />
@@ -265,8 +269,6 @@
     <ClCompile Include="main\hooks\PauseMenuController_Leave.cpp" />
     <ClCompile Include="main\hooks\PhotonObjectInteract_Start.cpp" />
     <ClCompile Include="main\hooks\PlayerStamina_Update.cpp" />
-    <ClCompile Include="main\hooks\Player_StartKillingPlayer.cpp" />
-    <ClCompile Include="main\hooks\Player_StartKillingPlayerNetworked.cpp" />
     <ClCompile Include="main\hooks\Present.cpp" />
     <ClCompile Include="main\hooks\SaltShaker_Update.cpp" />
     <ClCompile Include="main\hooks\SaltSpot_SyncSalt.cpp" />
@@ -343,6 +345,7 @@
     <ClInclude Include="main\features\feats\jackalopeesp\jackalopeesp.h" />
     <ClInclude Include="main\features\feats\journalmod\journalmod.h" />
     <ClInclude Include="main\features\feats\photomod\photomod.h" />
+    <ClInclude Include="main\features\feats\spiritboxalw\spiritboxalw.h" />
     <ClInclude Include="main\features\feats\staminabar\staminabar.h" />
     <ClInclude Include="main\features\feats\vanbuttonmod\vanbuttonmod.h" />
     <ClInclude Include="main\features\feats\mapmod\mapmodifier.h" />
@@ -390,6 +393,7 @@
     <ClInclude Include="main\sdk\Equipment.h" />
     <ClInclude Include="main\sdk\Evidence.h" />
     <ClInclude Include="main\sdk\EvidenceController.h" />
+    <ClInclude Include="main\sdk\EVPRecorder.h" />
     <ClInclude Include="main\sdk\ExitLevel.h" />
     <ClInclude Include="main\sdk\FallTeleportBox.h" />
     <ClInclude Include="main\sdk\FirstPersonController.h" />
@@ -421,8 +425,11 @@
     <ClInclude Include="main\sdk\LightningController.h" />
     <ClInclude Include="main\sdk\LightSwitch.h" />
     <ClInclude Include="main\sdk\LineRenderer.h" />
+    <ClInclude Include="main\sdk\LocalPCPlayer.h" />
+    <ClInclude Include="main\sdk\LocalPlayer.h" />
     <ClInclude Include="main\sdk\Map.h" />
     <ClInclude Include="main\sdk\MapController.h" />
+    <ClInclude Include="main\sdk\MediaValues.h" />
     <ClInclude Include="main\sdk\MethodInfo.h" />
     <ClInclude Include="main\sdk\MonoBehaviour.h" />
     <ClInclude Include="main\sdk\MouseLook.h" />
@@ -432,7 +439,6 @@
     <ClInclude Include="main\sdk\PauseMenuController.h" />
     <ClInclude Include="main\sdk\PhotonMessageInfo.h" />
     <ClInclude Include="main\sdk\PhotonNetwork.h" />
-    <ClInclude Include="main\sdk\MediaValues.h" />
     <ClInclude Include="main\sdk\PhotonObjectInteract.h" />
     <ClInclude Include="main\sdk\PhotonView.h" />
     <ClInclude Include="main\sdk\Physics.h" />
@@ -451,6 +457,7 @@
     <ClInclude Include="main\sdk\SaltSpot.h" />
     <ClInclude Include="main\sdk\SceneManager.h" />
     <ClInclude Include="main\sdk\Screen.h" />
+    <ClInclude Include="main\sdk\ScriptableRenderContext.h" />
     <ClInclude Include="main\sdk\sdk.h" />
     <ClInclude Include="main\sdk\ServerManager.h" />
     <ClInclude Include="main\sdk\StoreItem.h" />

@@ -337,7 +337,7 @@ std::string Utils::GetPlayerName(const SDK::Player* player)
 
 bool Utils::WTS(const SDK::Vector3& worldPos, SDK::Vector3& displayPos)
 {
-	SDK::Camera* playerCamera = GetLocalPlayer()->Fields.Camera; if (!playerCamera) return false;
+	SDK::Camera* playerCamera = GetLocalPlayer()->Fields.LocalPlayer->Fields.Camera; if (!playerCamera) return false;
 
 	SDK::Vector3 projected = SDK::Camera_WorldToScreenPoint(playerCamera, worldPos, nullptr); if (projected.Z <= 0.0f) return false;
 
@@ -352,7 +352,7 @@ bool Utils::WTS(const SDK::Vector3& worldPos, SDK::Vector3& displayPos)
 
 SDK::Transform* Utils::GetPlayerTransformCamera(const SDK::Player* player)
 {
-	return SDK::Component_Get_Transform(reinterpret_cast<SDK::Component*>(player->Fields.Camera), nullptr);
+	return SDK::Component_Get_Transform(reinterpret_cast<SDK::Component*>(player->Fields.LocalPlayer->Fields.Camera), nullptr);
 }
 
 SDK::Vector3 Utils::GetPosVec3(const SDK::Player* player)
@@ -467,7 +467,10 @@ bool Utils::IsLocalMasterClient()
 
 void Utils::TpPlayerToVec3(SDK::Player* player, const SDK::Vector3& position)
 {
-	SDK::Player_Teleport(player, position, nullptr);
+	if (!player) return;
+	auto* localPlayer = player->Fields.LocalPlayer;
+	if (!localPlayer) return;
+	SDK::LocalPlayer_TeleportPlayer(localPlayer, position, nullptr);
 }
 
 void Utils::TpPlayerToPlayer(SDK::Player* player, const SDK::Player* twoplayer)

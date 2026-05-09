@@ -564,6 +564,10 @@ inline void RegisterAllTranslations()
     ADD_STR("Jackalope_AttackChance", "Attack Chance: ", u8"Шанс атаки: ", u8"攻击几率：");
     ADD_STR("Jackalope_RunChance", "Run Chance: ", u8"Шанс побега: ", u8"逃跑几率：");
 
+    // Spirit Box Always Answer
+    ADD_STR("SpiritBoxAlwaysAnswer", "Spirit Box Always Answer", u8"Spirit Box Always Answer", u8"通灵盒持续回答");
+    ADD_STR("EnableSpiritBoxAlw", "EnableSpiritBoxAlw", u8"EnableSpiritBoxAlw", u8"启用通灵盒持续回答");
+
     // Player Modifier
     ADD_STR("PlayerModifier", "Player Modifier", u8"Модификатор игрока", u8"玩家修改器");
 

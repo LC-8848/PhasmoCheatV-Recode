@@ -46,7 +46,7 @@ void FoVEditor::FoVEditorMain()
 {
     auto localPlayer = Utils::GetLocalPlayer();
     if (!localPlayer) return;
-    auto Camera = localPlayer->Fields.Camera;
+    auto Camera = localPlayer->Fields.LocalPlayer->Fields.Camera;
     if (!Camera) return;
     float defFoV = SDK::Camera_Get_FieldOfView(Camera, nullptr);
     bool saved = CONFIG_BOOL(GetConfigManager(), "DefaultFoVSaved");

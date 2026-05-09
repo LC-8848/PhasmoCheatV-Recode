@@ -25,6 +25,7 @@ namespace PhasmoCheatV::InGame
     inline SDK::HandCamera* handCamera = nullptr;
     inline SDK::DifficultySettings* difficultySettings = nullptr;
 	inline std::vector<SDK::Jackalope*> jackalope;
+    inline SDK::FirstPersonController* firstPersonController = nullptr;
 
     // Reset in-game pointers
     inline void Reset() {
@@ -50,5 +51,6 @@ namespace PhasmoCheatV::InGame
         handCamera = nullptr;
         difficultySettings = nullptr;
         jackalope.clear();
+        firstPersonController = nullptr;
     }
 }

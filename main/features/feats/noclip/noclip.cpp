@@ -28,7 +28,7 @@ void NoClip::OnDeactivate()
 	auto localPlayer = Utils::GetLocalPlayer();
 	if (localPlayer)
 	{
-		auto firstPersonController = localPlayer->Fields.FirstPersonController;
+		auto firstPersonController = InGame::firstPersonController;
 		if (firstPersonController)
 		{
 			const auto controller = firstPersonController->Fields.PhysicsCharacterController;
@@ -77,7 +77,7 @@ void NoClip::NoClipMain(SDK::FirstPersonController* firstPersonController)
     }
     const auto transform = SDK::Component_Get_Transform(reinterpret_cast<SDK::Component*>(controller), nullptr);
 
-    SDK::Camera* camera = Utils::GetLocalPlayer()->Fields.Camera;
+    SDK::Camera* camera = Utils::GetLocalPlayer()->Fields.LocalPlayer->Fields.Camera;
     const auto camTransform = SDK::Component_Get_Transform(reinterpret_cast<SDK::Component*>(camera), nullptr);
 
     const auto forward = SDK::Transform_Get_Forward(camTransform, nullptr);
